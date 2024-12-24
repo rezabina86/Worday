@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  Worday
-//
-//  Created by Reza Bina on 23.12.24.
-//
-
 import SwiftUI
 
 struct ContentView: View {
