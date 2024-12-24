@@ -1,7 +1,7 @@
 import Testing
 @testable import Worday
 
-struct WordayTests {
+struct WordServiceTests {
     
     var sut: WordService!
     var mockResourceLoader: ResourceLoaderMock!
