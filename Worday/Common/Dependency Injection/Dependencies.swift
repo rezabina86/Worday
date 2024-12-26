@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 
 public func injectDependencies(into container: ContainerType) {
     container.register { _ -> ResourceLoaderType in
@@ -12,5 +13,9 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register { _ -> URLContentLoaderType in
         URLContentLoader()
+    }
+    
+    container.register { _ -> WordStorageModelContextType in
+        ModelContext(sharedModelContainer)
     }
 }
