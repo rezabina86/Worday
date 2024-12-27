@@ -10,7 +10,7 @@ protocol WordStorageModelContextType {
 extension WordStorageModelContextType {
     func fetchAll() throws -> Set<WordStorageEntity> {
         let entities = try self.fetch(
-            .init(sortBy: [SortDescriptor(\.createdAt)])
+            .init(sortBy: [SortDescriptor(\.createdAt, order: .forward)])
         )
         
         return Set(entities)

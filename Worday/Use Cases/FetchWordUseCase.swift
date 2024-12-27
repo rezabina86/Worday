@@ -2,6 +2,7 @@ import Foundation
 
 enum FetchWordUseCaseError: Error {
     case noAvailableWords
+    case noWordToday
 }
 
 protocol FetchWordUseCaseType {
@@ -13,11 +14,13 @@ final class FetchWordUseCase: FetchWordUseCaseType {
     init(
         wordRepository: WordRepositoryType,
         wordContext: WordStorageModelContextType,
-        randomWordProducer: RandomWordProducerType
+        randomWordProducer: RandomWordProducerType,
+        dateService: DateServiceType
     ) {
         self.wordRepository = wordRepository
         self.wordContext = wordContext
         self.randomWordProducer = randomWordProducer
+        self.dateService = dateService
     }
     
     func fetch() throws -> String {
@@ -27,11 +30,18 @@ final class FetchWordUseCase: FetchWordUseCaseType {
             throw FetchWordUseCaseError.noAvailableWords
         }
         
+        let storedWords = try wordContext.fetchAll()
+        
+        if let firstWordDate = storedWords.first.map ({ $0.createdAt }),
+           dateService.isDateInToday(firstWordDate) {
+            throw FetchWordUseCaseError.noWordToday
+        }
+        
+        // Storing words in Set to decrease time complexity
         let allWordsSet = Set(allWords)
+        let storedWordsSet = Set(storedWords.map { $0.word })
         
-        let storedWords = try Set(wordContext.fetchAll().map { $0.word })
-        
-        let availableWords = allWordsSet.subtracting(storedWords)
+        let availableWords = allWordsSet.subtracting(storedWordsSet)
         
         if availableWords.isEmpty {
             throw FetchWordUseCaseError.noAvailableWords
@@ -48,6 +58,7 @@ final class FetchWordUseCase: FetchWordUseCaseType {
     private let wordRepository: WordRepositoryType
     private let wordContext: WordStorageModelContextType
     private let randomWordProducer: RandomWordProducerType
+    private let dateService: DateServiceType
     
     private var words: WordModel?
     
