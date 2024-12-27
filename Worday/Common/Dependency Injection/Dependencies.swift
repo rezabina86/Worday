@@ -18,4 +18,15 @@ public func injectDependencies(into container: ContainerType) {
     container.register { _ -> WordStorageModelContextType in
         ModelContext(sharedModelContainer)
     }
+    
+    container.register { _ -> DateServiceType in
+        DateService()
+    }
+    
+    container.register { container -> FetchWordUseCaseType in
+        FetchWordUseCase(wordRepository: container.resolve(),
+                         wordContext: container.resolve(),
+                         randomWordProducer: container.resolve(),
+                         dateService: container.resolve())
+    }
 }
