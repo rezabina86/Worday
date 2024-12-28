@@ -1,10 +1,3 @@
-//
-//  WordayApp.swift
-//  Worday
-//
-//  Created by Reza Bina on 23.12.24.
-//
-
 import SwiftUI
 
 @main
@@ -13,6 +6,8 @@ struct WordayApp: App {
     init(container: ContainerType) {
         self.container = container
         configureDependencies(container)
+        
+        self.gameViewModelFactory = container.resolve()
     }
     
     init() {
@@ -21,11 +16,13 @@ struct WordayApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            GameView(viewModel: gameViewModelFactory.create())
         }
     }
     
     // MARK: - Privates
     private let container: ContainerType
     private var configureDependencies = injectDependencies
+    
+    private let gameViewModelFactory: GameViewModelFactoryType
 }

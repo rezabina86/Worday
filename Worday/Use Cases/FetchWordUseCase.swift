@@ -1,12 +1,18 @@
+import Combine
 import Foundation
 
-enum FetchWordUseCaseError: Error {
-    case noAvailableWords
-    case noWordToday
+enum FetchWordModel: Equatable {
+    case error
+    case word(WordModel)
+    
+    struct WordModel: Equatable {
+        let todayWord: String?
+        let lastPlayedWord: String?
+    }
 }
 
 protocol FetchWordUseCaseType {
-    func fetch() throws -> String
+    func fetch() -> FetchWordModel
 }
 
 final class FetchWordUseCase: FetchWordUseCaseType {
@@ -23,18 +29,18 @@ final class FetchWordUseCase: FetchWordUseCaseType {
         self.dateService = dateService
     }
     
-    func fetch() throws -> String {
-        try loadWordsIfNecessary()
-        
-        guard let allWords = words?.words else {
-            throw FetchWordUseCaseError.noAvailableWords
+    func fetch() -> FetchWordModel {
+        guard let allWords = try? wordRepository.words().words else {
+            return .error
         }
         
-        let storedWords = try wordContext.fetchAll()
+        guard let storedWords = try? wordContext.fetchAll() else {
+            return .error
+        }
         
-        if let firstWordDate = storedWords.first.map ({ $0.createdAt }),
-           dateService.isDateInToday(firstWordDate) {
-            throw FetchWordUseCaseError.noWordToday
+        if let firstWord = storedWords.first,
+           dateService.isDateInToday(firstWord.createdAt) {
+            return .word(.init(todayWord: nil, lastPlayedWord: firstWord.word))
         }
         
         // Storing words in Set to decrease time complexity
@@ -44,14 +50,14 @@ final class FetchWordUseCase: FetchWordUseCaseType {
         let availableWords = allWordsSet.subtracting(storedWordsSet)
         
         if availableWords.isEmpty {
-            throw FetchWordUseCaseError.noAvailableWords
+            return .error
         }
         
         guard let word = randomWordProducer.randomElement(in: availableWords) else {
-            throw FetchWordUseCaseError.noAvailableWords
+            return .error
         }
         
-        return word
+        return .word(.init(todayWord: word, lastPlayedWord: storedWords.first.map { $0.word }))
     }
     
     // MARK: - Privates
@@ -59,11 +65,4 @@ final class FetchWordUseCase: FetchWordUseCaseType {
     private let wordContext: WordStorageModelContextType
     private let randomWordProducer: RandomWordProducerType
     private let dateService: DateServiceType
-    
-    private var words: WordModel?
-    
-    private func loadWordsIfNecessary() throws {
-        guard words == nil else { return }
-        self.words = try wordRepository.words()
-    }
 }

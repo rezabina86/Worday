@@ -14,9 +14,9 @@ final class WordStorageModelContextMock: WordStorageModelContextType {
         calls.append(.insert(model: model))
     }
     
-    func fetchAll() throws -> Set<WordStorageEntity> {
+    func fetchAll() throws -> [WordStorageEntity] {
         calls.append(.fetchAll)
-        return Set(fetchReturnValue)
+        return fetchReturnValue
     }
     
     func fetch(_ descriptor: FetchDescriptor<WordStorageEntity>) throws -> [WordStorageEntity] {
