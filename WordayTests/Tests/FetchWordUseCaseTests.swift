@@ -29,8 +29,8 @@ struct FetchWordUseCaseTests {
         mockRandomWordProducer.randomElementReturnValue = "a"
         mockDateService.isDateInTodayReturnValue = false
         
-        let word = try sut.fetch()
-        #expect(word == "a")
+        let result = sut.fetch()
+        #expect(result == .word(word: "a"))
         #expect(mockWordRepository.calls == [.words])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [.randomElement(words: ["a", "b"])])
@@ -42,10 +42,9 @@ struct FetchWordUseCaseTests {
         mockRandomWordProducer.randomElementReturnValue = "a"
         mockDateService.isDateInTodayReturnValue = false
         
-        #expect(throws: FetchWordUseCaseError.noAvailableWords, performing: {
-            try sut.fetch()
-        })
+        let result = sut.fetch()
         
+        #expect(result == .error)
         #expect(mockWordRepository.calls == [.words])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [])
@@ -57,10 +56,8 @@ struct FetchWordUseCaseTests {
         mockRandomWordProducer.randomElementReturnValue = "a"
         mockDateService.isDateInTodayReturnValue = true
         
-        #expect(throws: FetchWordUseCaseError.noWordToday, performing: {
-            try sut.fetch()
-        })
-        
+        let result = sut.fetch()
+        #expect(result == .noWordToday(lastPlayedWord: "a"))
         #expect(mockWordRepository.calls == [.words])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [])
@@ -72,8 +69,8 @@ struct FetchWordUseCaseTests {
         mockRandomWordProducer.randomElementReturnValue = "c"
         mockDateService.isDateInTodayReturnValue = false
         
-        let word = try sut.fetch()
-        #expect(word == "c")
+        let result = sut.fetch()
+        #expect(result == .word(word: "c"))
         #expect(mockWordRepository.calls == [.words])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [.randomElement(words: ["c", "d"])])

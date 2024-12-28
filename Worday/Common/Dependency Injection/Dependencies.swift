@@ -11,6 +11,10 @@ public func injectDependencies(into container: ContainerType) {
         WordService(resourceLoader: container.resolve())
     }
     
+    container.register { container -> WordRepositoryType in
+        WordRepository(wordService: container.resolve())
+    }
+    
     container.register { _ -> URLContentLoaderType in
         URLContentLoader()
     }
@@ -28,5 +32,13 @@ public func injectDependencies(into container: ContainerType) {
                          wordContext: container.resolve(),
                          randomWordProducer: container.resolve(),
                          dateService: container.resolve())
+    }
+    
+    container.register { _ -> RandomWordProducerType in
+        RandomWordProducer()
+    }
+    
+    container.register { container -> GameViewModelFactoryType in
+        GameViewModelFactory(fetchWordUseCase: container.resolve())
     }
 }
