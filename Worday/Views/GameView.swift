@@ -28,8 +28,8 @@ struct GameView: View {
         switch viewState {
         case .error:
             Text("Error")
-        case .noWordToday:
-            Text("You have completed all words today")
+        case let .noWordToday(lastWord):
+            Text("You have completed all words today\nLast word: \(lastWord)")
         case let .game(word):
             Text(word)
         }
@@ -38,6 +38,6 @@ struct GameView: View {
 
 enum GameViewState: Equatable {
     case error
-    case noWordToday
-    case game(String)
+    case noWordToday(lastWord: String)
+    case game(word: String)
 }

@@ -30,7 +30,7 @@ struct FetchWordUseCaseTests {
         mockDateService.isDateInTodayReturnValue = false
         
         let result = sut.fetch()
-        #expect(result == .word(.init(todayWord: "a", lastPlayedWord: nil)))
+        #expect(result == .word(word: "a"))
         #expect(mockWordRepository.calls == [.words])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [.randomElement(words: ["a", "b"])])
@@ -57,7 +57,7 @@ struct FetchWordUseCaseTests {
         mockDateService.isDateInTodayReturnValue = true
         
         let result = sut.fetch()
-        #expect(result == .word(.init(todayWord: nil, lastPlayedWord: "a")))
+        #expect(result == .noWordToday(lastPlayedWord: "a"))
         #expect(mockWordRepository.calls == [.words])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [])
@@ -70,7 +70,7 @@ struct FetchWordUseCaseTests {
         mockDateService.isDateInTodayReturnValue = false
         
         let result = sut.fetch()
-        #expect(result == .word(.init(todayWord: "c", lastPlayedWord: "a")))
+        #expect(result == .word(word: "c"))
         #expect(mockWordRepository.calls == [.words])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [.randomElement(words: ["c", "d"])])

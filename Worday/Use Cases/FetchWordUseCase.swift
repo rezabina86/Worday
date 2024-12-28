@@ -3,12 +3,8 @@ import Foundation
 
 enum FetchWordModel: Equatable {
     case error
-    case word(WordModel)
-    
-    struct WordModel: Equatable {
-        let todayWord: String?
-        let lastPlayedWord: String?
-    }
+    case word(word: String)
+    case noWordToday(lastPlayedWord: String)
 }
 
 protocol FetchWordUseCaseType {
@@ -40,7 +36,7 @@ final class FetchWordUseCase: FetchWordUseCaseType {
         
         if let firstWord = storedWords.first,
            dateService.isDateInToday(firstWord.createdAt) {
-            return .word(.init(todayWord: nil, lastPlayedWord: firstWord.word))
+            return .noWordToday(lastPlayedWord: firstWord.word)
         }
         
         // Storing words in Set to decrease time complexity
@@ -57,7 +53,7 @@ final class FetchWordUseCase: FetchWordUseCaseType {
             return .error
         }
         
-        return .word(.init(todayWord: word, lastPlayedWord: storedWords.first.map { $0.word }))
+        return .word(word: word)
     }
     
     // MARK: - Privates
