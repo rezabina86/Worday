@@ -17,15 +17,21 @@ final class FetchWordUseCase: FetchWordUseCaseType {
         wordRepository: WordRepositoryType,
         wordContext: WordStorageModelContextType,
         randomWordProducer: RandomWordProducerType,
-        dateService: DateServiceType
+        dateService: DateServiceType,
+        userSettings: UserSettingsType
     ) {
         self.wordRepository = wordRepository
         self.wordContext = wordContext
         self.randomWordProducer = randomWordProducer
         self.dateService = dateService
+        self.userSettings = userSettings
     }
     
     func fetch() -> FetchWordModel {
+        if let currentWord = userSettings.currentWord {
+            return .word(word: currentWord)
+        }
+        
         guard let allWords = try? wordRepository.words().words else {
             return .error
         }
@@ -53,6 +59,10 @@ final class FetchWordUseCase: FetchWordUseCaseType {
             return .error
         }
         
+        defer {
+            userSettings.currentWord = word
+        }
+        
         return .word(word: word)
     }
     
@@ -61,4 +71,5 @@ final class FetchWordUseCase: FetchWordUseCaseType {
     private let wordContext: WordStorageModelContextType
     private let randomWordProducer: RandomWordProducerType
     private let dateService: DateServiceType
+    private let userSettings: UserSettingsType
 }
