@@ -4,26 +4,44 @@ import Foundation
 
 struct FetchWordUseCaseTests {
     
-    var sut: FetchWordUseCase!
-    var mockWordRepository: WordRepositoryMock!
-    var mockWordContext: WordStorageModelContextMock!
-    var mockRandomWordProducer: RandomWordProducerMock!
-    var mockDateService: DateServiceMock!
+    var sut: FetchWordUseCase
+    var mockWordRepository: WordRepositoryMock
+    var mockWordContext: WordStorageModelContextMock
+    var mockRandomWordProducer: RandomWordProducerMock
+    var mockDateService: DateServiceMock
+    var mockUserSettings: UserSettingsMock
     
     init() {
         mockWordRepository = .init()
         mockWordContext = .init()
         mockRandomWordProducer = .init()
         mockDateService = .init()
+        mockUserSettings = .init()
         sut = .init(
             wordRepository: mockWordRepository,
             wordContext: mockWordContext,
             randomWordProducer: mockRandomWordProducer,
-            dateService: mockDateService
+            dateService: mockDateService,
+            userSettings: mockUserSettings
         )
+    }
+    
+    @Test func testWhenThereIsUnplayedWord() async throws {
+        mockUserSettings.currentWordReturnValue = "hello"
+        mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
+        mockWordContext.fetchReturnValue = []
+        mockRandomWordProducer.randomElementReturnValue = "a"
+        mockDateService.isDateInTodayReturnValue = false
+        
+        let result = sut.fetch()
+        #expect(result == .word(word: "hello"))
+        #expect(mockWordRepository.calls.isEmpty)
+        #expect(mockWordContext.calls.isEmpty)
+        #expect(mockRandomWordProducer.calls.isEmpty)
     }
 
     @Test func testFetchSuccessfully() async throws {
+        mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
         mockWordContext.fetchReturnValue = []
         mockRandomWordProducer.randomElementReturnValue = "a"
@@ -37,6 +55,7 @@ struct FetchWordUseCaseTests {
     }
     
     @Test func testFetchSuccessfullyWhenAllWordsCompleted() async throws {
+        mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
         mockWordContext.fetchReturnValue = [.init(id: "123", word: "a"), .init(id: "345", word: "b")]
         mockRandomWordProducer.randomElementReturnValue = "a"
@@ -51,6 +70,7 @@ struct FetchWordUseCaseTests {
     }
     
     @Test func testFetchTodayWordIsCompleted() async throws {
+        mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
         mockWordContext.fetchReturnValue = [.init(id: "123", word: "a"), .init(id: "345", word: "b")]
         mockRandomWordProducer.randomElementReturnValue = "a"
@@ -64,6 +84,7 @@ struct FetchWordUseCaseTests {
     }
     
     @Test func testFetchSuccessfullyWhenWordsPartiallyCompleted() async throws {
+        mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b", "c", "d"])
         mockWordContext.fetchReturnValue = [.init(id: "123", word: "a"), .init(id: "345", word: "b")]
         mockRandomWordProducer.randomElementReturnValue = "c"

@@ -31,7 +31,8 @@ public func injectDependencies(into container: ContainerType) {
         FetchWordUseCase(wordRepository: container.resolve(),
                          wordContext: container.resolve(),
                          randomWordProducer: container.resolve(),
-                         dateService: container.resolve())
+                         dateService: container.resolve(),
+                         userSettings: container.resolve())
     }
     
     container.register { _ -> RandomWordProducerType in
@@ -40,5 +41,13 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register { container -> GameViewModelFactoryType in
         GameViewModelFactory(fetchWordUseCase: container.resolve())
+    }
+    
+    container.register { container -> UserSettingsType in
+        UserSettings(userDefaults: container.resolve())
+    }
+    
+    container.register { _ -> UserDefaultsType in
+        UserDefaults.standard
     }
 }
