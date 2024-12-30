@@ -7,24 +7,29 @@ enum FetchWordModel: Equatable {
     case noWordToday(lastPlayedWord: String)
 }
 
-protocol FetchWordUseCaseType {
+protocol WordProviderUseCaseType {
     func fetch() -> FetchWordModel
+    func store(word: String)
 }
 
-final class FetchWordUseCase: FetchWordUseCaseType {
+final class WordProviderUseCase: WordProviderUseCaseType {
     
     init(
         wordRepository: WordRepositoryType,
         wordContext: WordStorageModelContextType,
         randomWordProducer: RandomWordProducerType,
         dateService: DateServiceType,
-        userSettings: UserSettingsType
+        userSettings: UserSettingsType,
+        uuidProvider: UUIDProviderType,
+        dateProvider: DateProviderType
     ) {
         self.wordRepository = wordRepository
         self.wordContext = wordContext
         self.randomWordProducer = randomWordProducer
         self.dateService = dateService
         self.userSettings = userSettings
+        self.uuidProvider = uuidProvider
+        self.dateProvider = dateProvider
     }
     
     func fetch() -> FetchWordModel {
@@ -41,7 +46,7 @@ final class FetchWordUseCase: FetchWordUseCaseType {
         }
         
         if let firstWord = storedWords.first,
-           dateService.isDateInToday(firstWord.createdAt) {
+           dateService.isDateInToday(firstWord.playedAt) {
             return .noWordToday(lastPlayedWord: firstWord.word)
         }
         
@@ -59,11 +64,20 @@ final class FetchWordUseCase: FetchWordUseCaseType {
             return .error
         }
         
-        defer {
-            userSettings.currentWord = word
-        }
+        userSettings.currentWord = word
         
         return .word(word: word)
+    }
+    
+    func store(word: String) {
+        wordContext.insert(
+            .init(
+                id: uuidProvider.create(),
+                word: word,
+                playedAt: dateProvider.now()
+            )
+        )
+        userSettings.currentWord = nil
     }
     
     // MARK: - Privates
@@ -72,4 +86,6 @@ final class FetchWordUseCase: FetchWordUseCaseType {
     private let randomWordProducer: RandomWordProducerType
     private let dateService: DateServiceType
     private let userSettings: UserSettingsType
+    private let uuidProvider: UUIDProviderType
+    private let dateProvider: DateProviderType
 }

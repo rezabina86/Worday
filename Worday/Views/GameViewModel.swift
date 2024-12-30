@@ -6,10 +6,10 @@ protocol GameViewModelFactoryType {
 }
 
 struct GameViewModelFactory: GameViewModelFactoryType {
-    let fetchWordUseCase: FetchWordUseCaseType
+    let fetchWordUseCase: WordProviderUseCaseType
     
     func create() -> GameViewModelType {
-        GameViewModel(fetchWordUseCase: fetchWordUseCase)
+        GameViewModel(wordProviderUseCase: fetchWordUseCase)
     }
 }
 
@@ -19,8 +19,8 @@ protocol GameViewModelType {
 
 final class GameViewModel: GameViewModelType {
     
-    init(fetchWordUseCase: FetchWordUseCaseType) {
-        self.fetchWordUseCase = fetchWordUseCase
+    init(wordProviderUseCase: WordProviderUseCaseType) {
+        self.wordProviderUseCase = wordProviderUseCase
         
         updateViewState()
     }
@@ -30,12 +30,12 @@ final class GameViewModel: GameViewModelType {
     }
     
     // MARK: - Privates
-    private let fetchWordUseCase: FetchWordUseCaseType
+    private let wordProviderUseCase: WordProviderUseCaseType
     
     private let viewStateSubject: CurrentValueSubject<GameViewState, Never> = .init(.error)
     
     private func updateViewState() {
-        let result = fetchWordUseCase.fetch()
+        let result = wordProviderUseCase.fetch()
         
         switch result {
         case .error:

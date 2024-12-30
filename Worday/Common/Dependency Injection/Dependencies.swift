@@ -27,12 +27,14 @@ public func injectDependencies(into container: ContainerType) {
         DateService()
     }
     
-    container.register { container -> FetchWordUseCaseType in
-        FetchWordUseCase(wordRepository: container.resolve(),
-                         wordContext: container.resolve(),
-                         randomWordProducer: container.resolve(),
-                         dateService: container.resolve(),
-                         userSettings: container.resolve())
+    container.register { container -> WordProviderUseCaseType in
+        WordProviderUseCase(wordRepository: container.resolve(),
+                            wordContext: container.resolve(),
+                            randomWordProducer: container.resolve(),
+                            dateService: container.resolve(),
+                            userSettings: container.resolve(),
+                            uuidProvider: UUID(),
+                            dateProvider: Date())
     }
     
     container.register { _ -> RandomWordProducerType in
