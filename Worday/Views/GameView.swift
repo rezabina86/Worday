@@ -26,7 +26,7 @@ struct GameView: View {
     // MARK: - Privates
     private let viewModel: GameViewModelType
     
-    @State private var viewState: GameViewState = .error
+    @State private var viewState: GameViewState = .empty
     @Environment(\.scenePhase) private var scenePhase
     
     
@@ -34,11 +34,12 @@ struct GameView: View {
     @ViewBuilder
     private func view(for viewState: GameViewState) -> some View {
         switch viewState {
+        case .empty: EmptyView()
         case .error:
             Text("Error")
                 .transition(.opacity)
-        case let .noWordToday(lastWord):
-            Text("You have completed all words today\nLast word: \(lastWord)")
+        case let .noWordToday(viewState):
+            FinishedGameView(viewState: viewState)
                 .transition(.opacity)
         case let .game(viewState):
             OngoingGameView(viewState: viewState)
@@ -48,7 +49,8 @@ struct GameView: View {
 }
 
 enum GameViewState: Equatable {
+    case empty
     case error
-    case noWordToday(lastWord: String)
+    case noWordToday(viewState: FinishedGameViewState)
     case game(viewState: OngoingGameViewState)
 }
