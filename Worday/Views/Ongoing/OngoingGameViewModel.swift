@@ -118,11 +118,7 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
         self.characters.send(charactersToUpdate)
         
         if charactersToUpdate.allSatisfy({ $0.isCorrect }) {
-            finishGame()
+            wordProviderUseCase.store(word: word.joined().lowercased())
         }
-    }
-    
-    private func finishGame() {
-        wordProviderUseCase.store(word: word.joined())
     }
 }
