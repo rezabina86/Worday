@@ -15,12 +15,20 @@ struct GameView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.onAppear()
+        }
+        .onChange(of: scenePhase) { old, new in
+            viewModel.scenePhaseChanged(new)
+        }
     }
     
     // MARK: - Privates
     private let viewModel: GameViewModelType
     
     @State private var viewState: GameViewState = .error
+    @Environment(\.scenePhase) private var scenePhase
+    
     
     // MARK: - View Builders
     @ViewBuilder

@@ -34,7 +34,8 @@ public func injectDependencies(into container: ContainerType) {
                             dateService: container.resolve(),
                             userSettings: container.resolve(),
                             uuidProvider: UUID(),
-                            dateProvider: Date())
+                            dateProvider: Date(),
+                            finishGameRelay: container.resolve())
     }
     
     container.register { _ -> RandomWordProducerType in
@@ -43,7 +44,9 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register { container -> GameViewModelFactoryType in
         GameViewModelFactory(fetchWordUseCase: container.resolve(),
-                             ongoingGameViewModelFactory: container.resolve())
+                             ongoingGameViewModelFactory: container.resolve(),
+                             scenePhaseObserver: container.resolve(),
+                             appTriggerFactory: container.resolve())
     }
     
     container.register { container -> UserSettingsType in
@@ -61,5 +64,18 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register { _ -> ArrayShuffleType in
         ArrayShuffle()
+    }
+    
+    container.register(in: .weakContainer) { container -> AppTriggerFactoryType in
+        AppTriggerFactory(scenePhaseObserver: container.resolve(),
+                          finishGameRelay: container.resolve())
+    }
+    
+    container.register(in: .weakContainer) { _ -> ScenePhaseObserverType in
+        ScenePhaseObserver()
+    }
+    
+    container.register(in: .weakContainer) { _ -> FinishGameRelayType in
+        FinishGameRelay()
     }
 }
