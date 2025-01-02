@@ -77,7 +77,12 @@ final class GameViewModel: GameViewModelType {
         case let .word(word):
             setupOngoingGame(with: word)
         case let .noWordToday(lastPlayedWord):
-            viewStateSubject.send(.noWordToday(lastWord: lastPlayedWord))
+            let viewState = FinishedGameViewState(
+                title: "Great job!",
+                message: "You’ve solved today’s puzzle. The word was \(lastPlayedWord)",
+                subtitle: "Come back tomorrow for another challenge!"
+            )
+            viewStateSubject.send(.noWordToday(viewState: viewState))
         }
     }
     
