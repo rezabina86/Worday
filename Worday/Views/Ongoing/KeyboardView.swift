@@ -5,13 +5,13 @@ struct KeyBoardView: View {
     let viewState: KeyBoardViewState
     
     var body: some View {
-        VStack(spacing: .space_16pt) {
-            HStack(spacing: .space_16pt) {
+        VStack(spacing: .space_8pt) {
+            HStack(spacing: .space_8pt) {
                 ForEach(viewState.keys) { key in
                     buildKey(from: key)
                 }
             }
-            HStack(spacing: .space_16pt) {
+            HStack(spacing: .space_8pt) {
                 enterKey
                 deleteKey
             }
@@ -50,14 +50,14 @@ struct KeyBoardView: View {
     }
     
     @ViewBuilder
-    private func buildKey(from viewState: KeyViewState) -> some View {
-        Button(viewState.character.uppercased()) {
-            viewState.onTap.action()
+    private func buildKey(from vs: KeyViewState) -> some View {
+        Button(vs.character.uppercased()) {
+            vs.onTap.action()
         }
         .font(.title3)
         .fontWeight(.bold)
         .foregroundColor(Color.textColor)
-        .frame(minWidth:29)
+        .frame(minWidth:.size_32pt)
         .frame(height: .size_48pt)
         .background(Color.backgroundKeyNoneColor)
         .cornerRadius(.radius_small)

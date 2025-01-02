@@ -10,7 +10,7 @@ struct GameView: View {
         view(for: viewState)
         .task {
             for await vs in viewModel.viewState.values {
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.5)) {
                     self.viewState = vs
                 }
             }
@@ -28,10 +28,13 @@ struct GameView: View {
         switch viewState {
         case .error:
             Text("Error")
+                .transition(.opacity)
         case let .noWordToday(lastWord):
             Text("You have completed all words today\nLast word: \(lastWord)")
-        case let .game(word):
-            Text(word)
+                .transition(.opacity)
+        case let .game(viewState):
+            OngoingGameView(viewState: viewState)
+                .transition(.opacity)
         }
     }
 }
@@ -39,5 +42,5 @@ struct GameView: View {
 enum GameViewState: Equatable {
     case error
     case noWordToday(lastWord: String)
-    case game(word: String)
+    case game(viewState: OngoingGameViewState)
 }
