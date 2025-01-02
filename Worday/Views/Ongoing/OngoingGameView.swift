@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct OngoingGameView: View {
+    
+    let viewState: GameViewState.OngoingGameViewState
+    
     var body: some View {
         VStack {
             Spacer()
@@ -18,9 +21,6 @@ struct OngoingGameView: View {
                 .frame(height: .size_128pt)
         }
     }
-    
-    // MARK: - Privates
-    @State private var viewState: GameViewState.OngoingGameViewState = .empty
     
     // MARK: - Sub views
     @ViewBuilder
@@ -51,29 +51,51 @@ extension GameViewState {
 
 extension GameViewState.OngoingGameViewState {
     struct Character: Equatable, Identifiable {
-        let char: String
+        let id: UUID
         let state: State
-        let id: String
+        
+        var isEmpty: Bool {
+            state == .empty
+        }
+        
+        var character: String? {
+            switch self.state {
+            case .empty: return nil
+            case let .correct(char): return char
+            case let .draft(char): return char
+            case let .misplaced(char): return char
+            }
+        }
+        
+        var isCorrect: Bool {
+            switch self.state {
+            case .draft, .empty, .misplaced: return false
+            case .correct: return true
+            }
+        }
         
         enum State: Equatable {
-            case draft
-            case correct
-            case misplaced
+            case empty
+            case draft(char: String)
+            case correct(char: String)
+            case misplaced(char: String)
         }
+    }
+}
+
+extension GameViewState.OngoingGameViewState.Character {
+    static var empty: Self {
+        .init(id: .init(), state: .empty)
     }
 }
 
 extension GameViewState.OngoingGameViewState {
     static let empty: Self = .init(
-        characters: [.init(char: "", state: .draft, id: "a"),
-                     .init(char: "B", state: .draft, id: "b"),
-                     .init(char: "C", state: .misplaced, id: "c"),
-                     .init(char: "D", state: .correct, id: "d"),
-                     .init(char: "E", state: .correct, id: "e")],
+        characters: [.empty, .empty, .empty, .empty, .empty],
         keyboardViewState: .empty
     )
 }
 
 #Preview {
-    OngoingGameView()
+    OngoingGameView(viewState: .empty)
 }

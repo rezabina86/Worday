@@ -10,7 +10,7 @@ protocol WordStorageModelContextType {
 extension WordStorageModelContextType {
     func fetchAll() throws -> [WordStorageEntity] {
         try self.fetch(
-            .init(sortBy: [SortDescriptor(\.playedAt, order: .forward)])
+            .init(sortBy: [SortDescriptor(\.playedAt, order: .reverse)])
         )
     }
 }

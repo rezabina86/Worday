@@ -42,7 +42,8 @@ public func injectDependencies(into container: ContainerType) {
     }
     
     container.register { container -> GameViewModelFactoryType in
-        GameViewModelFactory(fetchWordUseCase: container.resolve())
+        GameViewModelFactory(fetchWordUseCase: container.resolve(),
+                             ongoingGameViewModelFactory: container.resolve())
     }
     
     container.register { container -> UserSettingsType in
@@ -51,5 +52,9 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register { _ -> UserDefaultsType in
         UserDefaults.standard
+    }
+    
+    container.register { _ -> OngoingGameViewModelFactoryType in
+        OngoingGameViewModelFactory()
     }
 }
