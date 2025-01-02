@@ -79,6 +79,7 @@ final class WordProviderUseCase: WordProviderUseCaseType {
                 playedAt: dateProvider.now()
             )
         )
+        try? wordContext.save()
         userSettings.currentWord = nil
         finishGameRelay.finishGame()
     }

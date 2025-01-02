@@ -3,6 +3,7 @@ import Foundation
 
 protocol WordStorageModelContextType {
     func insert(_ model: WordStorageEntity)
+    func save() throws
     func fetchAll() throws -> [WordStorageEntity]
     func fetch(_ descriptor: FetchDescriptor<WordStorageEntity>) throws -> [WordStorageEntity]
 }
