@@ -1,7 +1,7 @@
 import Combine
 @testable import Worday
 
-final class FinishGameRelay: FinishGameRelayType {
+final class FinishGameRelayMock: FinishGameRelayType {
     
     enum Call: Equatable {
         case finishGame

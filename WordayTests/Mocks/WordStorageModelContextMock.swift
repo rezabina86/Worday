@@ -6,12 +6,17 @@ final class WordStorageModelContextMock: WordStorageModelContextType {
     
     enum Call: Equatable {
         case insert(model: WordStorageEntity)
+        case save
         case fetchAll
         case fetch
     }
     
     func insert(_ model: WordStorageEntity) {
         calls.append(.insert(model: model))
+    }
+    
+    func save() throws {
+        calls.append(.save)
     }
     
     func fetchAll() throws -> [WordStorageEntity] {
