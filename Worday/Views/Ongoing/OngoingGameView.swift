@@ -74,6 +74,13 @@ extension GameViewState.OngoingGameViewState {
             }
         }
         
+        var isDraft: Bool {
+            switch self.state {
+            case .correct, .misplaced, .empty: return false
+            case .draft: return true
+            }
+        }
+        
         enum State: Equatable {
             case empty
             case draft(char: String)

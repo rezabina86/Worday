@@ -63,15 +63,5 @@ final class GameViewModel: GameViewModelType {
                 viewStateSubject.send(.game(viewState: $0))
             }
             .store(in: &cancellables)
-        
-        ongoingGameViewModel?.finishGame
-            .sink { [weak self] finished in
-                guard let self else { return }
-                if finished {
-                    wordProviderUseCase.store(word: word)
-                    fetchWord()
-                }
-            }
-            .store(in: &cancellables)
     }
 }

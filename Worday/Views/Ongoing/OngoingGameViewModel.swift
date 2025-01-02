@@ -6,21 +6,25 @@ protocol OngoingGameViewModelFactoryType {
 }
 
 struct OngoingGameViewModelFactory: OngoingGameViewModelFactoryType {
+    let wordProviderUseCase: WordProviderUseCaseType
+    
     func create(with word: String) -> OngoingGameViewModelType {
-        OngoingGameViewModel(word: word)
+        OngoingGameViewModel(word: word,
+                             wordProviderUseCase: wordProviderUseCase)
     }
 }
 
 protocol OngoingGameViewModelType {
     var viewState: AnyPublisher< GameViewState.OngoingGameViewState,Never> { get }
-    var finishGame: AnyPublisher<Bool, Never> { get }
 }
 
 final class OngoingGameViewModel: OngoingGameViewModelType {
     
-    init(word: String) {
+    init(word: String,
+         wordProviderUseCase: WordProviderUseCaseType) {
         self.word = word.split(separator: "").map { String($0) }
         self.shuffledCharacters = self.word.shuffled()
+        self.wordProviderUseCase = wordProviderUseCase
     }
     
     var viewState: AnyPublisher<GameViewState.OngoingGameViewState, Never> {
@@ -34,16 +38,15 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
         .eraseToAnyPublisher()
     }
     
-    var finishGame: AnyPublisher<Bool, Never> {
-        finishGameSubject.eraseToAnyPublisher()
-    }
-    
     // MARK: - Privates
     private let word: [String]
     private let shuffledCharacters: [String]
     
-    private let characters: CurrentValueSubject<[GameViewState.OngoingGameViewState.Character], Never> = .init([.empty, .empty, .empty, .empty, .empty])
-    private let finishGameSubject: PassthroughSubject<Bool, Never> = .init()
+    private let wordProviderUseCase: WordProviderUseCaseType
+    
+    private let characters: CurrentValueSubject<[GameViewState.OngoingGameViewState.Character], Never> = .init([
+        .empty, .empty, .empty, .empty, .empty
+    ])
     
     private var makeKeyboardViewState: KeyBoardViewState {
         let keys: [KeyViewState] = self.shuffledCharacters.enumerated()
@@ -91,7 +94,8 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
     }
     
     private func performEnter() {
-        guard self.characters.value.allSatisfy({ $0.isEmpty == false }) else {
+        guard self.characters.value.allSatisfy({ $0.isEmpty == false }) &&
+              self.characters.value.contains(where: { $0.isDraft }) else {
             return
         }
         
@@ -109,7 +113,11 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
         self.characters.send(charactersToUpdate)
         
         if charactersToUpdate.allSatisfy({ $0.isCorrect }) {
-            finishGameSubject.send(true)
+            finishGame()
         }
+    }
+    
+    private func finishGame() {
+        wordProviderUseCase.store(word: word.joined())
     }
 }

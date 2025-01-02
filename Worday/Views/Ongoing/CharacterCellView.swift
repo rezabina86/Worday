@@ -23,7 +23,6 @@ struct CharacterCellView: View {
             .background(background)
             .cellBorderView(for: character)
             .cellForegroundColor(for: character)
-            .transition(.scale)
             .transition(.opacity)
     }
     
