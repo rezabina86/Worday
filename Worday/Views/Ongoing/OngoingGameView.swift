@@ -51,7 +51,7 @@ extension GameViewState {
 
 extension GameViewState.OngoingGameViewState {
     struct Character: Equatable, Identifiable {
-        let id: UUID
+        let id: String
         let state: State
         
         var isEmpty: Bool {
@@ -91,14 +91,20 @@ extension GameViewState.OngoingGameViewState {
 }
 
 extension GameViewState.OngoingGameViewState.Character {
-    static var empty: Self {
-        .init(id: .init(), state: .empty)
+    static func empty(id: String) -> Self {
+        .init(id: id, state: .empty)
     }
 }
 
 extension GameViewState.OngoingGameViewState {
     static let empty: Self = .init(
-        characters: [.empty, .empty, .empty, .empty, .empty],
+        characters: [
+            .empty(id: "1"),
+            .empty(id: "2"),
+            .empty(id: "3"),
+            .empty(id: "4"),
+            .empty(id: "5")
+        ],
         keyboardViewState: .empty
     )
 }

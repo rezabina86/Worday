@@ -54,7 +54,12 @@ public func injectDependencies(into container: ContainerType) {
         UserDefaults.standard
     }
     
-    container.register { _ -> OngoingGameViewModelFactoryType in
-        OngoingGameViewModelFactory()
+    container.register { container -> OngoingGameViewModelFactoryType in
+        OngoingGameViewModelFactory(wordProviderUseCase: container.resolve(),
+                                    arrayShuffle: container.resolve())
+    }
+    
+    container.register { _ -> ArrayShuffleType in
+        ArrayShuffle()
     }
 }

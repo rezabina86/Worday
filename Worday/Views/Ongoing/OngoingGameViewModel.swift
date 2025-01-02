@@ -7,24 +7,28 @@ protocol OngoingGameViewModelFactoryType {
 
 struct OngoingGameViewModelFactory: OngoingGameViewModelFactoryType {
     let wordProviderUseCase: WordProviderUseCaseType
+    let arrayShuffle: ArrayShuffleType
     
     func create(with word: String) -> OngoingGameViewModelType {
         OngoingGameViewModel(word: word,
-                             wordProviderUseCase: wordProviderUseCase)
+                             wordProviderUseCase: wordProviderUseCase,
+                             arrayShuffle: arrayShuffle)
     }
 }
 
 protocol OngoingGameViewModelType {
-    var viewState: AnyPublisher< GameViewState.OngoingGameViewState,Never> { get }
+    var viewState: AnyPublisher<GameViewState.OngoingGameViewState,Never> { get }
 }
 
 final class OngoingGameViewModel: OngoingGameViewModelType {
     
     init(word: String,
-         wordProviderUseCase: WordProviderUseCaseType) {
+         wordProviderUseCase: WordProviderUseCaseType,
+         arrayShuffle: ArrayShuffleType) {
         self.word = word.split(separator: "").map { String($0) }
-        self.shuffledCharacters = self.word.shuffled()
+        self.shuffledCharacters = arrayShuffle.shuffle(array: self.word)
         self.wordProviderUseCase = wordProviderUseCase
+        self.arrayShuffle = arrayShuffle
     }
     
     var viewState: AnyPublisher<GameViewState.OngoingGameViewState, Never> {
@@ -43,9 +47,10 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
     private let shuffledCharacters: [String]
     
     private let wordProviderUseCase: WordProviderUseCaseType
+    private let arrayShuffle: ArrayShuffleType
     
     private let characters: CurrentValueSubject<[GameViewState.OngoingGameViewState.Character], Never> = .init([
-        .empty, .empty, .empty, .empty, .empty
+        .empty(id: "0"), .empty(id: "1"), .empty(id: "2"), .empty(id: "3"), .empty(id: "4")
     ])
     
     private var makeKeyboardViewState: KeyBoardViewState {
@@ -78,7 +83,7 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
         guard let index = charactersToUpdate.firstIndex(where: { $0.isEmpty }) else {
             return
         }
-        let newCharater = GameViewState.OngoingGameViewState.Character(id: UUID(), state: .draft(char: char))
+        let newCharater = GameViewState.OngoingGameViewState.Character(id: "\(index)", state: .draft(char: char))
         charactersToUpdate[index] = newCharater
         self.characters.send(charactersToUpdate)
     }
@@ -88,7 +93,7 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
         guard let index = charactersToUpdate.lastIndex(where: { $0.isEmpty == false }) else {
             return
         }
-        let newCharater = GameViewState.OngoingGameViewState.Character.empty
+        let newCharater = GameViewState.OngoingGameViewState.Character.empty(id: "\(index)")
         charactersToUpdate[index] = newCharater
         self.characters.send(charactersToUpdate)
     }
@@ -104,9 +109,9 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
         for (index, char) in self.characters.value.enumerated() {
             guard let char = char.character else { return }
             if self.word[index] == char {
-                charactersToUpdate.append(.init(id: .init(), state: .correct(char: char)))
+                charactersToUpdate.append(.init(id: "\(index)", state: .correct(char: char)))
             } else {
-                charactersToUpdate.append(.init(id: .init(), state: .misplaced(char: char)))
+                charactersToUpdate.append(.init(id: "\(index)", state: .misplaced(char: char)))
             }
         }
         
