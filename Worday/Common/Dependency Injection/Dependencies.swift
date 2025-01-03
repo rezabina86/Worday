@@ -87,4 +87,12 @@ public func injectDependencies(into container: ContainerType) {
     container.register { _ -> URLSessionFactoryType in
         URLSessionFactory()
     }
+    
+    container.register { container -> DictionaryServiceType in
+        DictionaryService(client: container.resolve())
+    }
+    
+    container.register { container -> DictionaryRepositoryType in
+        DictionaryRepository(dictionaryService: container.resolve())
+    }
 }
