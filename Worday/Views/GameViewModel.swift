@@ -9,12 +9,14 @@ protocol GameViewModelFactoryType {
 struct GameViewModelFactory: GameViewModelFactoryType {
     let fetchWordUseCase: WordProviderUseCaseType
     let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
+    let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
     let scenePhaseObserver: ScenePhaseObserverType
     let appTriggerFactory: AppTriggerFactoryType
     
     func create() -> GameViewModelType {
         GameViewModel(wordProviderUseCase: fetchWordUseCase,
                       ongoingGameViewModelFactory: ongoingGameViewModelFactory,
+                      finishedGameViewModelFactory: finishedGameViewModelFactory,
                       scenePhaseObserver: scenePhaseObserver,
                       appTriggerFactory: appTriggerFactory)
     }
@@ -29,10 +31,12 @@ final class GameViewModel: GameViewModelType {
     
     init(wordProviderUseCase: WordProviderUseCaseType,
          ongoingGameViewModelFactory: OngoingGameViewModelFactoryType,
+         finishedGameViewModelFactory: FinishedGameViewModelFactoryType,
          scenePhaseObserver: ScenePhaseObserverType,
          appTriggerFactory: AppTriggerFactoryType) {
         self.wordProviderUseCase = wordProviderUseCase
         self.ongoingGameViewModelFactory = ongoingGameViewModelFactory
+        self.finishedGameViewModelFactory = finishedGameViewModelFactory
         self.scenePhaseObserver = scenePhaseObserver
         self.appTriggerFactory = appTriggerFactory
         
@@ -55,10 +59,12 @@ final class GameViewModel: GameViewModelType {
     // MARK: - Privates
     private let wordProviderUseCase: WordProviderUseCaseType
     private let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
+    private let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
     private let scenePhaseObserver: ScenePhaseObserverType
     private let appTriggerFactory: AppTriggerFactoryType
     
     private var ongoingGameViewModel: OngoingGameViewModelType?
+    private var finishedGameViewModel: FinishedGameViewModelType?
     
     private let viewStateSubject: CurrentValueSubject<GameViewState, Never> = .init(.error)
     private var cancellables: Set<AnyCancellable> = []
@@ -72,12 +78,7 @@ final class GameViewModel: GameViewModelType {
         case let .word(word):
             setupOngoingGame(with: word)
         case let .noWordToday(lastPlayedWord):
-            let viewState = FinishedGameViewState(
-                title: "Great job!",
-                message: "You’ve solved today’s puzzle. The word was \(lastPlayedWord)",
-                subtitle: "Come back tomorrow for another challenge!"
-            )
-            viewStateSubject.send(.noWordToday(viewState: viewState))
+            setupFinishedGame(with: lastPlayedWord)
         }
     }
     
@@ -87,6 +88,16 @@ final class GameViewModel: GameViewModelType {
         ongoingGameViewModel?.viewState
             .sink { [viewStateSubject] in
                 viewStateSubject.send(.game(viewState: $0))
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupFinishedGame(with word: String) {
+        finishedGameViewModel = finishedGameViewModelFactory.create(for: word)
+        
+        finishedGameViewModel?.viewState
+            .sink { [viewStateSubject] in
+                viewStateSubject.send(.noWordToday(viewState: $0))
             }
             .store(in: &cancellables)
     }

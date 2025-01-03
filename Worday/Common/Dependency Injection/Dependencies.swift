@@ -45,6 +45,7 @@ public func injectDependencies(into container: ContainerType) {
     container.register { container -> GameViewModelFactoryType in
         GameViewModelFactory(fetchWordUseCase: container.resolve(),
                              ongoingGameViewModelFactory: container.resolve(),
+                             finishedGameViewModelFactory: container.resolve(),
                              scenePhaseObserver: container.resolve(),
                              appTriggerFactory: container.resolve())
     }
@@ -98,5 +99,9 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register { container -> DictionaryUseCaseType in
         DictionaryUseCase(dictionaryRepository: container.resolve())
+    }
+    
+    container.register { container -> FinishedGameViewModelFactoryType in
+        FinishedGameViewModelFactory(dictionaryUseCase: container.resolve())
     }
 }
