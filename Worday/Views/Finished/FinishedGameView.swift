@@ -42,7 +42,7 @@ struct FinishedGameView: View {
                 .multilineTextAlignment(.center)
                 .font(wdFont24)
             ForEach(viewState.defination) { def in
-                VStack(alignment: .leading, spacing: .space_8pt) {
+                VStack(alignment: .center, spacing: .space_8pt) {
                     Text(def.type)
                         .multilineTextAlignment(.center)
                         .font(wdFont16)
