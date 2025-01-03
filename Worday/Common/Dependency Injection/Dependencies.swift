@@ -78,4 +78,13 @@ public func injectDependencies(into container: ContainerType) {
     container.register(in: .weakContainer) { _ -> FinishGameRelayType in
         FinishGameRelay()
     }
+    
+    container.register(in: .container) { container -> HTTPClientType in
+        HTTPClient(sessionFactory: container.resolve(),
+                   extendedCache: true)
+    }
+    
+    container.register { _ -> URLSessionFactoryType in
+        URLSessionFactory()
+    }
 }
