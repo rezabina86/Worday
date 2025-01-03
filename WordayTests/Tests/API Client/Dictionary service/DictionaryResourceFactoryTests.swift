@@ -10,7 +10,6 @@ final class DictionaryResourceFactoryTests {
     init() {
         mockDecoder = .init()
         mockDecoder.decodeReturnValue = [WordMeaningAPIEntity.fake()]
-        DictionaryResourceFactory.decoder = mockDecoder
     }
     
     deinit {
@@ -18,16 +17,19 @@ final class DictionaryResourceFactoryTests {
     }
     
     @Test func testGenerateURL() {
+        DictionaryResourceFactory.decoder = mockDecoder
         sut = DictionaryResourceFactory.resource(for: "abcde")
         #expect(sut.url.absoluteString == "https://api.dictionaryapi.dev/api/v2/entries/en/abcde")
     }
     
     @Test func testMethod() {
+        DictionaryResourceFactory.decoder = mockDecoder
         sut = DictionaryResourceFactory.resource(for: "abcde")
         #expect(sut.method == .get)
     }
     
     @Test func testParse() {
+        DictionaryResourceFactory.decoder = mockDecoder
         sut = DictionaryResourceFactory.resource(for: "abcde")
         let result: [WordMeaningAPIEntity]!
         result = try? sut.parse(Data())
