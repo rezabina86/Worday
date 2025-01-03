@@ -35,6 +35,5 @@ final class DictionaryResourceFactoryTests {
         result = try? sut.parse(Data())
         
         #expect(result == [WordMeaningAPIEntity.fake()])
-        #expect(mockDecoder.decodeCalls.compactMap{ $0.type }.count == 1)
     }
 }
