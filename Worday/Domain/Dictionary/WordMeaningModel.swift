@@ -13,7 +13,7 @@ extension WordMeaningModel {
 }
 
 extension WordMeaningModel.Meaning {
-    enum PartOfSpeech: Equatable {
+    enum PartOfSpeech: String, Equatable {
         case noun
         case verb
         case interjection
