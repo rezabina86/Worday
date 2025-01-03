@@ -17,16 +17,22 @@ struct AppTriggerFactory: AppTriggerFactoryType {
     
     func create(of triggers: [AppTrigger]) -> AnyPublisher<Void, Never> {
         let publishers = triggers.map { observable(for: $0) }
-        return Publishers.MergeMany(publishers)
-            .eraseToAnyPublisher()
+        if triggers.contains(.appBecameActive) {
+            return Publishers.MergeMany(publishers)
+                .eraseToAnyPublisher()
+        } else {
+            return Publishers.MergeMany(publishers)
+                .prepend(())
+                .eraseToAnyPublisher()
+        }
     }
     
     private func observable(for trigger: AppTrigger) -> AnyPublisher<Void, Never> {
         switch trigger {
         case .appBecameActive:
-            return scenePhaseObserver.appBecameActive.prepend(()).eraseToAnyPublisher()
+            return scenePhaseObserver.appBecameActive.eraseToAnyPublisher()
         case .gameFinished:
-            return finishGameRelay.gameFinished.prepend(()).eraseToAnyPublisher()
+            return finishGameRelay.gameFinished.eraseToAnyPublisher()
         }
     }
     

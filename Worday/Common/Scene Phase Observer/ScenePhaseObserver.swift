@@ -4,7 +4,6 @@ import Foundation
 
 protocol ScenePhaseObserverType {
     func phaseChanged(_ scenePhase: ScenePhase)
-    func appAppeared()
     
     var appBecameActive: AnyPublisher<Void, Never> { get }
 }
@@ -26,10 +25,6 @@ final class ScenePhaseObserver: ScenePhaseObserverType {
         @unknown default:
             break
         }
-    }
-    
-    func appAppeared() {
-        _appBecameActive.send(())
     }
     
     // MARK: - Privates
