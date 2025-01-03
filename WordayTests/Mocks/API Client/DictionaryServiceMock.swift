@@ -8,9 +8,14 @@ final class DictionaryServiceMock: DictionaryServiceType {
     
     func meaning(for word: String) async throws -> [WordMeaningAPIEntity] {
         calls.append(.meaning(word: word))
-        return meaningReturnValue
+        switch meaningReturnValue {
+        case let .success(entity):
+            return entity
+        case let .failure(error):
+            throw error
+        }
     }
     
     var calls: [Call] = []
-    var meaningReturnValue: [WordMeaningAPIEntity] = []
+    var meaningReturnValue: Result<[WordMeaningAPIEntity], Error> = .success([])
 }
