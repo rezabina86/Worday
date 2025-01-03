@@ -15,9 +15,6 @@ struct GameView: View {
                 }
             }
         }
-        .onAppear {
-            viewModel.onAppear()
-        }
         .onChange(of: scenePhase) { old, new in
             viewModel.scenePhaseChanged(new)
         }

@@ -25,6 +25,7 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
     init(word: String,
          wordProviderUseCase: WordProviderUseCaseType,
          arrayShuffle: ArrayShuffleType) {
+        print(word)
         self.word = word.split(separator: "").map { String($0) }
         self.shuffledCharacters = arrayShuffle.shuffle(array: self.word)
         self.wordProviderUseCase = wordProviderUseCase

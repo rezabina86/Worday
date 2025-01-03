@@ -22,7 +22,6 @@ struct GameViewModelFactory: GameViewModelFactoryType {
 
 protocol GameViewModelType {
     var viewState: AnyPublisher<GameViewState, Never> { get }
-    func onAppear()
     func scenePhaseChanged(_ scenePhase: ScenePhase)
 }
 
@@ -47,10 +46,6 @@ final class GameViewModel: GameViewModelType {
     
     var viewState: AnyPublisher<GameViewState, Never> {
         viewStateSubject.eraseToAnyPublisher()
-    }
-    
-    func onAppear() {
-        scenePhaseObserver.appAppeared()
     }
     
     func scenePhaseChanged(_ scenePhase: ScenePhase) {
@@ -87,9 +82,7 @@ final class GameViewModel: GameViewModelType {
     }
     
     private func setupOngoingGame(with word: String) {
-        if ongoingGameViewModel == nil {
-            ongoingGameViewModel = ongoingGameViewModelFactory.create(with: word)
-        }
+        ongoingGameViewModel = ongoingGameViewModelFactory.create(with: word)
         
         ongoingGameViewModel?.viewState
             .sink { [viewStateSubject] in
