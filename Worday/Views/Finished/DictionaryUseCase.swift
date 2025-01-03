@@ -13,24 +13,11 @@ protocol DictionaryUseCaseType {
 
 struct DictionaryUseCase: DictionaryUseCaseType {
     
-    init(dictionaryRepository: DictionaryRepositoryType,
-         appTriggerFactory: AppTriggerFactoryType) {
+    init(dictionaryRepository: DictionaryRepositoryType) {
         self.dictionaryRepository = dictionaryRepository
-        self.appTriggerFactory = appTriggerFactory
     }
     
     func create(for word: String) -> AnyPublisher<DictionaryDataState, Never> {
-        makeTrigger()
-            .flatMap {
-                dictionaryData(for: word)
-            }.eraseToAnyPublisher()
-    }
-    
-    // MARK: - Private
-    private let dictionaryRepository: DictionaryRepositoryType
-    private let appTriggerFactory: AppTriggerFactoryType
-    
-    private func dictionaryData(for word: String) -> AnyPublisher<DictionaryDataState, Never> {
         Future<DictionaryDataState, Never> { promise in
             Task {
                 do {
@@ -45,7 +32,6 @@ struct DictionaryUseCase: DictionaryUseCaseType {
         .eraseToAnyPublisher()
     }
     
-    private func makeTrigger() -> AnyPublisher<Void, Never> {
-        appTriggerFactory.create(of: [])
-    }
+    // MARK: - Private
+    private let dictionaryRepository: DictionaryRepositoryType
 }

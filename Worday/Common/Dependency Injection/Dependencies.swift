@@ -95,4 +95,8 @@ public func injectDependencies(into container: ContainerType) {
     container.register { container -> DictionaryRepositoryType in
         DictionaryRepository(dictionaryService: container.resolve())
     }
+    
+    container.register { container -> DictionaryUseCaseType in
+        DictionaryUseCase(dictionaryRepository: container.resolve())
+    }
 }
