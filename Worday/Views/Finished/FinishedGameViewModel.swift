@@ -31,7 +31,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
             case .error:
                 return .init(
                     title: title,
-                    meaning: .error(message: "You’ve solved today’s puzzle. The word was \(word)"),
+                    meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: word.uppercased()),
                     subtitle: subtitle
                 )
             case .loading:
@@ -61,14 +61,14 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     private var cancellables: Set<AnyCancellable> = []
     private let viewStateSubject: CurrentValueSubject<FinishedGameViewState, Never> = .init(.empty)
     
-    private let title: String = "Great job!"
+    private let title: String = "Great job! 🎉🎉"
     private let subtitle: String = "Come back tomorrow for another challenge!"
     
     private func createLoadedViewState(from model: WordMeaningModel) -> FinishedGameViewState {
         .init(
             title: title,
             meaning: .meaning(viewState: .init(
-                word: model.word,
+                word: model.word.uppercased(),
                 defination: model.meanings.map { .init(from: $0) }
             )),
             subtitle: subtitle
