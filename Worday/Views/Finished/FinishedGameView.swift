@@ -5,7 +5,7 @@ struct FinishedGameView: View {
     let viewState: FinishedGameViewState
     
     var body: some View {
-        VStack(alignment: .center, spacing: .space_20pt) {
+        VStack(alignment: .center, spacing: .space_96pt) {
             Text(viewState.title)
                 .multilineTextAlignment(.center)
                 .font(.title)
@@ -17,6 +17,9 @@ struct FinishedGameView: View {
                 .multilineTextAlignment(.center)
                 .font(.body)
                 .bold()
+            
+            Spacer()
+                .frame(height: .size_48pt)
         }
         .padding(.space_64pt)
     }
@@ -26,10 +29,13 @@ struct FinishedGameView: View {
         switch meaning {
         case .loading:
             ProgressView()
-        case let .error(message):
-            Text(message)
-                .multilineTextAlignment(.center)
-                .font(wdFont16)
+        case let .error(message, word):
+            VStack {
+                Text(message)
+                    .multilineTextAlignment(.center)
+                    .font(wdFont16)
+                tagView(text: word)
+            }
         case let .meaning(viewState):
             buildMeaningView(from: viewState)
         }
@@ -38,22 +44,37 @@ struct FinishedGameView: View {
     @ViewBuilder
     func buildMeaningView(from viewState: FinishedGameViewState.Meaning.MeaningViewState) -> some View {
         VStack(spacing: .space_12pt) {
-            Text(viewState.word)
-                .multilineTextAlignment(.center)
-                .font(wdFont24)
+            tagView(text: viewState.word)
             ForEach(viewState.defination) { def in
                 VStack(alignment: .center, spacing: .space_8pt) {
-                    Text(def.type)
-                        .multilineTextAlignment(.center)
-                        .font(wdFont16)
-                        .bold()
-                    
-                    Text(def.meaning)
-                        .multilineTextAlignment(.center)
-                        .font(wdFont16)
+                    HStack(alignment: .top, spacing: .space_8pt) {
+                        Text(def.type)
+                            .multilineTextAlignment(.center)
+                            .font(wdFont16)
+                            .bold()
+                        
+                        Text(def.meaning)
+                            .multilineTextAlignment(.center)
+                            .font(wdFont16)
+                    }
                 }
             }
         }
+    }
+    
+    @ViewBuilder
+    private func tagView(text: String) -> some View {
+        HStack(spacing: .space_4pt) {
+            Text(text)
+                .foregroundColor(Color.white)
+                .lineLimit(1)
+                .font(wdFont24)
+                .frame(minHeight: .size_16pt)
+        }
+        .padding(.horizontal, .space_8pt)
+        .padding(.vertical, .space_4pt)
+        .background(Color.orange)
+        .cornerRadius(.radius_small)
     }
 }
 
@@ -66,7 +87,7 @@ struct FinishedGameViewState: Equatable {
 extension FinishedGameViewState {
     enum Meaning: Equatable {
         case loading
-        case error(message: String)
+        case error(message: String, word: String)
         case meaning(viewState: MeaningViewState)
     }
 }
@@ -93,7 +114,7 @@ extension FinishedGameViewState {
 #Preview {
 //    FinishedGameView(viewState: .init(
 //        title: "Great job!",
-//        meaning: .error(message: "You’ve solved today’s puzzle. The word was ABCDE"),
+//        meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: "ABCDE"),
 //        subtitle: "Come back tomorrow for another challenge!"
 //    ))
     FinishedGameView(viewState: .init(
@@ -104,12 +125,12 @@ extension FinishedGameViewState {
                 .init(
                     id: .init(),
                     type: "noun",
-                    meaning: "very special noun"
+                    meaning: "very special noun, very special noun, very special noun"
                 ),
                 .init(
                     id: .init(),
                     type: "verb",
-                    meaning: "very special verb"
+                    meaning: "very special verb, very special verb, very special verb, very special verb"
                 )
             ]
         )),

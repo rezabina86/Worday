@@ -29,7 +29,7 @@ struct KeyBoardView: View {
         .minimumScaleFactor(0.01)
         .padding(.space_8pt)
         .foregroundColor(Color.textColor)
-        .frame(height: .size_48pt)
+        .frame(width: .size_72pt, height: .size_48pt)
         .background(Color.backgroundKeyNoneColor)
         .cornerRadius(.radius_small)
     }
@@ -43,7 +43,7 @@ struct KeyBoardView: View {
                 .fontWeight(.bold)
                 .padding(.space_8pt)
                 .foregroundColor(Color.textColor)
-                .frame(height: .size_48pt)
+                .frame(width: .size_48pt, height: .size_48pt)
                 .background(Color.backgroundKeyNoneColor)
                 .cornerRadius(.radius_small)
         }
@@ -57,8 +57,7 @@ struct KeyBoardView: View {
         .font(.title3)
         .fontWeight(.bold)
         .foregroundColor(Color.textColor)
-        .frame(minWidth:.size_32pt)
-        .frame(height: .size_48pt)
+        .frame(width: .size_48pt, height: .size_48pt)
         .background(Color.backgroundKeyNoneColor)
         .cornerRadius(.radius_small)
     }
