@@ -51,12 +51,10 @@ private final class RedirectionPreventer: NSObject, URLSessionTaskDelegate {
 
 // MARK: - Factories
 private func createDefaultHeaders() -> [String: String] {
-    var headers = [
+    return [
         "Accept": "application/json",
         "Content-Type": "application/json"
     ]
-
-    return headers
 }
 
 // MARK: - Constants

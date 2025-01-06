@@ -66,7 +66,7 @@ final class GameViewModel: GameViewModelType {
     private var ongoingGameViewModel: OngoingGameViewModelType?
     private var finishedGameViewModel: FinishedGameViewModelType?
     
-    private let viewStateSubject: CurrentValueSubject<GameViewState, Never> = .init(.error)
+    private let viewStateSubject: CurrentValueSubject<GameViewState, Never> = .init(.empty)
     private var cancellables: Set<AnyCancellable> = []
     
     private func fetchWord() {

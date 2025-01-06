@@ -17,11 +17,8 @@ struct FinishedGameView: View {
                 .multilineTextAlignment(.center)
                 .font(.body)
                 .bold()
-            
-            Spacer()
-                .frame(height: .size_48pt)
         }
-        .padding(.space_64pt)
+        .padding(.space_48pt)
     }
     
     @ViewBuilder
