@@ -10,7 +10,7 @@ struct GameView: View {
         view(for: viewState)
         .task {
             for await vs in viewModel.viewState.values {
-                withAnimation(.easeInOut(duration: 0.5)) {
+                withAnimation(.easeInOut(duration: 0.25)) {
                     self.viewState = vs
                 }
             }
@@ -31,9 +31,12 @@ struct GameView: View {
     @ViewBuilder
     private func view(for viewState: GameViewState) -> some View {
         switch viewState {
-        case .empty: EmptyView()
+        case .empty:
+            EmptyStateView()
+                .transition(.opacity)
         case .error:
-            Text("Error")
+            Text("Seomething horrible happened.\nPlease try delete and re-install the app")
+                .font(wdFont16)
                 .transition(.opacity)
         case let .noWordToday(viewState):
             FinishedGameView(viewState: viewState)

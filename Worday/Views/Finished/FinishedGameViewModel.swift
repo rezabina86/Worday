@@ -61,7 +61,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     private var cancellables: Set<AnyCancellable> = []
     private let viewStateSubject: CurrentValueSubject<FinishedGameViewState, Never> = .init(.empty)
     
-    private let title: String = "Great job! 🎉🎉"
+    private let title: String = "Great job! 🎉"
     private let subtitle: String = "Come back tomorrow for another challenge!"
     
     private func createLoadedViewState(from model: WordMeaningModel) -> FinishedGameViewState {
