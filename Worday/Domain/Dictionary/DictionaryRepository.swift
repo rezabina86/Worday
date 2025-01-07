@@ -44,6 +44,14 @@ extension WordMeaningModel.Meaning.PartOfSpeech {
         case .noun: self = .noun
         case .verb: self = .verb
         case .interjection: self = .interjection
+        case .adjective: self = .adjective
+        case .adverb: self = .adverb
+        case .pronoun: self = .pronoun
+        case .preposition: self = .preposition
+        case .conjunction: self = .conjunction
+        case .numeral: self = .numeral
+        case .article: self = .article
+        case .determiner: self = .determiner
         }
     }
 }
