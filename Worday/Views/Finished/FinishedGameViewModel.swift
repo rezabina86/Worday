@@ -1,4 +1,5 @@
 import Combine
+import Foundation
 
 protocol FinishedGameViewModelFactoryType {
     func create(for word: String) -> FinishedGameViewModelType
@@ -23,32 +24,35 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
         word: String,
         dictionaryUseCase: DictionaryUseCaseType
     ) {
-        self.dictionaryUseCase = dictionaryUseCase
-        
-        dictionaryUseCase.create(for: word).map { [weak self] dataState -> FinishedGameViewState in
-            guard let self else { return .empty }
-            switch dataState {
-            case .error:
-                return .init(
-                    title: title,
-                    meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: word.uppercased()),
-                    subtitle: subtitle
-                )
-            case .loading:
-                return .init(
-                    title: title,
-                    meaning: .loading,
-                    subtitle: subtitle
-                )
-            case let .data(model):
-                return createLoadedViewState(from: model)
+        dictionaryUseCase.create(for: word)
+            .combineLatest(selectedMeaningSubject)
+            .map { [weak self] dataState, selectedMeaning -> FinishedGameViewState in
+                guard let self else { return .empty }
+                switch dataState {
+                case .error:
+                    return .init(
+                        title: title,
+                        meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: word.uppercased()),
+                        subtitle: subtitle
+                    )
+                case .loading:
+                    return .init(
+                        title: title,
+                        meaning: .loading,
+                        subtitle: subtitle
+                    )
+                case let .data(model):
+                    return createLoadedViewState(from: model,
+                                                 selectedMeaning: selectedMeaning)
+                }
             }
-        }
-        .sink(receiveValue: { [weak self] in
-            guard let self else { return }
-            viewStateSubject.send($0)
-        })
-        .store(in: &cancellables)
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] in
+                guard let self else { return }
+                setSelectedMeaningIfNecessary(from: $0)
+                viewStateSubject.send($0)
+            })
+            .store(in: &cancellables)
     }
     
     var viewState: AnyPublisher<FinishedGameViewState, Never> {
@@ -56,32 +60,58 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     }
     
     // MARK: - Privates
-    private let dictionaryUseCase: DictionaryUseCaseType
-    
     private var cancellables: Set<AnyCancellable> = []
     private let viewStateSubject: CurrentValueSubject<FinishedGameViewState, Never> = .init(.empty)
+    private let selectedMeaningSubject: CurrentValueSubject<FinishedGameViewState.Meaning.MeaningViewState.Meaning?, Never> = .init(nil)
     
     private let title: String = "Great job! 🎉"
     private let subtitle: String = "Come back tomorrow for another challenge!"
     
-    private func createLoadedViewState(from model: WordMeaningModel) -> FinishedGameViewState {
-        .init(
+    private func createLoadedViewState(from model: WordMeaningModel,
+                                       selectedMeaning: FinishedGameViewState.Meaning.MeaningViewState.Meaning?) -> FinishedGameViewState {
+        let meanings: [FinishedGameViewState.Meaning.MeaningViewState.Meaning] = model.meanings
+            .enumerated()
+            .map { .init(
+                from: $0.element,
+                index: $0.offset
+            )}
+
+        return .init(
             title: title,
             meaning: .meaning(viewState: .init(
                 word: model.word.uppercased(),
-                defination: model.meanings.map { .init(from: $0) }
+                meanings: meanings,
+                selectedMeaning: selectedMeaning,
+                onSelectMeaning: { [selectedMeaningSubject] meaning in
+                    selectedMeaningSubject.send(meaning)
+                }
             )),
             subtitle: subtitle
         )
     }
+    
+    private func setSelectedMeaningIfNecessary(from viewState: FinishedGameViewState) {
+        guard selectedMeaningSubject.value == nil else { return }
+        switch viewState.meaning {
+        case .loading, .error: return
+        case let .meaning(viewState):
+            self.selectedMeaningSubject.send(viewState.meanings.first)
+        }
+    }
 }
 
-private extension FinishedGameViewState.Meaning.MeaningViewState.Definition {
-    init(from model: WordMeaningModel.Meaning) {
+private extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
+    init(from model: WordMeaningModel.Meaning, index: Int) {
         self = .init(
-            id: .init(),
-            type: "[\(model.partOfSpeech.rawValue)]",
-            meaning: model.definitions.first?.definition ?? ""
+            id: "\(index)",
+            type: model.partOfSpeech.rawValue,
+            definitions: model.definitions.enumerated().map {
+                .init(
+                    id: "\($0.offset)",
+                    index: $0.offset + 1,
+                    definition: $0.element.definition
+                )
+            }
         )
     }
 }

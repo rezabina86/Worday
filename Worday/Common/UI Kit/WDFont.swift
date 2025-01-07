@@ -20,3 +20,6 @@ let wdFont8: Font =
     .system(size: 8)
     .monospaced()
     .weight(.medium)
+
+let titleFont: Font = .custom("Academy Engraved LET", size: 42)
+let bodyFont: Font = .custom("Copperplate", size: 18)

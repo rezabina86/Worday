@@ -16,7 +16,15 @@ extension WordMeaningModel.Meaning {
     enum PartOfSpeech: String, Equatable {
         case noun
         case verb
+        case adjective
+        case adverb
+        case pronoun
+        case preposition
+        case conjunction
         case interjection
+        case numeral
+        case article
+        case determiner
     }
     
     struct Definition: Equatable {
