@@ -8,6 +8,15 @@ protocol AppTriggerFactoryType {
 enum AppTrigger: Equatable {
     case gameFinished
     case appBecameActive
+    
+    var needsInitialTrigger: Bool {
+        switch self {
+        case .gameFinished:
+            return true
+        case .appBecameActive:
+            return false
+        }
+    }
 }
 
 struct AppTriggerFactory: AppTriggerFactoryType {
@@ -17,12 +26,12 @@ struct AppTriggerFactory: AppTriggerFactoryType {
     
     func create(of triggers: [AppTrigger]) -> AnyPublisher<Void, Never> {
         let publishers = triggers.map { observable(for: $0) }
-        if triggers.contains(.appBecameActive) {
+        if triggers.contains(where: { $0.needsInitialTrigger }) {
             return Publishers.MergeMany(publishers)
+                .prepend(())
                 .eraseToAnyPublisher()
         } else {
             return Publishers.MergeMany(publishers)
-                .prepend(())
                 .eraseToAnyPublisher()
         }
     }
