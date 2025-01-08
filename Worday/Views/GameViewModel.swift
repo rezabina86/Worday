@@ -69,8 +69,12 @@ final class GameViewModel: GameViewModelType {
     private let viewStateSubject: CurrentValueSubject<GameViewState, Never> = .init(.empty)
     private var cancellables: Set<AnyCancellable> = []
     
+    private var latestFetchResult: FetchWordModel?
+    
     private func fetchWord() {
         let result = wordProviderUseCase.fetch()
+        
+        guard result != latestFetchResult else { return }
         
         switch result {
         case .error:
@@ -80,6 +84,8 @@ final class GameViewModel: GameViewModelType {
         case let .noWordToday(lastPlayedWord):
             setupFinishedGame(with: lastPlayedWord)
         }
+        
+        latestFetchResult = result
     }
     
     private func setupOngoingGame(with word: String) {

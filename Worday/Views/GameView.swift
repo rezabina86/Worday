@@ -10,7 +10,7 @@ struct GameView: View {
         view(for: viewState)
         .task {
             for await vs in viewModel.viewState.values {
-                withAnimation(.easeInOut(duration: 0.25)) {
+                withAnimation {
                     self.viewState = vs
                 }
             }
@@ -34,6 +34,7 @@ struct GameView: View {
         case .empty:
             EmptyStateView()
                 .transition(.opacity)
+                .animation(.easeInOut(duration: 1.5), value: viewState)
         case .error:
             Text("Seomething horrible happened.\nPlease try delete and re-install the app")
                 .font(wdFont16)
@@ -41,9 +42,11 @@ struct GameView: View {
         case let .noWordToday(viewState):
             FinishedGameView(viewState: viewState)
                 .transition(.opacity)
+                .animation(.easeInOut(duration: 0.5), value: viewState)
         case let .game(viewState):
             OngoingGameView(viewState: viewState)
                 .transition(.opacity)
+                .animation(.easeInOut(duration: 0.2), value: viewState)
         }
     }
 }
