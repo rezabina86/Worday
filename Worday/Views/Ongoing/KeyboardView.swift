@@ -20,18 +20,21 @@ struct KeyBoardView: View {
     
     @ViewBuilder
     private var enterKey: some View {
-        Button("ENTER") {
+        Button {
             viewState.onTapEnter.action()
+        } label: {
+            Text("ENTER")
+                .font(.caption2)
+                .fontWeight(.bold)
+                .scaledToFill()
+                .minimumScaleFactor(0.01)
+                .padding(.space_8pt)
+                .foregroundColor(Color.textColor)
+                .frame(width: .size_72pt, height: .size_48pt)
+                .background(Color.backgroundKeyNoneColor)
+                .cornerRadius(.radius_small)
+                .contentShape(Rectangle())
         }
-        .font(.caption2)
-        .fontWeight(.bold)
-        .scaledToFill()
-        .minimumScaleFactor(0.01)
-        .padding(.space_8pt)
-        .foregroundColor(Color.textColor)
-        .frame(width: .size_72pt, height: .size_48pt)
-        .background(Color.backgroundKeyNoneColor)
-        .cornerRadius(.radius_small)
     }
     
     @ViewBuilder
@@ -46,20 +49,24 @@ struct KeyBoardView: View {
                 .frame(width: .size_48pt, height: .size_48pt)
                 .background(Color.backgroundKeyNoneColor)
                 .cornerRadius(.radius_small)
+                .contentShape(Rectangle())
         }
     }
     
     @ViewBuilder
     private func buildKey(from vs: KeyViewState) -> some View {
-        Button(vs.character.uppercased()) {
+        Button {
             vs.onTap.action()
+        } label: {
+            Text(vs.character.uppercased())
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(Color.textColor)
+                .frame(width: .size_48pt, height: .size_48pt)
+                .background(Color.backgroundKeyNoneColor)
+                .cornerRadius(.radius_small)
+                .contentShape(Rectangle())
         }
-        .font(.title3)
-        .fontWeight(.bold)
-        .foregroundColor(Color.textColor)
-        .frame(width: .size_48pt, height: .size_48pt)
-        .background(Color.backgroundKeyNoneColor)
-        .cornerRadius(.radius_small)
     }
 }
 
