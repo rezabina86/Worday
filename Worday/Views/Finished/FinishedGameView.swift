@@ -11,7 +11,7 @@ struct FinishedGameView: View {
             
             Text(viewState.title)
                 .multilineTextAlignment(.center)
-                .font(.title)
+                .font(titleFont2)
                 .bold()
             
             Text(viewState.subtitle)
