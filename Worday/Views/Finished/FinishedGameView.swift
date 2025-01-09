@@ -147,11 +147,11 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 }
 
 extension FinishedGameViewState {
-    static let empty: Self = .init(title: "empty", meaning: .loading, subtitle: "")
+    static let empty: Self = .init(title: "", meaning: .loading, subtitle: "")
 }
 
 extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
-    static let empty: Self = .init(id: "empty", type: "", definitions: [])
+    static let empty: Self = .init(id: "", type: "", definitions: [])
 }
 
 #Preview {
