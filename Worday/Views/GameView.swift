@@ -36,7 +36,7 @@ struct GameView: View {
                 .transition(.opacity)
                 .animation(.easeInOut(duration: 1.5), value: viewState)
         case .error:
-            Text("Seomething horrible happened.\nPlease try delete and re-install the app")
+            Text("Seomething horrible happened.\nPlease delete and re-install the app")
                 .font(bodyFont)
                 .transition(.opacity)
                 .padding(.space_16pt)
