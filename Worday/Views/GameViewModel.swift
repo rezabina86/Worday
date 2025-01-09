@@ -26,9 +26,9 @@ struct GameViewModelFactory: GameViewModelFactoryType {
 
 protocol GameViewModelType {
     var viewState: AnyPublisher<GameViewState, Never> { get }
+    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> { get }
     func scenePhaseChanged(_ scenePhase: ScenePhase)
     func setModalDestination(_ destination: ModalCoordinatorDestination?)
-    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> { get }
 }
 
 final class GameViewModel: GameViewModelType {
