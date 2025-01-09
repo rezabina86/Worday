@@ -15,8 +15,25 @@ struct GameView: View {
                 }
             }
         }
+        .task {
+            for await destination in viewModel.currentDestination.values {
+                self.currentModalDestination = destination
+            }
+        }
         .onChange(of: scenePhase) { old, new in
             viewModel.scenePhaseChanged(new)
+        }
+        .sheet(item: .init(get: {
+            self.currentModalDestination
+        }, set: { destination in
+            viewModel.setModalDestination(destination)
+        })) { destination in
+            switch currentModalDestination {
+            case .info:
+                InfoModalView()
+            case nil:
+                EmptyView()
+            }
         }
     }
     
@@ -24,6 +41,7 @@ struct GameView: View {
     private let viewModel: GameViewModelType
     
     @State private var viewState: GameViewState = .empty
+    @State private var currentModalDestination: ModalCoordinatorDestination?
     @Environment(\.scenePhase) private var scenePhase
     
     
@@ -36,9 +54,10 @@ struct GameView: View {
                 .transition(.opacity)
                 .animation(.easeInOut(duration: 1.5), value: viewState)
         case .error:
-            Text("Seomething horrible happened.\nPlease try delete and re-install the app")
-                .font(wdFont16)
+            Text("Seomething horrible happened.\nPlease delete and re-install the app")
+                .font(bodyFont)
                 .transition(.opacity)
+                .padding(.space_16pt)
         case let .noWordToday(viewState):
             FinishedGameView(viewState: viewState)
                 .transition(.opacity)

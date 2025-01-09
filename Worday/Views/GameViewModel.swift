@@ -12,19 +12,23 @@ struct GameViewModelFactory: GameViewModelFactoryType {
     let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
     let scenePhaseObserver: ScenePhaseObserverType
     let appTriggerFactory: AppTriggerFactoryType
+    let modalCoordinator: ModalCoordinatorType
     
     func create() -> GameViewModelType {
         GameViewModel(wordProviderUseCase: fetchWordUseCase,
                       ongoingGameViewModelFactory: ongoingGameViewModelFactory,
                       finishedGameViewModelFactory: finishedGameViewModelFactory,
                       scenePhaseObserver: scenePhaseObserver,
-                      appTriggerFactory: appTriggerFactory)
+                      appTriggerFactory: appTriggerFactory,
+                      modalCoordinator: modalCoordinator)
     }
 }
 
 protocol GameViewModelType {
     var viewState: AnyPublisher<GameViewState, Never> { get }
+    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> { get }
     func scenePhaseChanged(_ scenePhase: ScenePhase)
+    func setModalDestination(_ destination: ModalCoordinatorDestination?)
 }
 
 final class GameViewModel: GameViewModelType {
@@ -33,12 +37,14 @@ final class GameViewModel: GameViewModelType {
          ongoingGameViewModelFactory: OngoingGameViewModelFactoryType,
          finishedGameViewModelFactory: FinishedGameViewModelFactoryType,
          scenePhaseObserver: ScenePhaseObserverType,
-         appTriggerFactory: AppTriggerFactoryType) {
+         appTriggerFactory: AppTriggerFactoryType,
+         modalCoordinator: ModalCoordinatorType) {
         self.wordProviderUseCase = wordProviderUseCase
         self.ongoingGameViewModelFactory = ongoingGameViewModelFactory
         self.finishedGameViewModelFactory = finishedGameViewModelFactory
         self.scenePhaseObserver = scenePhaseObserver
         self.appTriggerFactory = appTriggerFactory
+        self.modalCoordinator = modalCoordinator
         
         makeTrigger
             .sink { [weak self] _ in
@@ -52,8 +58,16 @@ final class GameViewModel: GameViewModelType {
         viewStateSubject.eraseToAnyPublisher()
     }
     
+    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> {
+        modalCoordinator.currentDestination.eraseToAnyPublisher()
+    }
+    
     func scenePhaseChanged(_ scenePhase: ScenePhase) {
         scenePhaseObserver.phaseChanged(scenePhase)
+    }
+    
+    func setModalDestination(_ destination: ModalCoordinatorDestination?) {
+        modalCoordinator.present(destination)
     }
     
     // MARK: - Privates
@@ -62,6 +76,7 @@ final class GameViewModel: GameViewModelType {
     private let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
     private let scenePhaseObserver: ScenePhaseObserverType
     private let appTriggerFactory: AppTriggerFactoryType
+    private let modalCoordinator: ModalCoordinatorType
     
     private var ongoingGameViewModel: OngoingGameViewModelType?
     private var finishedGameViewModel: FinishedGameViewModelType?

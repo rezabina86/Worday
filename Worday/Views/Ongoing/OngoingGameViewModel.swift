@@ -8,11 +8,13 @@ protocol OngoingGameViewModelFactoryType {
 struct OngoingGameViewModelFactory: OngoingGameViewModelFactoryType {
     let wordProviderUseCase: WordProviderUseCaseType
     let arrayShuffle: ArrayShuffleType
+    let modalCoordinator: ModalCoordinatorType
     
     func create(with word: String) -> OngoingGameViewModelType {
         OngoingGameViewModel(word: word,
                              wordProviderUseCase: wordProviderUseCase,
-                             arrayShuffle: arrayShuffle)
+                             arrayShuffle: arrayShuffle,
+                             modalCoordinator: modalCoordinator)
     }
 }
 
@@ -24,11 +26,13 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
     
     init(word: String,
          wordProviderUseCase: WordProviderUseCaseType,
-         arrayShuffle: ArrayShuffleType) {
+         arrayShuffle: ArrayShuffleType,
+         modalCoordinator: ModalCoordinatorType) {
         self.word = word.split(separator: "").map { String($0) }
         self.shuffledCharacters = arrayShuffle.shuffle(array: self.word)
         self.wordProviderUseCase = wordProviderUseCase
         self.arrayShuffle = arrayShuffle
+        self.modalCoordinator = modalCoordinator
     }
     
     var viewState: AnyPublisher<GameViewState.OngoingGameViewState, Never> {
@@ -36,7 +40,10 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
             guard let self else { return .empty }
             return .init(
                 characters: $0,
-                keyboardViewState: makeKeyboardViewState
+                keyboardViewState: makeKeyboardViewState,
+                onTapInfoButton: .init { [modalCoordinator] in
+                    modalCoordinator.present(.info)
+                }
             )
         }
         .eraseToAnyPublisher()
@@ -48,6 +55,7 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
     
     private let wordProviderUseCase: WordProviderUseCaseType
     private let arrayShuffle: ArrayShuffleType
+    private let modalCoordinator: ModalCoordinatorType
     
     private let characters: CurrentValueSubject<[GameViewState.OngoingGameViewState.Character], Never> = .init([
         .empty(id: "0"), .empty(id: "1"), .empty(id: "2"), .empty(id: "3"), .empty(id: "4")

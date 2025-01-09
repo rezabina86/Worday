@@ -7,6 +7,7 @@ final class OngoingGameViewModelTests {
     var sut: OngoingGameViewModel!
     var mockWordProviderUseCase: WordProviderUseCaseMock
     var mockArrayShuffle: ArrayShuffleMock
+    var mockModalCoordinator: ModalCoordinatorMock
     
     var cancellables: Set<AnyCancellable>
     var viewState: GameViewState.OngoingGameViewState?
@@ -15,10 +16,12 @@ final class OngoingGameViewModelTests {
         cancellables = []
         mockWordProviderUseCase = .init()
         mockArrayShuffle = .init()
+        mockModalCoordinator = .init()
         mockArrayShuffle.shuffleReturnValue = ["a", "b", "c", "d", "e"]
         sut = .init(word: "abcde",
                     wordProviderUseCase: mockWordProviderUseCase,
-                    arrayShuffle: mockArrayShuffle)
+                    arrayShuffle: mockArrayShuffle,
+                    modalCoordinator: mockModalCoordinator)
         
         sut.viewState
             .sink { [weak self] state in
@@ -44,7 +47,8 @@ final class OngoingGameViewModelTests {
                        .init(id: "4", character: "e", onTap: .fake)],
                 onTapEnter: .fake,
                 onTapDelete: .fake
-            )
+            ),
+            onTapInfoButton: .fake
         )
         
         #expect(viewState == expectedState)
@@ -69,7 +73,8 @@ final class OngoingGameViewModelTests {
                        .init(id: "4", character: "e", onTap: .fake)],
                 onTapEnter: .fake,
                 onTapDelete: .fake
-            )
+            ),
+            onTapInfoButton: .fake
         )
         
         #expect(viewState == expectedState)
@@ -95,7 +100,8 @@ final class OngoingGameViewModelTests {
                        .init(id: "4", character: "e", onTap: .fake)],
                 onTapEnter: .fake,
                 onTapDelete: .fake
-            )
+            ),
+            onTapInfoButton: .fake
         )
         
         #expect(viewState == expectedState)
@@ -122,7 +128,8 @@ final class OngoingGameViewModelTests {
                        .init(id: "4", character: "e", onTap: .fake)],
                 onTapEnter: .fake,
                 onTapDelete: .fake
-            )
+            ),
+            onTapInfoButton: .fake
         )
         
         #expect(viewState == expectedState)
@@ -153,7 +160,8 @@ final class OngoingGameViewModelTests {
                        .init(id: "4", character: "e", onTap: .fake)],
                 onTapEnter: .fake,
                 onTapDelete: .fake
-            )
+            ),
+            onTapInfoButton: .fake
         )
         
         #expect(viewState == expectedState)
@@ -185,11 +193,17 @@ final class OngoingGameViewModelTests {
                        .init(id: "4", character: "e", onTap: .fake)],
                 onTapEnter: .fake,
                 onTapDelete: .fake
-            )
+            ),
+            onTapInfoButton: .fake
         )
         
         #expect(viewState == expectedState)
         #expect(mockWordProviderUseCase.calls == [.store(word: "abcde")])
+    }
+    
+    @Test func testPresentInfoModal() async throws {
+        viewState?.onTapInfoButton.action()
+        #expect(mockModalCoordinator.calls == [.present(destination: .info)])
     }
 }
 

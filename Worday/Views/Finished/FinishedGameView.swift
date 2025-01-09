@@ -6,9 +6,12 @@ struct FinishedGameView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: .space_16pt) {
+            Spacer()
+                .frame(height: .space_12pt)
+            
             Text(viewState.title)
                 .multilineTextAlignment(.center)
-                .font(.title)
+                .font(titleFont2)
                 .bold()
             
             Text(viewState.subtitle)
@@ -35,11 +38,12 @@ struct FinishedGameView: View {
         case .loading:
             ProgressView()
         case let .error(message, word):
-            VStack {
+            VStack(spacing: .space_16pt) {
                 Text(message)
                     .multilineTextAlignment(.center)
-                    .font(wdFont16)
-                tagView(text: word)
+                    .font(bodyFont)
+                Text(word)
+                    .font(titleFont)
             }
         case let .meaning(viewState):
             buildMeaningView(from: viewState)
@@ -95,21 +99,6 @@ struct FinishedGameView: View {
             }
         }
     }
-    
-    @ViewBuilder
-    private func tagView(text: String) -> some View {
-        HStack(spacing: .space_4pt) {
-            Text(text)
-                .foregroundColor(Color.white)
-                .lineLimit(1)
-                .font(wdFont24)
-                .frame(minHeight: .size_16pt)
-        }
-        .padding(.horizontal, .space_8pt)
-        .padding(.vertical, .space_4pt)
-        .background(Color.orange)
-        .cornerRadius(.radius_small)
-    }
 }
 
 struct FinishedGameViewState: Equatable {
@@ -158,57 +147,57 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 }
 
 extension FinishedGameViewState {
-    static let empty: Self = .init(title: "empty", meaning: .loading, subtitle: "")
+    static let empty: Self = .init(title: "", meaning: .loading, subtitle: "")
 }
 
 extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
-    static let empty: Self = .init(id: "empty", type: "", definitions: [])
+    static let empty: Self = .init(id: "", type: "", definitions: [])
 }
 
 #Preview {
-//    FinishedGameView(viewState: .init(
-//        title: "Great job!",
-//        meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: "ABCDE"),
-//        subtitle: "Come back tomorrow for another challenge!"
-//    ))
     FinishedGameView(viewState: .init(
         title: "Great job!",
-        meaning: .meaning(viewState:
-                .init(
-                    word: "ABCDE",
-                    meanings: [
-                        .init(
-                            id: "0",
-                            type: "noun",
-                            definitions: [
-                                .init(
-                                    id: "0",
-                                    index: 1,
-                                    definition: "very special noun, very special noun, very special noun"
-                                ),
-                                .init(
-                                    id: "1",
-                                    index: 2,
-                                    definition: "very special noun, very special noun, very special noun - No. 2"
-                                )
-                            ]
-                        ),
-                        .init(
-                            id: "1",
-                            type: "verb",
-                            definitions: [
-                                .init(
-                                    id: "0",
-                                    index: 0,
-                                    definition: "very special verb, very special verb, very special verb, very special verb"
-                                )
-                            ]
-                        )
-                    ],
-                    selectedMeaning: .init(id: .init(), type: "noun", definitions: [.init(id: "0", index: 0, definition: "very special noun, very special noun, very special noun")]),
-                    onSelectMeaning: { _ in }
-                )
-        ),
+        meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: "ABCDE"),
         subtitle: "Come back tomorrow for another challenge!"
     ))
+//    FinishedGameView(viewState: .init(
+//        title: "Great job!",
+//        meaning: .meaning(viewState:
+//                .init(
+//                    word: "ABCDE",
+//                    meanings: [
+//                        .init(
+//                            id: "0",
+//                            type: "noun",
+//                            definitions: [
+//                                .init(
+//                                    id: "0",
+//                                    index: 1,
+//                                    definition: "very special noun, very special noun, very special noun"
+//                                ),
+//                                .init(
+//                                    id: "1",
+//                                    index: 2,
+//                                    definition: "very special noun, very special noun, very special noun - No. 2"
+//                                )
+//                            ]
+//                        ),
+//                        .init(
+//                            id: "1",
+//                            type: "verb",
+//                            definitions: [
+//                                .init(
+//                                    id: "0",
+//                                    index: 0,
+//                                    definition: "very special verb, very special verb, very special verb, very special verb"
+//                                )
+//                            ]
+//                        )
+//                    ],
+//                    selectedMeaning: .init(id: .init(), type: "noun", definitions: [.init(id: "0", index: 0, definition: "very special noun, very special noun, very special noun")]),
+//                    onSelectMeaning: { _ in }
+//                )
+//        ),
+//        subtitle: "Come back tomorrow for another challenge!"
+//    ))
 }

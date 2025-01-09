@@ -6,6 +6,31 @@ struct OngoingGameView: View {
     
     var body: some View {
         VStack {
+            
+            ZStack {
+                HStack {
+                    Spacer()
+                    Button {
+                        viewState.onTapInfoButton.action()
+                    } label: {
+                        Image(systemName: "info.circle.fill")
+                            .foregroundStyle(.text)
+                            .contentShape(Rectangle())
+                    }
+                }
+
+                HStack {
+                    Image("logo")
+                        .resizable()
+                        .frame(width: .size_24pt, height: .size_24pt)
+                    
+                    Text("DailySort")
+                        .font(bodyFont)
+                        
+                }
+            }
+            .padding([.horizontal], .space_48pt)
+
             Spacer()
                 .frame(height: .size_128pt)
             
@@ -46,6 +71,7 @@ extension GameViewState {
     struct OngoingGameViewState: Equatable {
         let characters: [Character]
         let keyboardViewState: KeyBoardViewState
+        let onTapInfoButton: UserAction
     }
 }
 
@@ -105,7 +131,8 @@ extension GameViewState.OngoingGameViewState {
             .empty(id: "4"),
             .empty(id: "5")
         ],
-        keyboardViewState: .empty
+        keyboardViewState: .empty,
+        onTapInfoButton: .empty
     )
 }
 
