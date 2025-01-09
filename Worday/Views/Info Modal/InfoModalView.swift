@@ -3,6 +3,8 @@ import SwiftUI
 struct InfoModalView: View {
     var body: some View {
         VStack(spacing: .space_48pt) {
+            Spacer(minLength: .space_8pt)
+            
             HStack {
                 Image("logo")
                     .resizable()
@@ -24,6 +26,7 @@ struct InfoModalView: View {
                         .frame(width: .size_8pt, height: .size_8pt)
                     Text("Each day, the game provides a new word for you to guess.")
                         .font(.callout)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 
                 HStack(alignment: .firstTextBaseline) {
@@ -32,6 +35,7 @@ struct InfoModalView: View {
                         .frame(width: .size_8pt, height: .size_8pt)
                     Text("Rearrange the letters to form the correct word.")
                         .font(.callout)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 
                 HStack(alignment: .firstTextBaseline) {
@@ -40,6 +44,7 @@ struct InfoModalView: View {
                         .frame(width: .size_8pt, height: .size_8pt)
                     Text("The color of the tiles will change to show how close your guess was to the word.")
                         .font(.callout)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 
                 HStack(alignment: .firstTextBaseline) {
@@ -48,8 +53,11 @@ struct InfoModalView: View {
                         .frame(width: .size_8pt, height: .size_8pt)
                     Text("Once you've guessed the word, its meaning will be revealed.")
                         .font(.callout)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
+            
+            Spacer()
             
             Text("Made with ")
             +
@@ -59,6 +67,7 @@ struct InfoModalView: View {
             Text(" in Berlin")
         }
         .padding(.space_24pt)
+        .presentationDetents([.large])
     }
 }
 

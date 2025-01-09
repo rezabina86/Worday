@@ -47,7 +47,8 @@ public func injectDependencies(into container: ContainerType) {
                              ongoingGameViewModelFactory: container.resolve(),
                              finishedGameViewModelFactory: container.resolve(),
                              scenePhaseObserver: container.resolve(),
-                             appTriggerFactory: container.resolve())
+                             appTriggerFactory: container.resolve(),
+                             modalCoordinator: container.resolve())
     }
     
     container.register { container -> UserSettingsType in
@@ -60,7 +61,8 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register { container -> OngoingGameViewModelFactoryType in
         OngoingGameViewModelFactory(wordProviderUseCase: container.resolve(),
-                                    arrayShuffle: container.resolve())
+                                    arrayShuffle: container.resolve(),
+                                    modalCoordinator: container.resolve())
     }
     
     container.register { _ -> ArrayShuffleType in
@@ -103,5 +105,9 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register { container -> FinishedGameViewModelFactoryType in
         FinishedGameViewModelFactory(dictionaryUseCase: container.resolve())
+    }
+    
+    container.register(in: .weakContainer) { container -> ModalCoordinatorType in
+        ModalCoordinator()
     }
 }
