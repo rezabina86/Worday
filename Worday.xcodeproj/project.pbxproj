@@ -14,24 +14,29 @@
 			remoteGlobalIDString = B6C28E172D198F99000E9A88;
 			remoteInfo = Worday;
 		};
-		B6C28E332D198FAB000E9A88 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B6C28E102D198F99000E9A88 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B6C28E172D198F99000E9A88;
-			remoteInfo = Worday;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		B6C28E182D198F9A000E9A88 /* Worday.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Worday.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6C28E282D198FAB000E9A88 /* WordayTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordayTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B6C28E322D198FAB000E9A88 /* WordayUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordayUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B6C2909A2D26E1C2000E9A88 /* Exceptions for "Worday" folder in "Worday" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B6C28E172D198F99000E9A88 /* Worday */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B6C28E1A2D198F9A000E9A88 /* Worday */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B6C2909A2D26E1C2000E9A88 /* Exceptions for "Worday" folder in "Worday" target */,
+			);
 			path = Worday;
 			sourceTree = "<group>";
 		};
@@ -57,13 +62,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B6C28E2F2D198FAB000E9A88 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -81,7 +79,6 @@
 			children = (
 				B6C28E182D198F9A000E9A88 /* Worday.app */,
 				B6C28E282D198FAB000E9A88 /* WordayTests.xctest */,
-				B6C28E322D198FAB000E9A88 /* WordayUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -134,26 +131,6 @@
 			productReference = B6C28E282D198FAB000E9A88 /* WordayTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		B6C28E312D198FAB000E9A88 /* WordayUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B6C28E422D198FAB000E9A88 /* Build configuration list for PBXNativeTarget "WordayUITests" */;
-			buildPhases = (
-				B6C28E2E2D198FAB000E9A88 /* Sources */,
-				B6C28E2F2D198FAB000E9A88 /* Frameworks */,
-				B6C28E302D198FAB000E9A88 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B6C28E342D198FAB000E9A88 /* PBXTargetDependency */,
-			);
-			name = WordayUITests;
-			packageProductDependencies = (
-			);
-			productName = WordayUITests;
-			productReference = B6C28E322D198FAB000E9A88 /* WordayUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -168,10 +145,6 @@
 						CreatedOnToolsVersion = 16.2;
 					};
 					B6C28E272D198FAB000E9A88 = {
-						CreatedOnToolsVersion = 16.2;
-						TestTargetID = B6C28E172D198F99000E9A88;
-					};
-					B6C28E312D198FAB000E9A88 = {
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = B6C28E172D198F99000E9A88;
 					};
@@ -193,7 +166,6 @@
 			targets = (
 				B6C28E172D198F99000E9A88 /* Worday */,
 				B6C28E272D198FAB000E9A88 /* WordayTests */,
-				B6C28E312D198FAB000E9A88 /* WordayUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -207,13 +179,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		B6C28E262D198FAB000E9A88 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B6C28E302D198FAB000E9A88 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -237,13 +202,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B6C28E2E2D198FAB000E9A88 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -251,11 +209,6 @@
 			isa = PBXTargetDependency;
 			target = B6C28E172D198F99000E9A88 /* Worday */;
 			targetProxy = B6C28E292D198FAB000E9A88 /* PBXContainerItemProxy */;
-		};
-		B6C28E342D198FAB000E9A88 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B6C28E172D198F99000E9A88 /* Worday */;
-			targetProxy = B6C28E332D198FAB000E9A88 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -386,25 +339,33 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Worday/Preview Content\"";
 				DEVELOPMENT_TEAM = URHBQC87KW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Worday/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DailySort;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wordayapp.Worday;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -415,25 +376,33 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Worday/Preview Content\"";
 				DEVELOPMENT_TEAM = URHBQC87KW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Worday/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DailySort;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wordayapp.Worday;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -475,40 +444,6 @@
 			};
 			name = Release;
 		};
-		B6C28E432D198FAB000E9A88 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = URHBQC87KW;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wordayapp.WordayUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Worday;
-			};
-			name = Debug;
-		};
-		B6C28E442D198FAB000E9A88 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = URHBQC87KW;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wordayapp.WordayUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Worday;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -535,15 +470,6 @@
 			buildConfigurations = (
 				B6C28E402D198FAB000E9A88 /* Debug */,
 				B6C28E412D198FAB000E9A88 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B6C28E422D198FAB000E9A88 /* Build configuration list for PBXNativeTarget "WordayUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B6C28E432D198FAB000E9A88 /* Debug */,
-				B6C28E442D198FAB000E9A88 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
