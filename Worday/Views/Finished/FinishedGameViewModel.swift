@@ -38,16 +38,16 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
                 case .error:
                     return .init(
                         title: title,
-                        currentStreak: currentStreak,
-                        totalPlayed: totalPlayed,
+                        currentStreak: createCurrentStreak(),
+                        totalPlayed: createTotalPlayed(),
                         meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: word.uppercased()),
                         subtitle: subtitle
                     )
                 case .loading:
                     return .init(
                         title: title,
-                        currentStreak: currentStreak,
-                        totalPlayed: totalPlayed,
+                        currentStreak: createCurrentStreak(),
+                        totalPlayed: createTotalPlayed(),
                         meaning: .loading,
                         subtitle: subtitle
                     )
@@ -86,6 +86,14 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
         streakUseCase.totalPlayed()
     }()
     
+    private func createCurrentStreak() -> FinishedGameViewState.Streak {
+        .init(title: "Current streak", value: currentStreak)
+    }
+    
+    private func createTotalPlayed() -> FinishedGameViewState.Streak {
+        .init(title: "Played", value: totalPlayed)
+    }
+    
     private func createLoadedViewState(from model: WordMeaningModel,
                                        selectedMeaning: FinishedGameViewState.Meaning.MeaningViewState.Meaning?) -> FinishedGameViewState {
         let meanings: [FinishedGameViewState.Meaning.MeaningViewState.Meaning] = model.meanings
@@ -97,8 +105,8 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
 
         return .init(
             title: title,
-            currentStreak: currentStreak,
-            totalPlayed: totalPlayed,
+            currentStreak: createCurrentStreak(),
+            totalPlayed: createTotalPlayed(),
             meaning: .meaning(viewState: .init(
                 word: model.word.uppercased(),
                 meanings: meanings,

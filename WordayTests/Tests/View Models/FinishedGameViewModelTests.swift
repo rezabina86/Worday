@@ -6,15 +6,18 @@ import Foundation
 final class FinishedGameViewModelTests {
     var sut: FinishedGameViewModel!
     var mockDictionaryUseCase: DictionaryUseCaseMock
+    var mockStreakUseCase: StreakUseCaseMock
     
     private let title: String = "Great job! 🎉"
     private let subtitle: String = "Come back tomorrow for another challenge!"
     
     init() {
         mockDictionaryUseCase = .init()
+        mockStreakUseCase = .init()
         
         sut = .init(word: "abcde",
-                    dictionaryUseCase: mockDictionaryUseCase)
+                    dictionaryUseCase: mockDictionaryUseCase,
+                    streakUseCase: mockStreakUseCase)
     }
 }
 

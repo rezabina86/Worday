@@ -16,12 +16,12 @@ struct FinishedGameView: View {
             
             HStack {
                 VStack {
-                    Text("\(viewState.totalPlayed)")
+                    Text("\(viewState.totalPlayed.value)")
                         .multilineTextAlignment(.center)
                         .font(.footnote)
                         .bold()
                         .foregroundStyle(Color.orange)
-                    Text("Played")
+                    Text(viewState.totalPlayed.title)
                         .multilineTextAlignment(.center)
                         .font(.footnote)
                         .bold()
@@ -29,12 +29,12 @@ struct FinishedGameView: View {
                 Spacer()
                     .frame(width: .space_24pt)
                 VStack {
-                    Text("\(viewState.currentStreak)")
+                    Text("\(viewState.currentStreak.value)")
                         .multilineTextAlignment(.center)
                         .font(.footnote)
                         .bold()
                         .foregroundStyle(Color.orange)
-                    Text("Current streak")
+                    Text(viewState.currentStreak.title)
                         .multilineTextAlignment(.center)
                         .font(.footnote)
                         .bold()
@@ -131,10 +131,17 @@ struct FinishedGameView: View {
 
 struct FinishedGameViewState: Equatable {
     let title: String
-    let currentStreak: Int
-    let totalPlayed: Int
+    let currentStreak: Streak
+    let totalPlayed: Streak
     let meaning: FinishedGameViewState.Meaning
     let subtitle: String
+}
+
+extension FinishedGameViewState {
+    struct Streak: Equatable {
+        let title: String
+        let value: Int
+    }
 }
 
 extension FinishedGameViewState {
@@ -177,7 +184,13 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 }
 
 extension FinishedGameViewState {
-    static let empty: Self = .init(title: "", currentStreak: 1, totalPlayed: 2, meaning: .loading, subtitle: "")
+    static let empty: Self = .init(
+        title: "",
+        currentStreak: .init(title: "Current streak", value: 1),
+        totalPlayed: .init(title: "Played", value: 2),
+        meaning: .loading,
+        subtitle: ""
+    )
 }
 
 extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
@@ -187,8 +200,8 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 #Preview {
     FinishedGameView(viewState: .init(
         title: "Great job!",
-        currentStreak: 1,
-        totalPlayed: 2,
+        currentStreak: .init(title: "Current streak", value: 1),
+        totalPlayed: .init(title: "Played", value: 2),
         meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: "ABCDE"),
         subtitle: "Come back tomorrow for another challenge!"
     ))
