@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B6807A9A2D3D748E005AB0D4 /* ReleaseNootes.md in Resources */ = {isa = PBXBuildFile; fileRef = B6807A992D3D7482005AB0D4 /* ReleaseNootes.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		B6C28E292D198FAB000E9A88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -17,6 +21,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B6807A992D3D7482005AB0D4 /* ReleaseNootes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ReleaseNootes.md; sourceTree = "<group>"; };
 		B6C28E182D198F9A000E9A88 /* Worday.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Worday.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6C28E282D198FAB000E9A88 /* WordayTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordayTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -68,6 +73,7 @@
 		B6C28E0F2D198F99000E9A88 = {
 			isa = PBXGroup;
 			children = (
+				B6807A992D3D7482005AB0D4 /* ReleaseNootes.md */,
 				B6C28E1A2D198F9A000E9A88 /* Worday */,
 				B6C28E2B2D198FAB000E9A88 /* WordayTests */,
 				B6C28E192D198F9A000E9A88 /* Products */,
@@ -175,6 +181,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6807A9A2D3D748E005AB0D4 /* ReleaseNootes.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
