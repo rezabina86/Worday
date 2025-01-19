@@ -14,6 +14,33 @@ struct FinishedGameView: View {
                 .font(titleFont2)
                 .bold()
             
+            HStack {
+                VStack {
+                    Text("\(viewState.totalPlayed)")
+                        .multilineTextAlignment(.center)
+                        .font(.footnote)
+                        .bold()
+                        .foregroundStyle(Color.orange)
+                    Text("Played")
+                        .multilineTextAlignment(.center)
+                        .font(.footnote)
+                        .bold()
+                }
+                Spacer()
+                    .frame(width: .space_24pt)
+                VStack {
+                    Text("\(viewState.currentStreak)")
+                        .multilineTextAlignment(.center)
+                        .font(.footnote)
+                        .bold()
+                        .foregroundStyle(Color.orange)
+                    Text("Current streak")
+                        .multilineTextAlignment(.center)
+                        .font(.footnote)
+                        .bold()
+                }
+            }
+            
             Text(viewState.subtitle)
                 .multilineTextAlignment(.center)
                 .font(.footnote)
@@ -92,6 +119,7 @@ struct FinishedGameView: View {
                                 }
                                 .padding([.horizontal], .space_32pt)
                             }
+                            .animation(.easeIn(duration: 0.1), value: selectedMeaning)
                         }
                     }
                     .padding([.horizontal], -.space_32pt)
@@ -103,6 +131,8 @@ struct FinishedGameView: View {
 
 struct FinishedGameViewState: Equatable {
     let title: String
+    let currentStreak: Int
+    let totalPlayed: Int
     let meaning: FinishedGameViewState.Meaning
     let subtitle: String
 }
@@ -147,7 +177,7 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 }
 
 extension FinishedGameViewState {
-    static let empty: Self = .init(title: "", meaning: .loading, subtitle: "")
+    static let empty: Self = .init(title: "", currentStreak: 1, totalPlayed: 2, meaning: .loading, subtitle: "")
 }
 
 extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
@@ -157,6 +187,8 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 #Preview {
     FinishedGameView(viewState: .init(
         title: "Great job!",
+        currentStreak: 1,
+        totalPlayed: 2,
         meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: "ABCDE"),
         subtitle: "Come back tomorrow for another challenge!"
     ))

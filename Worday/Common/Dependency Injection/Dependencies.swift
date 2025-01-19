@@ -104,10 +104,20 @@ public func injectDependencies(into container: ContainerType) {
     }
     
     container.register { container -> FinishedGameViewModelFactoryType in
-        FinishedGameViewModelFactory(dictionaryUseCase: container.resolve())
+        FinishedGameViewModelFactory(dictionaryUseCase: container.resolve(),
+                                     streakUseCase: container.resolve())
     }
     
     container.register(in: .weakContainer) { container -> ModalCoordinatorType in
         ModalCoordinator()
+    }
+    
+    container.register { _ -> CalendarServiceType in
+        Calendar.current
+    }
+    
+    container.register { container -> StreakUseCaseType in
+        StreakUseCase(wordContext: container.resolve(),
+                      calendarService: container.resolve())
     }
 }

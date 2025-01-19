@@ -7,10 +7,12 @@ protocol FinishedGameViewModelFactoryType {
 
 struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
     let dictionaryUseCase: DictionaryUseCaseType
+    let streakUseCase: StreakUseCaseType
     
     func create(for word: String) -> FinishedGameViewModelType {
         FinishedGameViewModel(word: word,
-                              dictionaryUseCase: dictionaryUseCase)
+                              dictionaryUseCase: dictionaryUseCase,
+                              streakUseCase: streakUseCase)
     }
 }
 
@@ -22,22 +24,30 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     
     init(
         word: String,
-        dictionaryUseCase: DictionaryUseCaseType
+        dictionaryUseCase: DictionaryUseCaseType,
+        streakUseCase: StreakUseCaseType
     ) {
+        self.streakUseCase = streakUseCase
+        
         dictionaryUseCase.create(for: word)
             .combineLatest(selectedMeaningSubject)
+            .receive(on: RunLoop.main)
             .map { [weak self] dataState, selectedMeaning -> FinishedGameViewState in
                 guard let self else { return .empty }
                 switch dataState {
                 case .error:
                     return .init(
                         title: title,
+                        currentStreak: currentStreak,
+                        totalPlayed: totalPlayed,
                         meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: word.uppercased()),
                         subtitle: subtitle
                     )
                 case .loading:
                     return .init(
                         title: title,
+                        currentStreak: currentStreak,
+                        totalPlayed: totalPlayed,
                         meaning: .loading,
                         subtitle: subtitle
                     )
@@ -46,7 +56,6 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
                                                  selectedMeaning: selectedMeaning)
                 }
             }
-            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] in
                 guard let self else { return }
                 setSelectedMeaningIfNecessary(from: $0)
@@ -64,8 +73,18 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     private let viewStateSubject: CurrentValueSubject<FinishedGameViewState, Never> = .init(.empty)
     private let selectedMeaningSubject: CurrentValueSubject<FinishedGameViewState.Meaning.MeaningViewState.Meaning?, Never> = .init(nil)
     
+    private let streakUseCase: StreakUseCaseType
+    
     private let title: String = "Great job! 🎉"
     private let subtitle: String = "Come back tomorrow for another challenge!"
+    
+    private lazy var currentStreak: Int = {
+        streakUseCase.calculateStreak()
+    }()
+    
+    private lazy var totalPlayed: Int = {
+        streakUseCase.totalPlayed()
+    }()
     
     private func createLoadedViewState(from model: WordMeaningModel,
                                        selectedMeaning: FinishedGameViewState.Meaning.MeaningViewState.Meaning?) -> FinishedGameViewState {
@@ -78,6 +97,8 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
 
         return .init(
             title: title,
+            currentStreak: currentStreak,
+            totalPlayed: totalPlayed,
             meaning: .meaning(viewState: .init(
                 word: model.word.uppercased(),
                 meanings: meanings,
