@@ -91,6 +91,9 @@ final class GameViewModel: GameViewModelType {
         
         guard result != latestFetchResult else { return }
         
+        ongoingGameViewModel = nil
+        finishedGameViewModel = nil
+        
         switch result {
         case .error:
             viewStateSubject.send(.error)
