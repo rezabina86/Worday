@@ -9,15 +9,9 @@ final class DictionaryUseCaseMock: DictionaryUseCaseType {
     
     func create(for word: String) -> AnyPublisher<DictionaryDataState, Never> {
         calls.append(.create(word: word))
-        
-        // Send the value set by the test on each call
-        createSubject.send(createReturnValue)
-        
-        // Return the subject as a publisher
         return createSubject.eraseToAnyPublisher()
     }
     
     var calls: [Call] = []
-    private var createSubject: CurrentValueSubject<DictionaryDataState, Never> = .init(.loading)
-    var createReturnValue: DictionaryDataState = .loading
+    var createSubject: PassthroughSubject<DictionaryDataState, Never> = .init()
 }

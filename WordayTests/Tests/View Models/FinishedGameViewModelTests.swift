@@ -11,6 +11,8 @@ final class FinishedGameViewModelTests {
     private let title: String = "Great job! 🎉"
     private let subtitle: String = "Come back tomorrow for another challenge!"
     
+    private let testSubscriber: TestableSubscriber<FinishedGameViewState, Never>
+    
     init() {
         mockDictionaryUseCase = .init()
         mockStreakUseCase = .init()
@@ -18,7 +20,30 @@ final class FinishedGameViewModelTests {
         sut = .init(word: "abcde",
                     dictionaryUseCase: mockDictionaryUseCase,
                     streakUseCase: mockStreakUseCase)
+        
+        testSubscriber = .init()
+        sut.viewState
+            .subscribe(testSubscriber)
     }
+    
+//    @Test func testLoadingState() async throws {
+//        mockDictionaryUseCase.createSubject.send(.loading)
+//        mockStreakUseCase.calculateStreakReturnValue = 1
+//        mockStreakUseCase.totalPlayedReturnValue = 2
+//        
+//        
+//        
+//        #expect(testSubscriber.receivedValues == [
+//            .empty,
+//            .init(
+//                title: title,
+//                currentStreak: .init(title: "Current streak", value: 1),
+//                totalPlayed: .init(title: "Played", value: 2),
+//                meaning: .loading,
+//                subtitle: subtitle
+//            )
+//        ])
+//    }
 }
 
 private extension FinishedGameViewState {

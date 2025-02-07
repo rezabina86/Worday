@@ -56,11 +56,10 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
                                                  selectedMeaning: selectedMeaning)
                 }
             }
-            .sink(receiveValue: { [weak self] in
-                guard let self else { return }
-                setSelectedMeaningIfNecessary(from: $0)
-                viewStateSubject.send($0)
+            .handleEvents(receiveOutput: { [weak self] viewState in
+                self?.setSelectedMeaningIfNecessary(from: viewState)
             })
+            .assign(to: \.value, on: viewStateSubject)
             .store(in: &cancellables)
     }
     

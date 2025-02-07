@@ -186,8 +186,8 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 extension FinishedGameViewState {
     static let empty: Self = .init(
         title: "",
-        currentStreak: .init(title: "Current streak", value: 1),
-        totalPlayed: .init(title: "Played", value: 2),
+        currentStreak: .init(title: "", value: 0),
+        totalPlayed: .init(title: "", value: 0),
         meaning: .loading,
         subtitle: ""
     )
