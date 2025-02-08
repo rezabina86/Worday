@@ -14,6 +14,11 @@ struct FinishedGameView: View {
                 .font(titleFont2)
                 .bold()
             
+            Text(viewState.subtitle)
+                .multilineTextAlignment(.center)
+                .font(.footnote)
+                .bold()
+            
             HStack {
                 VStack {
                     Text("\(viewState.totalPlayed.value)")
@@ -40,11 +45,6 @@ struct FinishedGameView: View {
                         .bold()
                 }
             }
-            
-            Text(viewState.subtitle)
-                .multilineTextAlignment(.center)
-                .font(.footnote)
-                .bold()
             
             Rectangle()
                 .frame(height: 2)
@@ -186,8 +186,8 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 extension FinishedGameViewState {
     static let empty: Self = .init(
         title: "",
-        currentStreak: .init(title: "Current streak", value: 1),
-        totalPlayed: .init(title: "Played", value: 2),
+        currentStreak: .init(title: "", value: 0),
+        totalPlayed: .init(title: "", value: 0),
         meaning: .loading,
         subtitle: ""
     )

@@ -13,6 +13,7 @@ struct WordProviderUseCaseTests {
     var mockUUIDProvider: UUIDProviderMock
     var mockDateProvider: DateProviderMock
     var mockFinishGameRelay: FinishGameRelayMock
+    var mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
     
     init() {
         mockWordRepository = .init()
@@ -23,6 +24,7 @@ struct WordProviderUseCaseTests {
         mockUUIDProvider = .init()
         mockDateProvider = .init()
         mockFinishGameRelay = .init()
+        mockAttemptTrackerUseCase = .init()
         sut = .init(
             wordRepository: mockWordRepository,
             wordContext: mockWordContext,
@@ -31,7 +33,8 @@ struct WordProviderUseCaseTests {
             userSettings: mockUserSettings,
             uuidProvider: mockUUIDProvider,
             dateProvider: mockDateProvider,
-            finishGameRelay: mockFinishGameRelay
+            finishGameRelay: mockFinishGameRelay,
+            attemptTrackerUseCase: mockAttemptTrackerUseCase
         )
     }
     
@@ -48,6 +51,7 @@ struct WordProviderUseCaseTests {
         #expect(mockWordContext.calls.isEmpty)
         #expect(mockRandomWordProducer.calls.isEmpty)
         #expect(mockUserSettings.setCurrentWordCall.isEmpty)
+        #expect(mockAttemptTrackerUseCase.calls.isEmpty)
     }
 
     @Test func testFetchSuccessfully() async throws {
@@ -63,6 +67,7 @@ struct WordProviderUseCaseTests {
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [.randomElement(words: ["a", "b"])])
         #expect(mockUserSettings.setCurrentWordCall == [.currentWord(.set("a"))])
+        #expect(mockAttemptTrackerUseCase.calls == [.cleanup])
     }
     
     @Test func testFetchSuccessfullyWhenAllWordsCompleted() async throws {
@@ -82,6 +87,7 @@ struct WordProviderUseCaseTests {
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [])
         #expect(mockUserSettings.setCurrentWordCall.isEmpty)
+        #expect(mockAttemptTrackerUseCase.calls.isEmpty)
     }
     
     @Test func testFetchTodayWordIsCompleted() async throws {
@@ -100,6 +106,7 @@ struct WordProviderUseCaseTests {
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls.isEmpty)
         #expect(mockUserSettings.setCurrentWordCall.isEmpty)
+        #expect(mockAttemptTrackerUseCase.calls.isEmpty)
     }
     
     @Test func testFetchSuccessfullyWhenWordsPartiallyCompleted() async throws {
@@ -118,6 +125,7 @@ struct WordProviderUseCaseTests {
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [.randomElement(words: ["c", "d"])])
         #expect(mockUserSettings.setCurrentWordCall == [.currentWord(.set("c"))])
+        #expect(mockAttemptTrackerUseCase.calls == [.cleanup])
     }
     
     @Test func testStoreWord() async throws {

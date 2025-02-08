@@ -6,7 +6,6 @@ struct OngoingGameView: View {
     
     var body: some View {
         VStack {
-            
             ZStack {
                 HStack {
                     Spacer()
@@ -33,6 +32,18 @@ struct OngoingGameView: View {
 
             Spacer()
                 .frame(height: .size_128pt)
+            
+            viewState.numberOfTries.map { number in
+                Group {
+                    Text("Number of Tries: ")
+                        .font(bodyFont)
+                    +
+                    Text("\(number)")
+                        .font(bodyFont)
+                        .foregroundStyle(Color.orange)
+                }
+                .animation(.easeInOut(duration: 0.5), value: viewState)
+            }
             
             GeometryReader { proxy in
                 buildRowsView(from: viewState, proxy: proxy)
@@ -70,6 +81,7 @@ struct OngoingGameView: View {
 extension GameViewState {
     struct OngoingGameViewState: Equatable {
         let characters: [Character]
+        let numberOfTries: Int?
         let keyboardViewState: KeyBoardViewState
         let onTapInfoButton: UserAction
     }
@@ -131,6 +143,7 @@ extension GameViewState.OngoingGameViewState {
             .empty(id: "4"),
             .empty(id: "5")
         ],
+        numberOfTries: nil,
         keyboardViewState: .empty,
         onTapInfoButton: .empty
     )

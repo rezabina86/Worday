@@ -22,7 +22,8 @@ final class WordProviderUseCase: WordProviderUseCaseType {
         userSettings: UserSettingsType,
         uuidProvider: UUIDProviderType,
         dateProvider: DateProviderType,
-        finishGameRelay: FinishGameRelayType
+        finishGameRelay: FinishGameRelayType,
+        attemptTrackerUseCase: AttemptTrackerUseCaseType
     ) {
         self.wordRepository = wordRepository
         self.wordContext = wordContext
@@ -32,6 +33,7 @@ final class WordProviderUseCase: WordProviderUseCaseType {
         self.uuidProvider = uuidProvider
         self.dateProvider = dateProvider
         self.finishGameRelay = finishGameRelay
+        self.attemptTrackerUseCase = attemptTrackerUseCase
     }
     
     func fetch() -> FetchWordModel {
@@ -67,6 +69,7 @@ final class WordProviderUseCase: WordProviderUseCaseType {
         }
         
         userSettings.currentWord = word
+        attemptTrackerUseCase.cleanup()
         
         return .word(word: word)
     }
@@ -93,4 +96,5 @@ final class WordProviderUseCase: WordProviderUseCaseType {
     private let uuidProvider: UUIDProviderType
     private let dateProvider: DateProviderType
     private let finishGameRelay: FinishGameRelayType
+    private let attemptTrackerUseCase: AttemptTrackerUseCaseType
 }
