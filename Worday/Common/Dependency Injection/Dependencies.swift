@@ -35,7 +35,8 @@ public func injectDependencies(into container: ContainerType) {
                             userSettings: container.resolve(),
                             uuidProvider: UUID(),
                             dateProvider: Date(),
-                            finishGameRelay: container.resolve())
+                            finishGameRelay: container.resolve(),
+                            attemptTrackerUseCase: container.resolve())
     }
     
     container.register { _ -> RandomWordProducerType in
@@ -62,7 +63,8 @@ public func injectDependencies(into container: ContainerType) {
     container.register { container -> OngoingGameViewModelFactoryType in
         OngoingGameViewModelFactory(wordProviderUseCase: container.resolve(),
                                     arrayShuffle: container.resolve(),
-                                    modalCoordinator: container.resolve())
+                                    modalCoordinator: container.resolve(),
+                                    attemptTrackerUseCase: container.resolve())
     }
     
     container.register { _ -> ArrayShuffleType in
@@ -105,7 +107,8 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register { container -> FinishedGameViewModelFactoryType in
         FinishedGameViewModelFactory(dictionaryUseCase: container.resolve(),
-                                     streakUseCase: container.resolve())
+                                     streakUseCase: container.resolve(),
+                                     attemptTrackerUseCase: container.resolve())
     }
     
     container.register(in: .weakContainer) { container -> ModalCoordinatorType in
@@ -119,5 +122,9 @@ public func injectDependencies(into container: ContainerType) {
     container.register { container -> StreakUseCaseType in
         StreakUseCase(wordContext: container.resolve(),
                       calendarService: container.resolve())
+    }
+    
+    container.register { container -> AttemptTrackerUseCaseType in
+        AttemptTrackerUseCase(userSettings: container.resolve())
     }
 }

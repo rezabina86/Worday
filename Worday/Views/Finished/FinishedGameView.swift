@@ -14,6 +14,11 @@ struct FinishedGameView: View {
                 .font(titleFont2)
                 .bold()
             
+            Text(viewState.subtitle)
+                .multilineTextAlignment(.center)
+                .font(.footnote)
+                .bold()
+            
             HStack {
                 VStack {
                     Text("\(viewState.totalPlayed.value)")
@@ -40,11 +45,6 @@ struct FinishedGameView: View {
                         .bold()
                 }
             }
-            
-            Text(viewState.subtitle)
-                .multilineTextAlignment(.center)
-                .font(.footnote)
-                .bold()
             
             Rectangle()
                 .frame(height: 2)

@@ -8,11 +8,13 @@ protocol FinishedGameViewModelFactoryType {
 struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
     let dictionaryUseCase: DictionaryUseCaseType
     let streakUseCase: StreakUseCaseType
+    let attemptTrackerUseCase: AttemptTrackerUseCaseType
     
     func create(for word: String) -> FinishedGameViewModelType {
         FinishedGameViewModel(word: word,
                               dictionaryUseCase: dictionaryUseCase,
-                              streakUseCase: streakUseCase)
+                              streakUseCase: streakUseCase,
+                              attemptTrackerUseCase: attemptTrackerUseCase)
     }
 }
 
@@ -25,9 +27,11 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     init(
         word: String,
         dictionaryUseCase: DictionaryUseCaseType,
-        streakUseCase: StreakUseCaseType
+        streakUseCase: StreakUseCaseType,
+        attemptTrackerUseCase: AttemptTrackerUseCaseType
     ) {
         self.streakUseCase = streakUseCase
+        self.title = attemptTrackerUseCase.feedbackMessage()
         
         dictionaryUseCase.create(for: word)
             .combineLatest(selectedMeaningSubject)
@@ -74,7 +78,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     
     private let streakUseCase: StreakUseCaseType
     
-    private let title: String = "Great job! 🎉"
+    private let title: String
     private let subtitle: String = "Come back tomorrow for another challenge!"
     
     private lazy var currentStreak: Int = {
