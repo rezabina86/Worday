@@ -7,6 +7,7 @@ final class FinishedGameViewModelTests {
     var sut: FinishedGameViewModel!
     var mockDictionaryUseCase: DictionaryUseCaseMock
     var mockStreakUseCase: StreakUseCaseMock
+    var mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
     
     private let title: String = "Great job! 🎉"
     private let subtitle: String = "Come back tomorrow for another challenge!"
@@ -16,10 +17,12 @@ final class FinishedGameViewModelTests {
     init() {
         mockDictionaryUseCase = .init()
         mockStreakUseCase = .init()
+        mockAttemptTrackerUseCase = .init()
         
         sut = .init(word: "abcde",
                     dictionaryUseCase: mockDictionaryUseCase,
-                    streakUseCase: mockStreakUseCase)
+                    streakUseCase: mockStreakUseCase,
+                    attemptTrackerUseCase: mockAttemptTrackerUseCase)
         
         testSubscriber = .init()
         sut.viewState

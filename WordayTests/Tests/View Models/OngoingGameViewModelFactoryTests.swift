@@ -7,14 +7,17 @@ struct OngoingGameViewModelFactoryTests {
     var mockWordProviderUseCase: WordProviderUseCaseMock
     var mockArrayShuffle: ArrayShuffleMock
     var mockModalCoordinator: ModalCoordinatorMock
+    var mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
     
     init() {
         mockWordProviderUseCase = .init()
         mockArrayShuffle = .init()
         mockModalCoordinator = .init()
+        mockAttemptTrackerUseCase = .init()
         sut = .init(wordProviderUseCase: mockWordProviderUseCase,
                     arrayShuffle: mockArrayShuffle,
-                    modalCoordinator: mockModalCoordinator)
+                    modalCoordinator: mockModalCoordinator,
+                    attemptTrackerUseCase: mockAttemptTrackerUseCase)
     }
 
     @Test func testCreate() async throws {

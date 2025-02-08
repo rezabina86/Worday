@@ -21,7 +21,7 @@ struct AttemptTrackerUseCase: AttemptTrackerUseCaseType {
     }
     
     func advance() {
-        let numberOfTries = (userSettings.numberOfTries ?? 0) + 1
+        let numberOfTries = numberOfTriesSubject.value + 1
         userSettings.numberOfTries = numberOfTries
         numberOfTriesSubject.send(numberOfTries)
     }
@@ -32,7 +32,7 @@ struct AttemptTrackerUseCase: AttemptTrackerUseCaseType {
     }
     
     func feedbackMessage() -> String {
-        let numberOfTries = (userSettings.numberOfTries ?? 0)
+        let numberOfTries = numberOfTriesSubject.value
         return feedbackMessage(for: numberOfTries)
     }
     

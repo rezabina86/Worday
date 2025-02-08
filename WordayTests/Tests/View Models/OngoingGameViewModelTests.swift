@@ -8,6 +8,7 @@ final class OngoingGameViewModelTests {
     var mockWordProviderUseCase: WordProviderUseCaseMock
     var mockArrayShuffle: ArrayShuffleMock
     var mockModalCoordinator: ModalCoordinatorMock
+    var mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
     
     var cancellables: Set<AnyCancellable>
     var viewState: GameViewState.OngoingGameViewState?
@@ -17,11 +18,14 @@ final class OngoingGameViewModelTests {
         mockWordProviderUseCase = .init()
         mockArrayShuffle = .init()
         mockModalCoordinator = .init()
+        mockAttemptTrackerUseCase = .init()
         mockArrayShuffle.shuffleReturnValue = ["a", "b", "c", "d", "e"]
+        mockAttemptTrackerUseCase.numberOfTriesSubject.send(1)
         sut = .init(word: "abcde",
                     wordProviderUseCase: mockWordProviderUseCase,
                     arrayShuffle: mockArrayShuffle,
-                    modalCoordinator: mockModalCoordinator)
+                    modalCoordinator: mockModalCoordinator,
+                    attemptTrackerUseCase: mockAttemptTrackerUseCase)
         
         sut.viewState
             .sink { [weak self] state in
@@ -39,6 +43,7 @@ final class OngoingGameViewModelTests {
                 .empty(id: "3"),
                 .empty(id: "4")
             ],
+            numberOfTries: 1,
             keyboardViewState: .init(
                 keys: [.init(id: "0", character: "a", onTap: .fake),
                        .init(id: "1", character: "b", onTap: .fake),
@@ -65,6 +70,7 @@ final class OngoingGameViewModelTests {
                 .empty(id: "3"),
                 .empty(id: "4")
             ],
+            numberOfTries: 1,
             keyboardViewState: .init(
                 keys: [.init(id: "0", character: "a", onTap: .fake),
                        .init(id: "1", character: "b", onTap: .fake),
@@ -92,6 +98,7 @@ final class OngoingGameViewModelTests {
                 .empty(id: "3"),
                 .empty(id: "4")
             ],
+            numberOfTries: 1,
             keyboardViewState: .init(
                 keys: [.init(id: "0", character: "a", onTap: .fake),
                        .init(id: "1", character: "b", onTap: .fake),
@@ -120,6 +127,7 @@ final class OngoingGameViewModelTests {
                 .empty(id: "3"),
                 .empty(id: "4")
             ],
+            numberOfTries: 1,
             keyboardViewState: .init(
                 keys: [.init(id: "0", character: "a", onTap: .fake),
                        .init(id: "1", character: "b", onTap: .fake),
@@ -152,6 +160,7 @@ final class OngoingGameViewModelTests {
                 .init(id: "3", state: .misplaced(char: "a")),
                 .init(id: "4", state: .misplaced(char: "a"))
             ],
+            numberOfTries: 1,
             keyboardViewState: .init(
                 keys: [.init(id: "0", character: "a", onTap: .fake),
                        .init(id: "1", character: "b", onTap: .fake),
@@ -185,6 +194,7 @@ final class OngoingGameViewModelTests {
                 .init(id: "3", state: .correct(char: "d")),
                 .init(id: "4", state: .correct(char: "e"))
             ],
+            numberOfTries: 1,
             keyboardViewState: .init(
                 keys: [.init(id: "0", character: "a", onTap: .fake),
                        .init(id: "1", character: "b", onTap: .fake),
@@ -204,6 +214,17 @@ final class OngoingGameViewModelTests {
     @Test func testPresentInfoModal() async throws {
         viewState?.onTapInfoButton.action()
         #expect(mockModalCoordinator.calls == [.present(destination: .info)])
+    }
+    
+    @Test func testAdvaceAttempTracker() async throws {
+        viewState?.onTapFirstKey?.action()
+        viewState?.onTapSecondKey?.action()
+        viewState?.onTapThirdKey?.action()
+        viewState?.onTapFourthKey?.action()
+        viewState?.onTapFifthKey?.action()
+        
+        viewState?.keyboardViewState.onTapEnter.action()
+        #expect(mockAttemptTrackerUseCase.calls == [.advance])
     }
 }
 
