@@ -124,7 +124,7 @@ public func injectDependencies(into container: ContainerType) {
                       calendarService: container.resolve())
     }
     
-    container.register { container -> AttemptTrackerUseCaseType in
+    container.register(in: .weakContainer) { container -> AttemptTrackerUseCaseType in
         AttemptTrackerUseCase(userSettings: container.resolve())
     }
 }
