@@ -2,6 +2,7 @@ import Foundation
 
 protocol UserSettingsType: AnyObject {
     var currentWord: String? { get set }
+    var numberOfTries: Int? { get set }
     func reset()
 }
 
@@ -20,6 +21,15 @@ final class UserSettings: UserSettingsType {
         }
     }
     
+    var numberOfTries: Int? {
+        get {
+            return userDefaults.object(forKey: .numberOfTries) as? Int
+        }
+        set {
+            userDefaults.set(newValue, forKey: .numberOfTries)
+        }
+    }
+    
     func reset() {
         let keysToRemove: [UserSettings.Key] = UserSettings.Key.allCases
         
@@ -31,6 +41,7 @@ final class UserSettings: UserSettingsType {
     
     enum Key: String, CaseIterable {
         case currentWord = "current_word"
+        case numberOfTries = "number_of_tries"
     }
 }
 

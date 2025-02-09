@@ -42,7 +42,7 @@ struct UserSettingsTests {
         sut.reset()
         
         // Writes the data once
-        #expect(mockUserDefaults.setForKeyCalls.count == 1)
+        #expect(mockUserDefaults.setForKeyCalls.count == 2)
         
         //Writes data using the correct key
         #expect(mockUserDefaults.setForKeyCalls.first!.forKey == "current_word")
