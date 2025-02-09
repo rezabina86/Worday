@@ -9,7 +9,7 @@ protocol AttemptTrackerUseCaseType {
     func feedbackMessage() -> String
 }
 
-struct AttemptTrackerUseCase: AttemptTrackerUseCaseType {
+final class AttemptTrackerUseCase: AttemptTrackerUseCaseType {
     
     init(userSettings: UserSettingsType) {
         self.userSettings = userSettings
