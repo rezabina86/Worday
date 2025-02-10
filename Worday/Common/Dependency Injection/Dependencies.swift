@@ -127,4 +127,8 @@ public func injectDependencies(into container: ContainerType) {
     container.register(in: .weakContainer) { container -> AttemptTrackerUseCaseType in
         AttemptTrackerUseCase(userSettings: container.resolve())
     }
+    
+    container.register(in: .weakContainer) { _ -> NavigationRouterType in
+        NavigationRouter()
+    }
 }
