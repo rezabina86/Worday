@@ -1,47 +1,72 @@
 import SwiftUI
+import Combine
 
 struct GameView: View {
     
     init(viewModel: GameViewModelType) {
         self.viewModel = viewModel
+        
+        viewModel.currentNavigationPath
+            .receive(on: RunLoop.main)
+            .assign(to: \.currentNavigationPath, on: self)
+            .store(in: &subscriptions)
     }
     
     var body: some View {
-        view(for: viewState)
-        .task {
-            for await vs in viewModel.viewState.values {
-                withAnimation {
-                    self.viewState = vs
+        NavigationStack(
+            path: .init(
+                get: {
+                    return currentNavigationPath
+                },
+                set: {
+                    viewModel.setNavigationCurrentPath($0)
                 }
-            }
-        }
-        .task {
-            for await destination in viewModel.currentDestination.values {
-                self.currentModalDestination = destination
-            }
-        }
-        .onChange(of: scenePhase) { old, new in
-            viewModel.scenePhaseChanged(new)
-        }
-        .sheet(item: .init(get: {
-            self.currentModalDestination
-        }, set: { destination in
-            viewModel.setModalDestination(destination)
-        })) { destination in
-            switch currentModalDestination {
-            case .info:
-                InfoModalView()
-            case nil:
-                EmptyView()
-            }
+            )
+        ) {
+            view(for: viewState)
+                .task {
+                    for await vs in viewModel.viewState.values {
+                        withAnimation {
+                            self.viewState = vs
+                        }
+                    }
+                }
+                .task {
+                    for await destination in viewModel.currentDestination.values {
+                        self.currentModalDestination = destination
+                    }
+                }
+                .onChange(of: scenePhase) { old, new in
+                    viewModel.scenePhaseChanged(new)
+                }
+                .sheet(item: .init(get: {
+                    self.currentModalDestination
+                }, set: { destination in
+                    viewModel.setModalDestination(destination)
+                })) { destination in
+                    switch currentModalDestination {
+                    case .info:
+                        InfoModalView()
+                    case nil:
+                        EmptyView()
+                    }
+                }
+                .navigationDestination(
+                    for: NavigationDestination.self
+                ) { route in
+                    destination(for: route)
+                }
+                .navigationBarHidden(true)
         }
     }
     
     // MARK: - Privates
     private let viewModel: GameViewModelType
+    private var subscriptions: Set<AnyCancellable> = []
     
     @State private var viewState: GameViewState = .empty
     @State private var currentModalDestination: ModalCoordinatorDestination?
+    @ObservedState private var currentNavigationPath: NavigationPath = .init()
     @Environment(\.scenePhase) private var scenePhase
     
     
@@ -66,6 +91,18 @@ struct GameView: View {
             OngoingGameView(viewState: viewState)
                 .transition(.opacity)
                 .animation(.easeInOut(duration: 0.2), value: viewState)
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func destination(for destination: NavigationDestination) -> some View {
+        switch destination {
+        case let .wordList(viewState):
+            WordListView(viewState: viewState)
+        case .none:
+            EmptyView()
         }
     }
 }

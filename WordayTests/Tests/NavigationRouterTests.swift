@@ -17,14 +17,14 @@ struct NavigationRouterTests {
     }
     
     @Test func testSetCurrentPath() async throws {
-        sut.setCurrentPath(.init([NavigationDestination.testDestination]))
+        sut.setCurrentPath(.init([NavigationDestination.none]))
         
-        #expect(testSubscriber.receivedValues == [.init([NavigationDestination.testDestination])])
+        #expect(testSubscriber.receivedValues == [.init([NavigationDestination.none])])
     }
     
     @Test func testGotoDestination() async throws {
-        sut.gotoDestination(.testDestination)
+        sut.gotoDestination(.none)
         
-        #expect(testSubscriber.receivedValues == [.init([NavigationDestination.testDestination])])
+        #expect(testSubscriber.receivedValues == [.init([NavigationDestination.none])])
     }
 }

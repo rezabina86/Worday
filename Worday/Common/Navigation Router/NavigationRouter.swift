@@ -3,8 +3,8 @@ import Combine
 import Foundation
 
 enum NavigationDestination {
-    case wordList
-    case testDestination
+    case wordList(viewState: WordListViewState)
+    case none
 }
 
 protocol NavigationRouterType {
@@ -17,7 +17,7 @@ protocol NavigationRouterType {
 final class NavigationRouter: NavigationRouterType {
     
     var currentPath: AnyPublisher<NavigationPath, Never> {
-        currentPathSubject.removeDuplicates().eraseToAnyPublisher()
+        currentPathSubject.eraseToAnyPublisher()
     }
     
     func setCurrentPath(_ path: NavigationPath) {
@@ -25,9 +25,9 @@ final class NavigationRouter: NavigationRouterType {
     }
     
     func gotoDestination(_ destination: NavigationDestination) {
-        var newPath = currentPathSubject.value
-        newPath.append(destination)
-        currentPathSubject.send(newPath)
+        var currentPath = currentPathSubject.value
+        currentPath.append(destination)
+        currentPathSubject.send(currentPath)
     }
     
     // MARK: - Privates
@@ -40,9 +40,9 @@ extension NavigationDestination: Hashable {
     var id: String {
         switch self {
         case .wordList:
-            "word_list"
-        case .testDestination:
-            "test_destination"
+            "word_list_view"
+        case .none:
+            "none"
         }
     }
     

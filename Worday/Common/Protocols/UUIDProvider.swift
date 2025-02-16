@@ -4,8 +4,8 @@ protocol UUIDProviderType {
     func create() -> String
 }
 
-extension UUID: UUIDProviderType {
+struct UUIDProvider: UUIDProviderType {
     func create() -> String {
-        self.uuidString
+        UUID().uuidString
     }
 }

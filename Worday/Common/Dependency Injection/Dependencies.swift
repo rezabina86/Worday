@@ -27,13 +27,17 @@ public func injectDependencies(into container: ContainerType) {
         DateService()
     }
     
+    container.register { _ -> UUIDProviderType in
+        UUIDProvider()
+    }
+    
     container.register { container -> WordProviderUseCaseType in
         WordProviderUseCase(wordRepository: container.resolve(),
                             wordContext: container.resolve(),
                             randomWordProducer: container.resolve(),
                             dateService: container.resolve(),
                             userSettings: container.resolve(),
-                            uuidProvider: UUID(),
+                            uuidProvider: container.resolve(),
                             dateProvider: Date(),
                             finishGameRelay: container.resolve(),
                             attemptTrackerUseCase: container.resolve())
@@ -49,7 +53,8 @@ public func injectDependencies(into container: ContainerType) {
                              finishedGameViewModelFactory: container.resolve(),
                              scenePhaseObserver: container.resolve(),
                              appTriggerFactory: container.resolve(),
-                             modalCoordinator: container.resolve())
+                             modalCoordinator: container.resolve(),
+                             navigationRouter: container.resolve())
     }
     
     container.register { container -> UserSettingsType in
@@ -108,7 +113,9 @@ public func injectDependencies(into container: ContainerType) {
     container.register { container -> FinishedGameViewModelFactoryType in
         FinishedGameViewModelFactory(dictionaryUseCase: container.resolve(),
                                      streakUseCase: container.resolve(),
-                                     attemptTrackerUseCase: container.resolve())
+                                     attemptTrackerUseCase: container.resolve(),
+                                     wordListViewStateConverter: container.resolve(),
+                                     navigationRouter: container.resolve())
     }
     
     container.register(in: .weakContainer) { container -> ModalCoordinatorType in
@@ -130,5 +137,9 @@ public func injectDependencies(into container: ContainerType) {
     
     container.register(in: .weakContainer) { _ -> NavigationRouterType in
         NavigationRouter()
+    }
+    
+    container.register { container -> WordListViewStateConverterType in
+        WordListViewStateConverter(wordContext: container.resolve())
     }
 }
