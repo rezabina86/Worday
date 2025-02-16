@@ -5,7 +5,12 @@ struct WordListView: View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: .space_12pt) {
                 ForEach(viewState.cards) { card in
-                    createCard(card)
+                    Button {
+                        card.onTap.action()
+                    } label: {
+                        createCard(card)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.space_12pt)
