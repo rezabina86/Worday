@@ -23,4 +23,5 @@ let wdFont8: Font =
 
 let titleFont: Font = .custom("Academy Engraved LET", size: 42)
 let titleFont2: Font = .custom("Impact", size: 36)
+let titleFont3: Font = .custom("Academy Engraved LET", size: 32)
 let bodyFont: Font = .custom("Copperplate", size: 18)

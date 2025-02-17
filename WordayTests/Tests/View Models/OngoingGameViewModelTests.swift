@@ -4,11 +4,12 @@ import Foundation
 @testable import Worday
 
 final class OngoingGameViewModelTests {
-    var sut: OngoingGameViewModel!
-    var mockWordProviderUseCase: WordProviderUseCaseMock
-    var mockArrayShuffle: ArrayShuffleMock
-    var mockModalCoordinator: ModalCoordinatorMock
-    var mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
+    let sut: OngoingGameViewModel!
+    let mockWordProviderUseCase: WordProviderUseCaseMock
+    let mockArrayShuffle: ArrayShuffleMock
+    let mockModalCoordinator: ModalCoordinatorMock
+    let mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
+    let mockInfoModalViewStateConverter: InfoModalViewStateConverterMock
     
     var cancellables: Set<AnyCancellable>
     var viewState: GameViewState.OngoingGameViewState?
@@ -21,11 +22,13 @@ final class OngoingGameViewModelTests {
         mockAttemptTrackerUseCase = .init()
         mockArrayShuffle.shuffleReturnValue = ["a", "b", "c", "d", "e"]
         mockAttemptTrackerUseCase.numberOfTriesSubject.send(1)
+        mockInfoModalViewStateConverter = .init()
         sut = .init(word: "abcde",
                     wordProviderUseCase: mockWordProviderUseCase,
                     arrayShuffle: mockArrayShuffle,
                     modalCoordinator: mockModalCoordinator,
-                    attemptTrackerUseCase: mockAttemptTrackerUseCase)
+                    attemptTrackerUseCase: mockAttemptTrackerUseCase,
+                    infoModalViewStateConverter: mockInfoModalViewStateConverter)
         
         sut.viewState
             .sink { [weak self] state in
@@ -212,8 +215,9 @@ final class OngoingGameViewModelTests {
     }
     
     @Test func testPresentInfoModal() async throws {
+        mockInfoModalViewStateConverter.createReturnValue = .init(topics: [], versionString: "")
         viewState?.onTapInfoButton.action()
-        #expect(mockModalCoordinator.calls == [.present(destination: .info)])
+        #expect(mockModalCoordinator.calls == [.present(destination: .info(.init(topics: [], versionString: "")))])
     }
     
     @Test func testAdvaceAttempTracker() async throws {

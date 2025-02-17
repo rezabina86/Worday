@@ -9,12 +9,16 @@ struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
     let dictionaryUseCase: DictionaryUseCaseType
     let streakUseCase: StreakUseCaseType
     let attemptTrackerUseCase: AttemptTrackerUseCaseType
+    let wordListViewStateConverter: WordListViewStateConverterType
+    let navigationRouter: NavigationRouterType
     
     func create(for word: String) -> FinishedGameViewModelType {
         FinishedGameViewModel(word: word,
                               dictionaryUseCase: dictionaryUseCase,
                               streakUseCase: streakUseCase,
-                              attemptTrackerUseCase: attemptTrackerUseCase)
+                              attemptTrackerUseCase: attemptTrackerUseCase,
+                              wordListViewStateConverter: wordListViewStateConverter,
+                              navigationRouter: navigationRouter)
     }
 }
 
@@ -28,9 +32,13 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
         word: String,
         dictionaryUseCase: DictionaryUseCaseType,
         streakUseCase: StreakUseCaseType,
-        attemptTrackerUseCase: AttemptTrackerUseCaseType
+        attemptTrackerUseCase: AttemptTrackerUseCaseType,
+        wordListViewStateConverter: WordListViewStateConverterType,
+        navigationRouter: NavigationRouterType
     ) {
         self.streakUseCase = streakUseCase
+        self.wordListViewStateConverter = wordListViewStateConverter
+        self.navigationRouter = navigationRouter
         self.title = attemptTrackerUseCase.feedbackMessage()
         
         dictionaryUseCase.create(for: word)
@@ -41,6 +49,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
                 switch dataState {
                 case .error:
                     return .init(
+                        allWordButton: allWordsButtonState,
                         title: title,
                         currentStreak: createCurrentStreak(),
                         totalPlayed: createTotalPlayed(),
@@ -49,6 +58,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
                     )
                 case .loading:
                     return .init(
+                        allWordButton: allWordsButtonState,
                         title: title,
                         currentStreak: createCurrentStreak(),
                         totalPlayed: createTotalPlayed(),
@@ -77,6 +87,8 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     private let selectedMeaningSubject: CurrentValueSubject<FinishedGameViewState.Meaning.MeaningViewState.Meaning?, Never> = .init(nil)
     
     private let streakUseCase: StreakUseCaseType
+    private let wordListViewStateConverter: WordListViewStateConverterType
+    private let navigationRouter: NavigationRouterType
     
     private let title: String
     private let subtitle: String = "Come back tomorrow for another challenge!"
@@ -107,6 +119,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
             )}
 
         return .init(
+            allWordButton: allWordsButtonState,
             title: title,
             currentStreak: createCurrentStreak(),
             totalPlayed: createTotalPlayed(),
@@ -129,6 +142,16 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
         case let .meaning(viewState):
             self.selectedMeaningSubject.send(viewState.meanings.first)
         }
+    }
+    
+    private var allWordsButtonState: FinishedGameViewState.AllWordButton {
+        .init(
+            title: "All words",
+            onTap: .init { [wordListViewStateConverter, navigationRouter] in
+                navigationRouter
+                    .gotoDestination(.wordList(viewState: wordListViewStateConverter.create()))
+            }
+        )
     }
 }
 

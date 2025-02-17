@@ -6,8 +6,14 @@ struct FinishedGameView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: .space_16pt) {
-            Spacer()
-                .frame(height: .space_12pt)
+            HStack {
+                Spacer()
+                Button(viewState.allWordButton.title) {
+                    viewState.allWordButton.onTap.action()
+                }
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.capsule)
+            }
             
             Text(viewState.title)
                 .multilineTextAlignment(.center)
@@ -130,11 +136,19 @@ struct FinishedGameView: View {
 }
 
 struct FinishedGameViewState: Equatable {
+    let allWordButton: AllWordButton
     let title: String
     let currentStreak: Streak
     let totalPlayed: Streak
     let meaning: FinishedGameViewState.Meaning
     let subtitle: String
+}
+
+extension FinishedGameViewState {
+    struct AllWordButton: Equatable {
+        let title: String
+        let onTap: UserAction
+    }
 }
 
 extension FinishedGameViewState {
@@ -185,6 +199,7 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 
 extension FinishedGameViewState {
     static let empty: Self = .init(
+        allWordButton: .init(title: "", onTap: .empty),
         title: "",
         currentStreak: .init(title: "", value: 0),
         totalPlayed: .init(title: "", value: 0),
@@ -199,6 +214,7 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 
 #Preview {
     FinishedGameView(viewState: .init(
+        allWordButton: .init(title: "All words", onTap: .fake),
         title: "Great job!",
         currentStreak: .init(title: "Current streak", value: 1),
         totalPlayed: .init(title: "Played", value: 2),

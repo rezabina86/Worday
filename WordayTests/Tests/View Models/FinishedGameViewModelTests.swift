@@ -4,10 +4,12 @@ import Foundation
 @testable import Worday
 
 final class FinishedGameViewModelTests {
-    var sut: FinishedGameViewModel!
-    var mockDictionaryUseCase: DictionaryUseCaseMock
-    var mockStreakUseCase: StreakUseCaseMock
-    var mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
+    let sut: FinishedGameViewModel!
+    let mockDictionaryUseCase: DictionaryUseCaseMock
+    let mockStreakUseCase: StreakUseCaseMock
+    let mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
+    let mockWordListViewStateConverter: WordListViewStateConverterMock
+    let mockNavigationRouter: NavigationRouterMock
     
     private let title: String = "Great job! 🎉"
     private let subtitle: String = "Come back tomorrow for another challenge!"
@@ -18,16 +20,26 @@ final class FinishedGameViewModelTests {
         mockDictionaryUseCase = .init()
         mockStreakUseCase = .init()
         mockAttemptTrackerUseCase = .init()
+        mockWordListViewStateConverter = .init()
+        mockNavigationRouter = .init()
         
         sut = .init(word: "abcde",
                     dictionaryUseCase: mockDictionaryUseCase,
                     streakUseCase: mockStreakUseCase,
-                    attemptTrackerUseCase: mockAttemptTrackerUseCase)
+                    attemptTrackerUseCase: mockAttemptTrackerUseCase,
+                    wordListViewStateConverter: mockWordListViewStateConverter,
+                    navigationRouter: mockNavigationRouter)
         
         testSubscriber = .init()
         sut.viewState
             .subscribe(testSubscriber)
     }
+    
+//    @Test func testPresentWordList() async throws {
+//        testSubscriber.receivedValues.last?.allWordButton.onTap.action()
+//        
+//        #expect(mockWordListViewStateConverter.calls == [.create])
+//    }
     
 //    @Test func testLoadingState() async throws {
 //        mockDictionaryUseCase.createSubject.send(.loading)
