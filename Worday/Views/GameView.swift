@@ -24,39 +24,39 @@ struct GameView: View {
             )
         ) {
             view(for: viewState)
-                .task {
-                    for await vs in viewModel.viewState.values {
-                        withAnimation {
-                            self.viewState = vs
-                        }
-                    }
-                }
-                .task {
-                    for await destination in viewModel.currentDestination.values {
-                        self.currentModalDestination = destination
-                    }
-                }
-                .onChange(of: scenePhase) { old, new in
-                    viewModel.scenePhaseChanged(new)
-                }
-                .sheet(item: .init(get: {
-                    self.currentModalDestination
-                }, set: { destination in
-                    viewModel.setModalDestination(destination)
-                })) { destination in
-                    switch currentModalDestination {
-                    case let .info(viewState):
-                        InfoModalView(viewState: viewState)
-                    case nil:
-                        EmptyView()
-                    }
-                }
                 .navigationDestination(
                     for: NavigationDestination.self
                 ) { route in
                     destination(for: route)
                 }
                 .navigationBarHidden(true)
+        }
+        .task {
+            for await vs in viewModel.viewState.values {
+                withAnimation {
+                    self.viewState = vs
+                }
+            }
+        }
+        .task {
+            for await destination in viewModel.currentDestination.values {
+                self.currentModalDestination = destination
+            }
+        }
+        .onChange(of: scenePhase) { old, new in
+            viewModel.scenePhaseChanged(new)
+        }
+        .sheet(item: .init(get: {
+            self.currentModalDestination
+        }, set: { destination in
+            viewModel.setModalDestination(destination)
+        })) { destination in
+            switch currentModalDestination {
+            case let .info(viewState):
+                InfoModalView(viewState: viewState)
+            case nil:
+                EmptyView()
+            }
         }
     }
     
