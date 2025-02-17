@@ -17,7 +17,7 @@ struct WordListViewStateConverter: WordListViewStateConverterType {
                 .init(
                     id: "\(index)",
                     dateSection: .init(
-                        title: "Played on:",
+                        title: "Played on",
                         date: word.playedAt
                     ),
                     word: word.word,
