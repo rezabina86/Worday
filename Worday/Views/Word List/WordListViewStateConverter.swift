@@ -25,7 +25,7 @@ struct WordListViewStateConverter: WordListViewStateConverterType {
                 )
             }
         
-        return .init(navogationTitle: "Words", cards: cards)
+        return .init(navigationTitle: "Words", cards: cards)
     }
     
     // MARK: - Privates

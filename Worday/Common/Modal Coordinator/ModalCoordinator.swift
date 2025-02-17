@@ -1,8 +1,8 @@
 import Combine
 import Foundation
 
-enum ModalCoordinatorDestination: Identifiable {
-    case info
+enum ModalCoordinatorDestination: Identifiable, Equatable {
+    case info(InfoModalViewState)
     
     var id: String {
         switch self {

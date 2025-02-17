@@ -69,7 +69,12 @@ public func injectDependencies(into container: ContainerType) {
         OngoingGameViewModelFactory(wordProviderUseCase: container.resolve(),
                                     arrayShuffle: container.resolve(),
                                     modalCoordinator: container.resolve(),
-                                    attemptTrackerUseCase: container.resolve())
+                                    attemptTrackerUseCase: container.resolve(),
+                                    infoModalViewStateConverter: container.resolve())
+    }
+    
+    container.register { _ -> InfoModalViewStateConverterType in
+        InfoModalViewStateConverter(bundle: Bundle.main)
     }
     
     container.register { _ -> ArrayShuffleType in

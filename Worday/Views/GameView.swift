@@ -45,8 +45,8 @@ struct GameView: View {
                     viewModel.setModalDestination(destination)
                 })) { destination in
                     switch currentModalDestination {
-                    case .info:
-                        InfoModalView()
+                    case let .info(viewState):
+                        InfoModalView(viewState: viewState)
                     case nil:
                         EmptyView()
                     }

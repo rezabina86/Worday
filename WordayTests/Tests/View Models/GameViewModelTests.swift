@@ -4,13 +4,14 @@ import Foundation
 @testable import Worday
 
 final class GameViewModelTests {
-    var sut: GameViewModel!
-    var mockWordProviderUseCase: WordProviderUseCaseMock
-    var mockOngoingGameViewModelFactory: OngoingGameViewModelFactoryMock
-    var mockFinishedGameViewModelFactory: FinishedGameViewModelFactoryMock
-    var mockScenePhaseObserver: ScenePhaseObserverMock
-    var mockAppTriggerFactory: AppTriggerFactoryMock
-    var mockModalCoordinator: ModalCoordinatorMock
+    let sut: GameViewModel!
+    let mockWordProviderUseCase: WordProviderUseCaseMock
+    let mockOngoingGameViewModelFactory: OngoingGameViewModelFactoryMock
+    let mockFinishedGameViewModelFactory: FinishedGameViewModelFactoryMock
+    let mockScenePhaseObserver: ScenePhaseObserverMock
+    let mockAppTriggerFactory: AppTriggerFactoryMock
+    let mockModalCoordinator: ModalCoordinatorMock
+    let mockNavigationRouter: NavigationRouterMock
     
     var cancellables: Set<AnyCancellable>
     var viewState: GameViewState?
@@ -23,6 +24,7 @@ final class GameViewModelTests {
         mockScenePhaseObserver = .init()
         mockAppTriggerFactory = .init()
         mockModalCoordinator = .init()
+        mockNavigationRouter = .init()
         
         sut = .init(
             wordProviderUseCase: mockWordProviderUseCase,
@@ -30,7 +32,8 @@ final class GameViewModelTests {
             finishedGameViewModelFactory: mockFinishedGameViewModelFactory,
             scenePhaseObserver: mockScenePhaseObserver,
             appTriggerFactory: mockAppTriggerFactory,
-            modalCoordinator: mockModalCoordinator
+            modalCoordinator: mockModalCoordinator,
+            navigationRouter: mockNavigationRouter
         )
         
         sut.viewState
@@ -65,8 +68,8 @@ final class GameViewModelTests {
     }
     
     @Test func testPresentInfoModal() async throws {
-        sut.setModalDestination(.info)
-        #expect(mockModalCoordinator.calls == [.present(destination: .info)])
+        sut.setModalDestination(.info(.init(topics: [], versionString: "")))
+        #expect(mockModalCoordinator.calls == [.present(destination: .info(.init(topics: [], versionString: "")))])
     }
     
     @Test func testPhaseChanged() async throws {

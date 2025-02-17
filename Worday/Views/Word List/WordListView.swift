@@ -15,7 +15,7 @@ struct WordListView: View {
             }
             .padding(.space_12pt)
         }
-        .navigationTitle(viewState.navogationTitle)
+        .navigationTitle(viewState.navigationTitle)
     }
     
     let viewState: WordListViewState
@@ -48,7 +48,7 @@ struct WordListView: View {
 }
 
 struct WordListViewState: Equatable {
-    let navogationTitle: String
+    let navigationTitle: String
     let cards: [Card]
 }
 
@@ -70,7 +70,7 @@ extension WordListViewState.Card {
 
 #Preview {
     WordListView(viewState: .init(
-        navogationTitle: "Words",
+        navigationTitle: "Words",
         cards: [
             .init(id: "1", dateSection: .init(title: "Played on:", date: .now), word: "ABCDE", onTap: .empty),
             .init(id: "2", dateSection: .init(title: "Played on:", date: .now), word: "FGHIJ", onTap: .empty),
