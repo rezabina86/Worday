@@ -101,6 +101,8 @@ private extension View {
         switch destination {
         case let .wordList(viewState):
             WordListView(viewState: viewState)
+        case let .wordMeaning(viewModel):
+            WordMeaningView(viewModel: viewModel)
         case .none:
             EmptyView()
         }
