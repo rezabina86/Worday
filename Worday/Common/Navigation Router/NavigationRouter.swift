@@ -4,6 +4,7 @@ import Foundation
 
 enum NavigationDestination {
     case wordList(viewState: WordListViewState)
+    case wordMeaning(viewModel: WordMeaningViewModelType)
     case none
 }
 
@@ -41,6 +42,8 @@ extension NavigationDestination: Hashable {
         switch self {
         case .wordList:
             "word_list_view"
+        case .wordMeaning:
+            "word_meaning_view"
         case .none:
             "none"
         }

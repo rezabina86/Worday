@@ -6,8 +6,12 @@ protocol WordListViewStateConverterType {
 
 struct WordListViewStateConverter: WordListViewStateConverterType {
     
-    init(wordContext: WordStorageModelContextType) {
+    init(wordContext: WordStorageModelContextType,
+         wordMeaningViewModelFactory: WordMeaningViewModelFactoryType,
+         navigationRouter: NavigationRouterType) {
         self.wordContext = wordContext
+        self.wordMeaningViewModelFactory = wordMeaningViewModelFactory
+        self.navigationRouter = navigationRouter
     }
     
     func create() -> WordListViewState {
@@ -21,7 +25,11 @@ struct WordListViewStateConverter: WordListViewStateConverterType {
                         date: word.playedAt
                     ),
                     word: word.word,
-                    onTap: .empty
+                    onTap: .init {
+                        self.navigationRouter.gotoDestination(
+                            .wordMeaning(viewModel: wordMeaningViewModelFactory.create(word: word.word))
+                        )
+                    }
                 )
             }
         
@@ -30,4 +38,6 @@ struct WordListViewStateConverter: WordListViewStateConverterType {
     
     // MARK: - Privates
     private let wordContext: WordStorageModelContextType
+    private let wordMeaningViewModelFactory: WordMeaningViewModelFactoryType
+    private let navigationRouter: NavigationRouterType
 }

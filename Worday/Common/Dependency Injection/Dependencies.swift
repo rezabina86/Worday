@@ -145,6 +145,12 @@ public func injectDependencies(into container: ContainerType) {
     }
     
     container.register { container -> WordListViewStateConverterType in
-        WordListViewStateConverter(wordContext: container.resolve())
+        WordListViewStateConverter(wordContext: container.resolve(),
+                                   wordMeaningViewModelFactory: container.resolve(),
+                                   navigationRouter: container.resolve())
+    }
+    
+    container.register { container -> WordMeaningViewModelFactoryType in
+        WordMeaningViewModelFactory(dictionaryUseCase: container.resolve())
     }
 }
