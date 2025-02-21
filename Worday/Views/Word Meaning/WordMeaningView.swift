@@ -8,11 +8,11 @@ struct WordMeaningView: View {
     
     var body: some View {
         makeBody(with: viewState)
+            .transition(.opacity)
+            .animation(.easeInOut(duration: 0.5), value: viewState)
             .padding([.leading, .trailing, .bottom], .space_32pt)
             .padding(.top, .space_8pt)
             .ignoresSafeArea(edges: .bottom)
-            .transition(.opacity)
-            .animation(.easeInOut(duration: 0.5), value: viewState)
             .task {
                 for await vs in viewModel.viewState.values {
                     withAnimation {
@@ -53,6 +53,7 @@ struct WordMeaningView: View {
                     .font(titleFont)
                 Spacer()
             }
+            .animation(nil, value: viewState)
             
             viewState.selectedMeaning.map { selectedMeaning in
                 VStack(alignment: .leading, spacing: .space_16pt) {

@@ -13,6 +13,8 @@ struct OngoingGameView: View {
                         viewState.onTapInfoButton.action()
                     } label: {
                         Image(systemName: "info.circle.fill")
+                            .resizable()
+                            .frame(width: .size_24pt, height: .size_24pt)
                             .foregroundStyle(.text)
                             .contentShape(Rectangle())
                     }

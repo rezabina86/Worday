@@ -38,15 +38,15 @@ struct InfoModalView: View {
             Spacer()
             
             VStack {
-                Text(viewState.versionString)
-                    .font(.caption2)
-                
                 Text("Made with ")
                 +
                 Text(Image(systemName: "heart.fill"))
                     .foregroundColor(.red)
                 +
                 Text(" in Berlin")
+                
+                Text(viewState.versionString)
+                    .font(.caption2)
             }
         }
         .padding(.space_24pt)
