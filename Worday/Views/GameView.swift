@@ -83,12 +83,12 @@ struct GameView: View {
                 .font(bodyFont)
                 .transition(.opacity)
                 .padding(.space_16pt)
-        case let .noWordToday(viewState):
-            FinishedGameView(viewState: viewState)
+        case let .noWordToday(viewModel):
+            FinishedGameView(viewModel: viewModel)
                 .transition(.opacity)
                 .animation(.easeInOut(duration: 0.5), value: viewState)
-        case let .game(viewState):
-            OngoingGameView(viewState: viewState)
+        case let .game(viewModel):
+            OngoingGameView(viewModel: viewModel)
                 .transition(.opacity)
                 .animation(.easeInOut(duration: 0.2), value: viewState)
         }
@@ -112,6 +112,19 @@ private extension View {
 enum GameViewState: Equatable {
     case empty
     case error
-    case noWordToday(viewState: FinishedGameViewState)
-    case game(viewState: OngoingGameViewState)
+    case noWordToday(viewModel: FinishedGameViewModelType)
+    case game(viewModel: OngoingGameViewModelType)
+    
+    var id: String {
+        switch self {
+        case .empty: return "empty"
+        case .error: return "error"
+        case let .noWordToday(viewModel): return String(describing: viewModel.self)
+        case let .game(viewModel): return String(describing: viewModel.self)
+        }
+    }
+    
+    static func == (lhs: GameViewState, rhs: GameViewState) -> Bool {
+        lhs.id == rhs.id
+    }
 }
