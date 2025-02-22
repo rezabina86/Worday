@@ -41,23 +41,27 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
         self.modalCoordinator = modalCoordinator
         self.attemptTrackerUseCase = attemptTrackerUseCase
         self.infoModalViewStateConverter = infoModalViewStateConverter
+        
+        attemptTrackerUseCase.numberOfTries
+            .combineLatest(characters)
+            .receive(on: RunLoop.main)
+            .map { [weak self] numberOfTries, chars in
+                guard let self else { return .empty }
+                return .init(
+                    characters: chars,
+                    numberOfTries: numberOfTries,
+                    keyboardViewState: makeKeyboardViewState,
+                    onTapInfoButton: .init { [modalCoordinator, infoModalViewStateConverter] in
+                        modalCoordinator.present(.info(infoModalViewStateConverter.create()))
+                    }
+                )
+            }
+            .assign(to: \.value, on: viewStateSubject)
+            .store(in: &cancellables)
     }
     
     var viewState: AnyPublisher<GameViewState.OngoingGameViewState, Never> {
-        attemptTrackerUseCase.numberOfTries
-            .combineLatest(characters)
-            .map { [weak self] numberOfTries, chars in
-            guard let self else { return .empty }
-            return .init(
-                characters: chars,
-                numberOfTries: numberOfTries,
-                keyboardViewState: makeKeyboardViewState,
-                onTapInfoButton: .init { [modalCoordinator, infoModalViewStateConverter] in
-                    modalCoordinator.present(.info(infoModalViewStateConverter.create()))
-                }
-            )
-        }
-        .eraseToAnyPublisher()
+        viewStateSubject.eraseToAnyPublisher()
     }
     
     // MARK: - Privates
@@ -69,6 +73,9 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
     private let modalCoordinator: ModalCoordinatorType
     private let attemptTrackerUseCase: AttemptTrackerUseCaseType
     private let infoModalViewStateConverter: InfoModalViewStateConverterType
+    
+    private var cancellables: Set<AnyCancellable> = []
+    private let viewStateSubject: CurrentValueSubject<GameViewState.OngoingGameViewState, Never> = .init(.empty)
     
     private let characters: CurrentValueSubject<[GameViewState.OngoingGameViewState.Character], Never> = .init([
         .empty(id: "0"), .empty(id: "1"), .empty(id: "2"), .empty(id: "3"), .empty(id: "4")
