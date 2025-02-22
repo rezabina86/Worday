@@ -2,7 +2,9 @@ import SwiftUI
 
 struct FinishedGameView: View {
     
-    let viewState: FinishedGameViewState
+    init(viewModel: FinishedGameViewModelType) {
+        self.viewModel = viewModel
+    }
     
     var body: some View {
         VStack(alignment: .center, spacing: .space_16pt) {
@@ -14,16 +16,19 @@ struct FinishedGameView: View {
                 .buttonStyle(.bordered)
                 .buttonBorderShape(.capsule)
             }
+            .animation(nil, value: viewState)
             
             Text(viewState.title)
                 .multilineTextAlignment(.center)
                 .font(titleFont2)
                 .bold()
+                .animation(nil, value: viewState)
             
             Text(viewState.subtitle)
                 .multilineTextAlignment(.center)
                 .font(.footnote)
                 .bold()
+                .animation(nil, value: viewState)
             
             HStack {
                 VStack {
@@ -51,11 +56,13 @@ struct FinishedGameView: View {
                         .bold()
                 }
             }
+            .animation(nil, value: viewState)
             
             Rectangle()
                 .frame(height: 2)
                 .background(Color.primary)
                 .cornerRadius(.radius_xsmall)
+                .animation(nil, value: viewState)
             
             buildMeaningSection(from: viewState.meaning)
             
@@ -63,10 +70,21 @@ struct FinishedGameView: View {
         }
         .padding([.horizontal], .space_32pt)
         .ignoresSafeArea(edges: .bottom)
+        .task {
+            for await vs in viewModel.viewState.values {
+                withAnimation {
+                    self.viewState = vs
+                }
+            }
+        }
     }
     
+    // MARK: - Privates
+    private let viewModel: FinishedGameViewModelType
+    @State private var viewState: FinishedGameViewState = .empty
+    
     @ViewBuilder
-    func buildMeaningSection(from meaning: FinishedGameViewState.Meaning) -> some View {
+    private func buildMeaningSection(from meaning: FinishedGameViewState.Meaning) -> some View {
         switch meaning {
         case .loading:
             ProgressView()
@@ -84,7 +102,7 @@ struct FinishedGameView: View {
     }
     
     @ViewBuilder
-    func buildMeaningView(from viewState: FinishedGameViewState.Meaning.MeaningViewState) -> some View {
+    private func buildMeaningView(from viewState: FinishedGameViewState.Meaning.MeaningViewState) -> some View {
         VStack(alignment: .leading, spacing: .space_16pt) {
             HStack {
                 Text(viewState.word)
@@ -210,55 +228,4 @@ extension FinishedGameViewState {
 
 extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
     static let empty: Self = .init(id: "", type: "", definitions: [])
-}
-
-#Preview {
-    FinishedGameView(viewState: .init(
-        allWordButton: .init(title: "All words", onTap: .fake),
-        title: "Great job!",
-        currentStreak: .init(title: "Current streak", value: 1),
-        totalPlayed: .init(title: "Played", value: 2),
-        meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: "ABCDE"),
-        subtitle: "Come back tomorrow for another challenge!"
-    ))
-//    FinishedGameView(viewState: .init(
-//        title: "Great job!",
-//        meaning: .meaning(viewState:
-//                .init(
-//                    word: "ABCDE",
-//                    meanings: [
-//                        .init(
-//                            id: "0",
-//                            type: "noun",
-//                            definitions: [
-//                                .init(
-//                                    id: "0",
-//                                    index: 1,
-//                                    definition: "very special noun, very special noun, very special noun"
-//                                ),
-//                                .init(
-//                                    id: "1",
-//                                    index: 2,
-//                                    definition: "very special noun, very special noun, very special noun - No. 2"
-//                                )
-//                            ]
-//                        ),
-//                        .init(
-//                            id: "1",
-//                            type: "verb",
-//                            definitions: [
-//                                .init(
-//                                    id: "0",
-//                                    index: 0,
-//                                    definition: "very special verb, very special verb, very special verb, very special verb"
-//                                )
-//                            ]
-//                        )
-//                    ],
-//                    selectedMeaning: .init(id: .init(), type: "noun", definitions: [.init(id: "0", index: 0, definition: "very special noun, very special noun, very special noun")]),
-//                    onSelectMeaning: { _ in }
-//                )
-//        ),
-//        subtitle: "Come back tomorrow for another challenge!"
-//    ))
 }
