@@ -16,7 +16,7 @@ struct OngoingGameView: View {
                     } label: {
                         Image(systemName: "info.circle.fill")
                             .resizable()
-                            .frame(width: .size_24pt, height: .size_24pt)
+                            .frame(width: .size_20pt, height: .size_20pt)
                             .foregroundStyle(.text)
                             .contentShape(Rectangle())
                     }
@@ -149,17 +149,11 @@ extension GameViewState.OngoingGameViewState.Character {
     }
 }
 
-extension GameViewState.OngoingGameViewState {
+extension GameViewState.OngoingGameViewState {    
     static let empty: Self = .init(
-        characters: [
-            .empty(id: "1"),
-            .empty(id: "2"),
-            .empty(id: "3"),
-            .empty(id: "4"),
-            .empty(id: "5")
-        ],
+        characters: [],
         numberOfTries: nil,
-        keyboardViewState: .empty,
+        keyboardViewState: .init(keys: [], onTapEnter: .empty, onTapDelete: .empty),
         onTapInfoButton: .empty
     )
 }

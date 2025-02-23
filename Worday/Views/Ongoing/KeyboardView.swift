@@ -84,11 +84,11 @@ struct KeyViewState: Equatable, Identifiable {
 
 extension KeyBoardViewState {
     static let empty: Self = .init(
-        keys: [.init(id: "1", character: "A", onTap: .empty),
-               .init(id: "2", character: "B", onTap: .empty),
-               .init(id: "3", character: "C", onTap: .empty),
-               .init(id: "4", character: "D", onTap: .empty),
-               .init(id: "5", character: "E", onTap: .empty)],
+        keys: [.init(id: "0", character: "A", onTap: .empty),
+               .init(id: "1", character: "B", onTap: .empty),
+               .init(id: "2", character: "C", onTap: .empty),
+               .init(id: "3", character: "D", onTap: .empty),
+               .init(id: "4", character: "E", onTap: .empty)],
         onTapEnter: .empty,
         onTapDelete: .empty
     )
