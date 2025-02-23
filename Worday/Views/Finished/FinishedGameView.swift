@@ -65,6 +65,7 @@ struct FinishedGameView: View {
                 .animation(nil, value: viewState)
             
             buildMeaningSection(from: viewState.meaning)
+                .animation(.easeIn(duration: 0.3), value: viewState.meaning)
             
             Spacer()
         }
@@ -72,9 +73,7 @@ struct FinishedGameView: View {
         .ignoresSafeArea(edges: .bottom)
         .task {
             for await vs in viewModel.viewState.values {
-                withAnimation {
-                    self.viewState = vs
-                }
+                self.viewState = vs
             }
         }
     }
@@ -143,10 +142,10 @@ struct FinishedGameView: View {
                                 }
                                 .padding([.horizontal], .space_32pt)
                             }
-                            .animation(.easeIn(duration: 0.1), value: selectedMeaning)
                         }
                     }
                     .padding([.horizontal], -.space_32pt)
+                    .animation(.easeIn(duration: 0.3), value: viewState.selectedMeaning)
                 }
             }
         }
