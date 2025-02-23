@@ -37,7 +37,7 @@ struct InfoModalView: View {
             
             Spacer()
             
-            VStack {
+            VStack(alignment: .center, spacing: .space_12pt) {
                 Text("Made with ")
                 +
                 Text(Image(systemName: "heart.fill"))

@@ -15,9 +15,7 @@ struct WordMeaningView: View {
             .ignoresSafeArea(edges: .bottom)
             .task {
                 for await vs in viewModel.viewState.values {
-                    withAnimation {
-                        self.viewState = vs
-                    }
+                    self.viewState = vs
                 }
             }
     }
@@ -42,6 +40,7 @@ struct WordMeaningView: View {
             }
         case let .meaning(viewState):
             buildMeaningView(from: viewState)
+                .animation(.easeIn(duration: 0.3), value: viewState)
         }
     }
     
@@ -88,10 +87,10 @@ struct WordMeaningView: View {
                                 }
                                 .padding([.horizontal], .space_32pt)
                             }
-                            .animation(.easeIn(duration: 0.1), value: selectedMeaning)
                         }
                     }
                     .padding([.horizontal], -.space_32pt)
+                    .animation(.easeIn(duration: 0.3), value: viewState.selectedMeaning)
                 }
             }
         }

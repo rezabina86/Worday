@@ -25,8 +25,8 @@ struct WordListViewStateConverter: WordListViewStateConverterType {
                         date: word.playedAt
                     ),
                     word: word.word,
-                    onTap: .init {
-                        self.navigationRouter.gotoDestination(
+                    onTap: .init { [navigationRouter, wordMeaningViewModelFactory] in
+                        navigationRouter.gotoDestination(
                             .wordMeaning(viewModel: wordMeaningViewModelFactory.create(word: word.word))
                         )
                     }
