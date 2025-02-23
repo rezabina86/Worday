@@ -97,9 +97,6 @@ final class GameViewModel: GameViewModelType {
     private let modalCoordinator: ModalCoordinatorType
     private let navigationRouter: NavigationRouterType
     
-    private var ongoingGameViewModel: OngoingGameViewModelType?
-    private var finishedGameViewModel: FinishedGameViewModelType?
-    
     private let viewStateSubject: CurrentValueSubject<GameViewState, Never> = .init(.empty)
     private var cancellables: Set<AnyCancellable> = []
     
@@ -114,32 +111,12 @@ final class GameViewModel: GameViewModelType {
         case .error:
             viewStateSubject.send(.error)
         case let .word(word):
-            setupOngoingGame(with: word)
+            viewStateSubject.send(.game(viewModel: ongoingGameViewModelFactory.create(with: word)))
         case let .noWordToday(lastPlayedWord):
-            setupFinishedGame(with: lastPlayedWord)
+            viewStateSubject.send(.noWordToday(viewModel: finishedGameViewModelFactory.create(for: lastPlayedWord)))
         }
         
         latestFetchResult = result
-    }
-    
-    private func setupOngoingGame(with word: String) {
-        ongoingGameViewModel = ongoingGameViewModelFactory.create(with: word)
-        
-        ongoingGameViewModel?.viewState
-            .sink { [viewStateSubject] in
-                viewStateSubject.send(.game(viewState: $0))
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func setupFinishedGame(with word: String) {
-        finishedGameViewModel = finishedGameViewModelFactory.create(for: word)
-        
-        finishedGameViewModel?.viewState
-            .sink { [viewStateSubject] in
-                viewStateSubject.send(.noWordToday(viewState: $0))
-            }
-            .store(in: &cancellables)
     }
     
     private var makeTrigger: AnyPublisher<Void, Never> {
