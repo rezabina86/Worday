@@ -44,7 +44,6 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
         
         attemptTrackerUseCase.numberOfTries
             .combineLatest(characters)
-            .receive(on: RunLoop.main)
             .map { [weak self] numberOfTries, chars in
                 guard let self else { return .empty }
                 return .init(
