@@ -2,7 +2,9 @@ import SwiftUI
 
 struct OngoingGameView: View {
     
-    let viewState: GameViewState.OngoingGameViewState
+    init(viewModel: OngoingGameViewModelType) {
+        self.viewModel = viewModel
+    }
     
     var body: some View {
         VStack {
@@ -13,6 +15,8 @@ struct OngoingGameView: View {
                         viewState.onTapInfoButton.action()
                     } label: {
                         Image(systemName: "info.circle.fill")
+                            .resizable()
+                            .frame(width: .size_20pt, height: .size_20pt)
                             .foregroundStyle(.text)
                             .contentShape(Rectangle())
                     }
@@ -56,11 +60,22 @@ struct OngoingGameView: View {
             Spacer()
                 .frame(height: .size_128pt)
         }
+        .task {
+            for await vs in viewModel.viewState.values {
+                withAnimation {
+                    self.viewState = vs
+                }
+            }
+        }
     }
+    
+    // MARK: - Privates
+    private let viewModel: OngoingGameViewModelType
+    @State private var viewState: GameViewState.OngoingGameViewState = .empty
     
     // MARK: - Sub views
     @ViewBuilder
-    func buildRowsView(from viewState: GameViewState.OngoingGameViewState,
+    private func buildRowsView(from viewState: GameViewState.OngoingGameViewState,
                        proxy: GeometryProxy) -> some View {
         let availableWidth = proxy.size.width - (5 * (Constant.numberOfCharacters - 1).cgFloatValue)
         let size = availableWidth / Constant.numberOfCharacters.cgFloatValue
@@ -134,21 +149,11 @@ extension GameViewState.OngoingGameViewState.Character {
     }
 }
 
-extension GameViewState.OngoingGameViewState {
+extension GameViewState.OngoingGameViewState {    
     static let empty: Self = .init(
-        characters: [
-            .empty(id: "1"),
-            .empty(id: "2"),
-            .empty(id: "3"),
-            .empty(id: "4"),
-            .empty(id: "5")
-        ],
+        characters: [],
         numberOfTries: nil,
-        keyboardViewState: .empty,
+        keyboardViewState: .init(keys: [], onTapEnter: .empty, onTapDelete: .empty),
         onTapInfoButton: .empty
     )
-}
-
-#Preview {
-    OngoingGameView(viewState: .empty)
 }

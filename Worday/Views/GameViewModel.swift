@@ -13,6 +13,7 @@ struct GameViewModelFactory: GameViewModelFactoryType {
     let scenePhaseObserver: ScenePhaseObserverType
     let appTriggerFactory: AppTriggerFactoryType
     let modalCoordinator: ModalCoordinatorType
+    let navigationRouter: NavigationRouterType
     
     func create() -> GameViewModelType {
         GameViewModel(wordProviderUseCase: fetchWordUseCase,
@@ -20,15 +21,22 @@ struct GameViewModelFactory: GameViewModelFactoryType {
                       finishedGameViewModelFactory: finishedGameViewModelFactory,
                       scenePhaseObserver: scenePhaseObserver,
                       appTriggerFactory: appTriggerFactory,
-                      modalCoordinator: modalCoordinator)
+                      modalCoordinator: modalCoordinator,
+                      navigationRouter: navigationRouter)
     }
 }
 
 protocol GameViewModelType {
     var viewState: AnyPublisher<GameViewState, Never> { get }
-    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> { get }
     func scenePhaseChanged(_ scenePhase: ScenePhase)
+    
+    // Modal Coordinator
+    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> { get }
     func setModalDestination(_ destination: ModalCoordinatorDestination?)
+    
+    // Navigation Router
+    var currentNavigationPath: AnyPublisher<NavigationPath, Never> { get }
+    func setNavigationCurrentPath(_ path: NavigationPath)
 }
 
 final class GameViewModel: GameViewModelType {
@@ -38,13 +46,15 @@ final class GameViewModel: GameViewModelType {
          finishedGameViewModelFactory: FinishedGameViewModelFactoryType,
          scenePhaseObserver: ScenePhaseObserverType,
          appTriggerFactory: AppTriggerFactoryType,
-         modalCoordinator: ModalCoordinatorType) {
+         modalCoordinator: ModalCoordinatorType,
+         navigationRouter: NavigationRouterType) {
         self.wordProviderUseCase = wordProviderUseCase
         self.ongoingGameViewModelFactory = ongoingGameViewModelFactory
         self.finishedGameViewModelFactory = finishedGameViewModelFactory
         self.scenePhaseObserver = scenePhaseObserver
         self.appTriggerFactory = appTriggerFactory
         self.modalCoordinator = modalCoordinator
+        self.navigationRouter = navigationRouter
         
         makeTrigger
             .sink { [weak self] _ in
@@ -70,6 +80,14 @@ final class GameViewModel: GameViewModelType {
         modalCoordinator.present(destination)
     }
     
+    var currentNavigationPath: AnyPublisher<NavigationPath, Never> {
+        navigationRouter.currentPath.eraseToAnyPublisher()
+    }
+    
+    func setNavigationCurrentPath(_ path: NavigationPath) {
+        navigationRouter.setCurrentPath(path)
+    }
+    
     // MARK: - Privates
     private let wordProviderUseCase: WordProviderUseCaseType
     private let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
@@ -77,9 +95,7 @@ final class GameViewModel: GameViewModelType {
     private let scenePhaseObserver: ScenePhaseObserverType
     private let appTriggerFactory: AppTriggerFactoryType
     private let modalCoordinator: ModalCoordinatorType
-    
-    private var ongoingGameViewModel: OngoingGameViewModelType?
-    private var finishedGameViewModel: FinishedGameViewModelType?
+    private let navigationRouter: NavigationRouterType
     
     private let viewStateSubject: CurrentValueSubject<GameViewState, Never> = .init(.empty)
     private var cancellables: Set<AnyCancellable> = []
@@ -91,39 +107,16 @@ final class GameViewModel: GameViewModelType {
         
         guard result != latestFetchResult else { return }
         
-        ongoingGameViewModel = nil
-        finishedGameViewModel = nil
-        
         switch result {
         case .error:
             viewStateSubject.send(.error)
         case let .word(word):
-            setupOngoingGame(with: word)
+            viewStateSubject.send(.game(viewModel: ongoingGameViewModelFactory.create(with: word)))
         case let .noWordToday(lastPlayedWord):
-            setupFinishedGame(with: lastPlayedWord)
+            viewStateSubject.send(.noWordToday(viewModel: finishedGameViewModelFactory.create(for: lastPlayedWord)))
         }
         
         latestFetchResult = result
-    }
-    
-    private func setupOngoingGame(with word: String) {
-        ongoingGameViewModel = ongoingGameViewModelFactory.create(with: word)
-        
-        ongoingGameViewModel?.viewState
-            .sink { [viewStateSubject] in
-                viewStateSubject.send(.game(viewState: $0))
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func setupFinishedGame(with word: String) {
-        finishedGameViewModel = finishedGameViewModelFactory.create(for: word)
-        
-        finishedGameViewModel?.viewState
-            .sink { [viewStateSubject] in
-                viewStateSubject.send(.noWordToday(viewState: $0))
-            }
-            .store(in: &cancellables)
     }
     
     private var makeTrigger: AnyPublisher<Void, Never> {

@@ -1,13 +1,36 @@
 import SwiftUI
+import Combine
 
 struct GameView: View {
     
     init(viewModel: GameViewModelType) {
         self.viewModel = viewModel
+        
+        viewModel.currentNavigationPath
+            .receive(on: RunLoop.main)
+            .assign(to: \.currentNavigationPath, on: self)
+            .store(in: &subscriptions)
     }
     
     var body: some View {
-        view(for: viewState)
+        NavigationStack(
+            path: .init(
+                get: {
+                    return currentNavigationPath
+                },
+                set: {
+                    viewModel.setNavigationCurrentPath($0)
+                }
+            )
+        ) {
+            view(for: viewState)
+                .navigationDestination(
+                    for: NavigationDestination.self
+                ) { route in
+                    destination(for: route)
+                }
+                .navigationBarHidden(true)
+        }
         .task {
             for await vs in viewModel.viewState.values {
                 withAnimation {
@@ -29,8 +52,8 @@ struct GameView: View {
             viewModel.setModalDestination(destination)
         })) { destination in
             switch currentModalDestination {
-            case .info:
-                InfoModalView()
+            case let .info(viewState):
+                InfoModalView(viewState: viewState)
             case nil:
                 EmptyView()
             }
@@ -39,9 +62,11 @@ struct GameView: View {
     
     // MARK: - Privates
     private let viewModel: GameViewModelType
+    private var subscriptions: Set<AnyCancellable> = []
     
     @State private var viewState: GameViewState = .empty
     @State private var currentModalDestination: ModalCoordinatorDestination?
+    @ObservedState private var currentNavigationPath: NavigationPath = .init()
     @Environment(\.scenePhase) private var scenePhase
     
     
@@ -58,14 +83,28 @@ struct GameView: View {
                 .font(bodyFont)
                 .transition(.opacity)
                 .padding(.space_16pt)
-        case let .noWordToday(viewState):
-            FinishedGameView(viewState: viewState)
+        case let .noWordToday(viewModel):
+            FinishedGameView(viewModel: viewModel)
                 .transition(.opacity)
                 .animation(.easeInOut(duration: 0.5), value: viewState)
-        case let .game(viewState):
-            OngoingGameView(viewState: viewState)
+        case let .game(viewModel):
+            OngoingGameView(viewModel: viewModel)
                 .transition(.opacity)
                 .animation(.easeInOut(duration: 0.2), value: viewState)
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func destination(for destination: NavigationDestination) -> some View {
+        switch destination {
+        case let .wordList(viewState):
+            WordListView(viewState: viewState)
+        case let .wordMeaning(viewModel):
+            WordMeaningView(viewModel: viewModel)
+        case .none:
+            EmptyView()
         }
     }
 }
@@ -73,6 +112,19 @@ struct GameView: View {
 enum GameViewState: Equatable {
     case empty
     case error
-    case noWordToday(viewState: FinishedGameViewState)
-    case game(viewState: OngoingGameViewState)
+    case noWordToday(viewModel: FinishedGameViewModelType)
+    case game(viewModel: OngoingGameViewModelType)
+    
+    var id: String {
+        switch self {
+        case .empty: return "empty"
+        case .error: return "error"
+        case let .noWordToday(viewModel): return String(describing: viewModel.self)
+        case let .game(viewModel): return String(describing: viewModel.self)
+        }
+    }
+    
+    static func == (lhs: GameViewState, rhs: GameViewState) -> Bool {
+        lhs.id == rhs.id
+    }
 }

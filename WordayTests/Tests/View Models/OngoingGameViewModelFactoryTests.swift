@@ -3,21 +3,24 @@ import Foundation
 @testable import Worday
 
 struct OngoingGameViewModelFactoryTests {
-    var sut: OngoingGameViewModelFactory!
-    var mockWordProviderUseCase: WordProviderUseCaseMock
-    var mockArrayShuffle: ArrayShuffleMock
-    var mockModalCoordinator: ModalCoordinatorMock
-    var mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
+    let sut: OngoingGameViewModelFactory!
+    let mockWordProviderUseCase: WordProviderUseCaseMock
+    let mockArrayShuffle: ArrayShuffleMock
+    let mockModalCoordinator: ModalCoordinatorMock
+    let mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
+    let mockInfoModalViewStateConverter: InfoModalViewStateConverterMock
     
     init() {
         mockWordProviderUseCase = .init()
         mockArrayShuffle = .init()
         mockModalCoordinator = .init()
         mockAttemptTrackerUseCase = .init()
+        mockInfoModalViewStateConverter = .init()
         sut = .init(wordProviderUseCase: mockWordProviderUseCase,
                     arrayShuffle: mockArrayShuffle,
                     modalCoordinator: mockModalCoordinator,
-                    attemptTrackerUseCase: mockAttemptTrackerUseCase)
+                    attemptTrackerUseCase: mockAttemptTrackerUseCase,
+                    infoModalViewStateConverter: mockInfoModalViewStateConverter)
     }
 
     @Test func testCreate() async throws {

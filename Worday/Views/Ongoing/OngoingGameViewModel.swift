@@ -10,13 +10,15 @@ struct OngoingGameViewModelFactory: OngoingGameViewModelFactoryType {
     let arrayShuffle: ArrayShuffleType
     let modalCoordinator: ModalCoordinatorType
     let attemptTrackerUseCase: AttemptTrackerUseCaseType
+    let infoModalViewStateConverter: InfoModalViewStateConverterType
     
     func create(with word: String) -> OngoingGameViewModelType {
         OngoingGameViewModel(word: word,
                              wordProviderUseCase: wordProviderUseCase,
                              arrayShuffle: arrayShuffle,
                              modalCoordinator: modalCoordinator,
-                             attemptTrackerUseCase: attemptTrackerUseCase)
+                             attemptTrackerUseCase: attemptTrackerUseCase,
+                             infoModalViewStateConverter: infoModalViewStateConverter)
     }
 }
 
@@ -30,30 +32,35 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
          wordProviderUseCase: WordProviderUseCaseType,
          arrayShuffle: ArrayShuffleType,
          modalCoordinator: ModalCoordinatorType,
-         attemptTrackerUseCase: AttemptTrackerUseCaseType) {
+         attemptTrackerUseCase: AttemptTrackerUseCaseType,
+         infoModalViewStateConverter: InfoModalViewStateConverterType) {
         self.word = word.split(separator: "").map { String($0) }
         self.shuffledCharacters = arrayShuffle.shuffle(array: self.word)
         self.wordProviderUseCase = wordProviderUseCase
         self.arrayShuffle = arrayShuffle
         self.modalCoordinator = modalCoordinator
         self.attemptTrackerUseCase = attemptTrackerUseCase
-    }
-    
-    var viewState: AnyPublisher<GameViewState.OngoingGameViewState, Never> {
+        self.infoModalViewStateConverter = infoModalViewStateConverter
+        
         attemptTrackerUseCase.numberOfTries
             .combineLatest(characters)
             .map { [weak self] numberOfTries, chars in
-            guard let self else { return .empty }
-            return .init(
-                characters: chars,
-                numberOfTries: numberOfTries,
-                keyboardViewState: makeKeyboardViewState,
-                onTapInfoButton: .init { [modalCoordinator] in
-                    modalCoordinator.present(.info)
-                }
-            )
-        }
-        .eraseToAnyPublisher()
+                guard let self else { return .empty }
+                return .init(
+                    characters: chars,
+                    numberOfTries: numberOfTries,
+                    keyboardViewState: makeKeyboardViewState,
+                    onTapInfoButton: .init { [modalCoordinator, infoModalViewStateConverter] in
+                        modalCoordinator.present(.info(infoModalViewStateConverter.create()))
+                    }
+                )
+            }
+            .assign(to: \.value, on: viewStateSubject)
+            .store(in: &cancellables)
+    }
+    
+    var viewState: AnyPublisher<GameViewState.OngoingGameViewState, Never> {
+        viewStateSubject.eraseToAnyPublisher()
     }
     
     // MARK: - Privates
@@ -64,6 +71,10 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
     private let arrayShuffle: ArrayShuffleType
     private let modalCoordinator: ModalCoordinatorType
     private let attemptTrackerUseCase: AttemptTrackerUseCaseType
+    private let infoModalViewStateConverter: InfoModalViewStateConverterType
+    
+    private var cancellables: Set<AnyCancellable> = []
+    private let viewStateSubject: CurrentValueSubject<GameViewState.OngoingGameViewState, Never> = .init(.empty)
     
     private let characters: CurrentValueSubject<[GameViewState.OngoingGameViewState.Character], Never> = .init([
         .empty(id: "0"), .empty(id: "1"), .empty(id: "2"), .empty(id: "3"), .empty(id: "4")
