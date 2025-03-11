@@ -31,8 +31,8 @@ struct CharacterCellView: View {
         switch character.state {
         case .correct: Color.correct
         case .misplaced: Color.misplaced
-        case .draft: Color.backgroundColor
-        case .empty: Color.backgroundColor
+        case .draft: Color.clear
+        case .empty: Color.clear
         }
     }
 }

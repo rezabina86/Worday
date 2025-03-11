@@ -7,17 +7,20 @@ struct WordMeaningView: View {
     }
     
     var body: some View {
-        makeBody(with: viewState)
-            .transition(.opacity)
-            .animation(.easeInOut(duration: 0.5), value: viewState)
-            .padding([.leading, .trailing, .bottom], .space_32pt)
-            .padding(.top, .space_8pt)
-            .ignoresSafeArea(edges: .bottom)
-            .task {
-                for await vs in viewModel.viewState.values {
-                    self.viewState = vs
-                }
+        ZStack {
+            WDBackground()
+            makeBody(with: viewState)
+                .transition(.opacity)
+                .animation(.easeInOut(duration: 0.5), value: viewState)
+                .padding([.leading, .trailing, .bottom], .space_32pt)
+                .padding(.top, .space_8pt)
+                .ignoresSafeArea(edges: .bottom)
+        }
+        .task {
+            for await vs in viewModel.viewState.values {
+                self.viewState = vs
             }
+        }
     }
     
     // MARK: - Privates
@@ -68,7 +71,6 @@ struct WordMeaningView: View {
                         }
                     }
                     .pickerStyle(.palette)
-                    .tint(Color.blue)
                     
                     Text("DEFINITIONS")
                         .font(bodyFont)

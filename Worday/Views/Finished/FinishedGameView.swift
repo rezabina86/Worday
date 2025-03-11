@@ -7,14 +7,26 @@ struct FinishedGameView: View {
     }
     
     var body: some View {
+        makeBody
+            .task {
+                for await vs in viewModel.viewState.values {
+                    self.viewState = vs
+                }
+            }
+    }
+    
+    // MARK: - Privates
+    private let viewModel: FinishedGameViewModelType
+    @State private var viewState: FinishedGameViewState = .empty
+    
+    private var makeBody: some View {
         VStack(alignment: .center, spacing: .space_16pt) {
             HStack {
                 Spacer()
                 Button(viewState.allWordButton.title) {
                     viewState.allWordButton.onTap.action()
                 }
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.capsule)
+                .wdButtonStyle()
             }
             .animation(nil, value: viewState)
             
@@ -24,11 +36,19 @@ struct FinishedGameView: View {
                 .bold()
                 .animation(nil, value: viewState)
             
-            Text(viewState.subtitle)
-                .multilineTextAlignment(.center)
-                .font(.footnote)
-                .bold()
-                .animation(nil, value: viewState)
+            VStack(spacing: .space_4pt) {
+                Text(viewState.scoreString)
+                    .multilineTextAlignment(.center)
+                    .font(.caption)
+                    .bold()
+                    .animation(nil, value: viewState)
+                
+                Text(viewState.subtitle)
+                    .multilineTextAlignment(.center)
+                    .font(.caption)
+                    .bold()
+                    .animation(nil, value: viewState)
+            }
             
             HStack {
                 VStack {
@@ -71,16 +91,7 @@ struct FinishedGameView: View {
         }
         .padding([.horizontal], .space_32pt)
         .ignoresSafeArea(edges: .bottom)
-        .task {
-            for await vs in viewModel.viewState.values {
-                self.viewState = vs
-            }
-        }
     }
-    
-    // MARK: - Privates
-    private let viewModel: FinishedGameViewModelType
-    @State private var viewState: FinishedGameViewState = .empty
     
     @ViewBuilder
     private func buildMeaningSection(from meaning: FinishedGameViewState.Meaning) -> some View {
@@ -155,6 +166,7 @@ struct FinishedGameView: View {
 struct FinishedGameViewState: Equatable {
     let allWordButton: AllWordButton
     let title: String
+    let scoreString: String
     let currentStreak: Streak
     let totalPlayed: Streak
     let meaning: FinishedGameViewState.Meaning
@@ -218,6 +230,7 @@ extension FinishedGameViewState {
     static let empty: Self = .init(
         allWordButton: .init(title: "", onTap: .empty),
         title: "",
+        scoreString: "",
         currentStreak: .init(title: "", value: 0),
         totalPlayed: .init(title: "", value: 0),
         meaning: .loading,

@@ -42,4 +42,22 @@ struct AttemptTrackerUseCaseTests {
         
         #expect(testSubscriber.receivedValues == [0, 1, 2])
     }
+    
+    @Test func testOrdinalString() async throws {
+        sut.advance()
+        
+        #expect(sut.ordinalString() == "1st")
+        
+        sut.advance()
+        
+        #expect(sut.ordinalString() == "2nd")
+        
+        sut.advance()
+        
+        #expect(sut.ordinalString() == "3rd")
+        
+        sut.advance()
+        
+        #expect(sut.ordinalString() == "4th")
+    }
 }
