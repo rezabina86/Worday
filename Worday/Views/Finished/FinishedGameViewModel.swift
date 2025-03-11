@@ -40,6 +40,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
         self.wordListViewStateConverter = wordListViewStateConverter
         self.navigationRouter = navigationRouter
         self.title = attemptTrackerUseCase.feedbackMessage()
+        self.scoreMessage = "You solved it on your \(attemptTrackerUseCase.ordinalString()) try"
         
         dictionaryUseCase.create(for: word)
             .combineLatest(selectedMeaningSubject)
@@ -51,6 +52,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
                     return .init(
                         allWordButton: allWordsButtonState,
                         title: title,
+                        scoreString: scoreMessage,
                         currentStreak: createCurrentStreak(),
                         totalPlayed: createTotalPlayed(),
                         meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: word.uppercased()),
@@ -60,6 +62,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
                     return .init(
                         allWordButton: allWordsButtonState,
                         title: title,
+                        scoreString: scoreMessage,
                         currentStreak: createCurrentStreak(),
                         totalPlayed: createTotalPlayed(),
                         meaning: .loading,
@@ -91,6 +94,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     private let navigationRouter: NavigationRouterType
     
     private let title: String
+    private let scoreMessage: String
     private let subtitle: String = "Come back tomorrow for another challenge!"
     
     private lazy var currentStreak: Int = {
@@ -121,6 +125,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
         return .init(
             allWordButton: allWordsButtonState,
             title: title,
+            scoreString: scoreMessage,
             currentStreak: createCurrentStreak(),
             totalPlayed: createTotalPlayed(),
             meaning: .meaning(viewState: .init(

@@ -2,18 +2,21 @@ import SwiftUI
 
 struct WordListView: View {
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: .space_12pt) {
-                ForEach(viewState.cards) { card in
-                    Button {
-                        card.onTap.action()
-                    } label: {
-                        createCard(card)
+        ZStack {
+            WDBackground()
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: .space_12pt) {
+                    ForEach(viewState.cards) { card in
+                        Button {
+                            card.onTap.action()
+                        } label: {
+                            createCard(card)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
+                .padding(.space_12pt)
             }
-            .padding(.space_12pt)
         }
         .navigationTitle(viewState.navigationTitle)
     }
@@ -23,25 +26,22 @@ struct WordListView: View {
     // MARK: - Privates
     @ViewBuilder
     private func createCard(_ card: WordListViewState.Card) -> some View {
-        VStack(alignment: .center, spacing: .space_2pt) {
-            Text(card.word.uppercased())
-                .font(titleFont3)
-            
-            Text(card.dateSection.title)
-                .font(.caption)
-            
-            Text(card.dateSection.date, style: .date)
-                .font(.caption)
-            
+        GlassPane(cornerRadius: .radius_xxlarge) {
+            VStack(alignment: .center, spacing: .space_2pt) {
+                Text(card.word.uppercased())
+                    .font(titleFont3)
+                
+                Text(card.dateSection.title)
+                    .font(.caption)
+                
+                Text(card.dateSection.date, style: .date)
+                    .font(.caption)
+                
+            }
+            .padding(.space_12pt)
+            .frame(maxWidth: .infinity)
+            .frame(height: .size_96pt + .size_8pt)
         }
-        .padding(.space_12pt)
-        .frame(maxWidth: .infinity)
-        .frame(height: .size_96pt + .size_8pt)
-        .cornerRadius(.radius_medium)
-        .overlay(
-            RoundedRectangle(cornerRadius: .radius_medium)
-                .stroke(Color.primary, lineWidth: 1 / 2)
-        )
     }
     
     private let columns: [GridItem] = Array(repeating: GridItem(.flexible(), spacing: .space_12pt), count: 2)
