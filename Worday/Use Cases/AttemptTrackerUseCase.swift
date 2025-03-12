@@ -7,6 +7,7 @@ protocol AttemptTrackerUseCaseType {
     func advance()
     func cleanup()
     func feedbackMessage() -> String
+    func ordinalString() -> String
 }
 
 final class AttemptTrackerUseCase: AttemptTrackerUseCaseType {
@@ -34,6 +35,11 @@ final class AttemptTrackerUseCase: AttemptTrackerUseCaseType {
     func feedbackMessage() -> String {
         let numberOfTries = numberOfTriesSubject.value
         return feedbackMessage(for: numberOfTries)
+    }
+    
+    func ordinalString() -> String {
+        let numberOfTries = numberOfTriesSubject.value
+        return numberOfTries.ordinalString
     }
     
     // MARK: - Privates

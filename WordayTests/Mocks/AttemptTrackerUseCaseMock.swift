@@ -8,6 +8,7 @@ final class AttemptTrackerUseCaseMock: AttemptTrackerUseCaseType {
         case advance
         case cleanup
         case feedbackMessage
+        case ordinalString
     }
     
     var numberOfTries: AnyPublisher<Int, Never> {
@@ -27,7 +28,13 @@ final class AttemptTrackerUseCaseMock: AttemptTrackerUseCaseType {
         return feedbackMessageReturnValue
     }
     
+    func ordinalString() -> String {
+        calls.append(.ordinalString)
+        return ordinalStringReturnValue
+    }
+    
     var feedbackMessageReturnValue: String = ""
+    var ordinalStringReturnValue: String = ""
     var numberOfTriesSubject: CurrentValueSubject<Int, Never> = .init(0)
     var calls: [Call] = []
 }

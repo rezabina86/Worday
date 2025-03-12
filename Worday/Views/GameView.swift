@@ -23,7 +23,10 @@ struct GameView: View {
                 }
             )
         ) {
-            view(for: viewState)
+            ZStack {
+                WDBackground()
+                view(for: viewState)
+            }
                 .navigationDestination(
                     for: NavigationDestination.self
                 ) { route in
