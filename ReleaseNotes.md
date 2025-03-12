@@ -17,3 +17,6 @@
 -Minor bug fixes and improvements.
 
 -All words have been added, and tapping on a word reveals its meaning.
+
+### 1.4.0:
+-We've given our app a fresh new look! Enjoy an improved UI with a modern design
