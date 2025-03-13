@@ -1,11 +1,11 @@
 ## DailySort: A Fun Word Game to learn a new English word, everyday!
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/12cbcde7-8c90-4220-a996-e5099d634b7a" width=150>
-  <img src="https://github.com/user-attachments/assets/46962c85-71e7-402a-b2e3-fe61ffbe328c" width=150>
-  <img src="https://github.com/user-attachments/assets/9be1f060-c054-47c2-8ddb-e4d84e4c46d8" width=150>
-  <img src="https://github.com/user-attachments/assets/bc05bcd3-d735-4bec-b2cf-6475a00488a3" width=150>
-  <img src="https://github.com/user-attachments/assets/4bdfc575-34e9-4a67-82f5-643f8439d10c" width=150>
+  <img src="https://github.com/user-attachments/assets/503bd1cf-60b4-4373-929b-f0e8b60bc88b" width=150>
+  <img src="https://github.com/user-attachments/assets/16fd1fde-0388-49a8-b0ea-7bc5646aef0d" width=150>
+  <img src="https://github.com/user-attachments/assets/59542062-5944-484f-a658-c24436b9c871" width=150>
+  <img src="https://github.com/user-attachments/assets/d1618be6-1e99-499d-a48e-3034edace0b7" width=150>
+  <img src="https://github.com/user-attachments/assets/b2960660-c0c5-417a-97b9-90334e215346" width=150>
 </p>
 
 <p align="center">
