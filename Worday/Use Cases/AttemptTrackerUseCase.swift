@@ -49,16 +49,16 @@ final class AttemptTrackerUseCase: AttemptTrackerUseCaseType {
     
     private func feedbackMessage(for tries: Int) -> String {
         let messages = [
-            "Genius 🤯",         // 1st try
-            "Magnificent ✨",    // 2nd try
-            "Impressive 👏",     // 3rd try
-            "Splendid 🎉",       // 4th try
-            "Great 👍",          // 5th try
-            "Nice 😊",           // 6th try
-            "Good effort 💪",    // 7th try
-            "You got it! 🎯"     // 8th try
+            "Genius",         // 1st try
+            "Magnificent",    // 2nd try
+            "Impressive",     // 3rd try
+            "Splendid",       // 4th try
+            "Great",          // 5th try
+            "Nice",           // 6th try
+            "Good effort",    // 7th try
+            "You got it!"     // 8th try
         ]
         
-        return tries > 0 && tries <= messages.count ? messages[tries - 1] : "Not bad 🤔"
+        return tries > 0 && tries <= messages.count ? messages[tries - 1] : "Not bad"
     }
 }

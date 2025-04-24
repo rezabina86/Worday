@@ -77,9 +77,10 @@ struct OngoingGameView: View {
     @ViewBuilder
     private func buildRowsView(from viewState: GameViewState.OngoingGameViewState,
                        proxy: GeometryProxy) -> some View {
-        let availableWidth = proxy.size.width - (5 * (Constant.numberOfCharacters - 1).cgFloatValue)
+        let spacing: CGFloat = .space_8pt
+        let availableWidth = proxy.size.width - (spacing * (Constant.numberOfCharacters - 1).cgFloatValue)
         let size = availableWidth / Constant.numberOfCharacters.cgFloatValue
-        HStack(spacing: .space_8pt) {
+        HStack(spacing: spacing) {
             ForEach(viewState.characters) { char in
                 CharacterCellView(
                     character: char,
