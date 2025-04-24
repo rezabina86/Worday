@@ -20,3 +20,6 @@
 
 ### 1.4.0:
 -We've given our app a fresh new look! Enjoy an improved UI with a modern design
+
+### 1.5.0:
+-Minor bug fixes and improvements.
