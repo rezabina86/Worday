@@ -38,10 +38,15 @@ final class WordMeaningViewModel: WordMeaningViewModelType {
                                                  selectedMeaning: selectedMeaning)
                 }
             }
-            .handleEvents(receiveOutput: { [weak self] viewState in
-                self?.setSelectedMeaningIfNecessary(from: viewState)
-            })
             .assign(to: \.value, on: viewStateSubject)
+            .store(in: &cancellables)
+        
+        viewStateSubject
+            .receive(on: RunLoop.main)
+            .sink { [weak self] viewState in
+                guard let self else { return }
+                setSelectedMeaningIfNecessary(from: viewState)
+            }
             .store(in: &cancellables)
     }
     
