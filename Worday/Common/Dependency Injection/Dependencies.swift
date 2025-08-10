@@ -120,7 +120,8 @@ public func injectDependencies(into container: ContainerType) {
                                      streakUseCase: container.resolve(),
                                      attemptTrackerUseCase: container.resolve(),
                                      wordListViewStateConverter: container.resolve(),
-                                     navigationRouter: container.resolve())
+                                     navigationRouter: container.resolve(),
+                                     schedulerFactory: container.resolve())
     }
     
     container.register(in: .weakContainer) { container -> ModalCoordinatorType in
@@ -151,6 +152,11 @@ public func injectDependencies(into container: ContainerType) {
     }
     
     container.register { container -> WordMeaningViewModelFactoryType in
-        WordMeaningViewModelFactory(dictionaryUseCase: container.resolve())
+        WordMeaningViewModelFactory(dictionaryUseCase: container.resolve(),
+                                    schedulerFactory: container.resolve())
+    }
+    
+    container.register { _ -> SchedulerFactoryType in
+        SchedulerFactory()
     }
 }
