@@ -37,19 +37,14 @@ final class WordMeaningViewModel: WordMeaningViewModelType {
                 case .loading:
                     return .loading
                 case let .data(model):
-                    return createLoadedViewState(from: model,
-                                                 selectedMeaning: selectedMeaning)
+                    let viewState = createLoadedViewState(from: model, selectedMeaning: selectedMeaning)
+                    defer {
+                        setSelectedMeaningIfNecessary(from: viewState)
+                    }
+                    return viewState
                 }
             }
             .assign(to: \.value, on: viewStateSubject)
-            .store(in: &cancellables)
-        
-        viewStateSubject
-            .receive(on: schedulerFactory.makeMainScheduler())
-            .sink { [weak self] viewState in
-                guard let self else { return }
-                setSelectedMeaningIfNecessary(from: viewState)
-            }
             .store(in: &cancellables)
     }
     
