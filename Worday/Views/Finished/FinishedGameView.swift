@@ -228,7 +228,7 @@ extension FinishedGameViewState.Meaning.MeaningViewState.Meaning {
 
 extension FinishedGameViewState {
     static let empty: Self = .init(
-        allWordButton: .init(title: "", onTap: .empty),
+        allWordButton: .init(title: "", onTap: .fake),
         title: "",
         scoreString: "",
         currentStreak: .init(title: "", value: 0),

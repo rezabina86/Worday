@@ -11,6 +11,7 @@ struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
     let attemptTrackerUseCase: AttemptTrackerUseCaseType
     let wordListViewStateConverter: WordListViewStateConverterType
     let navigationRouter: NavigationRouterType
+    let schedulerFactory: SchedulerFactoryType
     
     func create(for word: String) -> FinishedGameViewModelType {
         FinishedGameViewModel(word: word,
@@ -18,7 +19,8 @@ struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
                               streakUseCase: streakUseCase,
                               attemptTrackerUseCase: attemptTrackerUseCase,
                               wordListViewStateConverter: wordListViewStateConverter,
-                              navigationRouter: navigationRouter)
+                              navigationRouter: navigationRouter,
+                              schedulerFactory: schedulerFactory)
     }
 }
 
@@ -34,17 +36,19 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
         streakUseCase: StreakUseCaseType,
         attemptTrackerUseCase: AttemptTrackerUseCaseType,
         wordListViewStateConverter: WordListViewStateConverterType,
-        navigationRouter: NavigationRouterType
+        navigationRouter: NavigationRouterType,
+        schedulerFactory: SchedulerFactoryType
     ) {
         self.streakUseCase = streakUseCase
         self.wordListViewStateConverter = wordListViewStateConverter
         self.navigationRouter = navigationRouter
+        self.schedulerFactory = schedulerFactory
         self.title = attemptTrackerUseCase.feedbackMessage()
         self.scoreMessage = "You solved it on your \(attemptTrackerUseCase.ordinalString()) try"
         
         dictionaryUseCase.create(for: word)
             .combineLatest(selectedMeaningSubject)
-            .receive(on: RunLoop.main)
+            .receive(on: schedulerFactory.makeMainScheduler())
             .map { [weak self] dataState, selectedMeaning -> FinishedGameViewState in
                 guard let self else { return .empty }
                 switch dataState {
@@ -69,19 +73,14 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
                         subtitle: subtitle
                     )
                 case let .data(model):
-                    return createLoadedViewState(from: model,
-                                                 selectedMeaning: selectedMeaning)
+                    let viewState = createLoadedViewState(from: model, selectedMeaning: selectedMeaning)
+                    defer {
+                        setSelectedMeaningIfNecessary(from: viewState)
+                    }
+                    return viewState
                 }
             }
             .assign(to: \.value, on: viewStateSubject)
-            .store(in: &cancellables)
-        
-        viewStateSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] viewState in
-                guard let self else { return }
-                setSelectedMeaningIfNecessary(from: viewState)
-            }
             .store(in: &cancellables)
     }
     
@@ -97,6 +96,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     private let streakUseCase: StreakUseCaseType
     private let wordListViewStateConverter: WordListViewStateConverterType
     private let navigationRouter: NavigationRouterType
+    private let schedulerFactory: SchedulerFactoryType
     
     private let title: String
     private let scoreMessage: String

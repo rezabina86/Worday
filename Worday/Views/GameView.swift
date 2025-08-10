@@ -7,7 +7,7 @@ struct GameView: View {
         self.viewModel = viewModel
         
         viewModel.currentNavigationPath
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .assign(to: \.currentNavigationPath, on: self)
             .store(in: &subscriptions)
     }
