@@ -26,3 +26,6 @@
 
 ### 1.6.0:
 -Minor bug fixes and improvements.
+
+### 1.7.0:
+-Updated for iOS 26 and liquid glass.
