@@ -19,9 +19,15 @@ public struct GlassPane<Content: View>: View {
 
     public var body: some View {
         ZStack {
-            GlassView(cornerRadius: cornerRadius, corners: corners, fill: fill, opacity: opacity, shadowRadius: shadowRadius)
+            if #available(iOS 26.0, *) {
+                content
+                    .contentShape(Rectangle())
+                    .glassify(with: cornerRadius)
+            } else {
+                GlassView(cornerRadius: cornerRadius, corners: corners, fill: fill, opacity: opacity, shadowRadius: shadowRadius)
 
-            content
+                content
+            }
         }
     }
 }
@@ -29,8 +35,6 @@ public struct GlassPane<Content: View>: View {
 struct GlassPane_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
-            //Color.blue
-            
             GlassPane(cornerRadius: 20.0) {
                 Text("Hello World! 🌐")
             }
