@@ -31,9 +31,7 @@ struct KeyBoardView: View {
                 .padding(.space_8pt)
                 .foregroundColor(Color.textColor)
                 .frame(width: .size_72pt, height: .size_48pt)
-                .background(Color.backgroundKeyNoneColor)
-                .cornerRadius(.radius_small)
-                .contentShape(Rectangle())
+                .buttonBackground
         }
     }
     
@@ -47,9 +45,7 @@ struct KeyBoardView: View {
                 .padding(.space_8pt)
                 .foregroundColor(Color.textColor)
                 .frame(width: .size_48pt, height: .size_48pt)
-                .background(Color.backgroundKeyNoneColor)
-                .cornerRadius(.radius_small)
-                .contentShape(Rectangle())
+                .buttonBackground
         }
     }
     
@@ -63,9 +59,7 @@ struct KeyBoardView: View {
                 .fontWeight(.bold)
                 .foregroundColor(Color.textColor)
                 .frame(width: .size_48pt, height: .size_48pt)
-                .background(Color.backgroundKeyNoneColor)
-                .cornerRadius(.radius_small)
-                .contentShape(Rectangle())
+                .buttonBackground
         }
     }
 }
@@ -92,4 +86,18 @@ extension KeyBoardViewState {
         onTapEnter: .empty,
         onTapDelete: .empty
     )
+}
+
+private extension View {
+    @ViewBuilder
+    var buttonBackground: some View {
+        if #available(iOS 26.0, *) {
+            self.glassify(with: .radius_medium)
+                .contentShape(Rectangle())
+        } else {
+            self.background(Color.backgroundKeyNoneColor)
+                .cornerRadius(.radius_medium)
+                .contentShape(Rectangle())
+        }
+    }
 }

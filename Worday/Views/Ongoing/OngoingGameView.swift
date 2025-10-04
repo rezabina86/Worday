@@ -16,7 +16,7 @@ struct OngoingGameView: View {
                     } label: {
                         Image(systemName: "info.circle.fill")
                             .resizable()
-                            .frame(width: .size_20pt, height: .size_20pt)
+                            .frame(width: .size_24pt, height: .size_24pt)
                             .foregroundStyle(.text)
                             .contentShape(Rectangle())
                     }
