@@ -78,7 +78,7 @@ final class WordProviderUseCase: WordProviderUseCaseType {
     func store(word: String) {
         wordContext.insert(
             .init(
-                id: uuidProvider.create(),
+                id: .init(rawValue: uuidProvider.create()),
                 word: word,
                 playedAt: dateProvider.now()
             )

@@ -14,7 +14,7 @@ struct PlayedWordsLibraryTests {
     @Test("load reads the stored words from the context")
     func loadReadsFromStore() {
         mockWordContext.fetchReturnValue = [
-            .init(id: "1", word: "CAT", playedAt: .init(timeIntervalSince1970: 0))
+            .init(id: .init(rawValue: "1"), word: "CAT", playedAt: .init(timeIntervalSince1970: 0))
         ]
 
         sut.load()
@@ -30,7 +30,7 @@ struct PlayedWordsLibraryTests {
         #expect(sut.words.isEmpty)
 
         mockWordContext.fetchReturnValue = [
-            .init(id: "1", word: "DOG", playedAt: .init(timeIntervalSince1970: 0))
+            .init(id: .init(rawValue: "1"), word: "DOG", playedAt: .init(timeIntervalSince1970: 0))
         ]
         sut.reload()
 

@@ -77,8 +77,8 @@ struct WordProviderUseCaseTests {
         mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
         mockWordContext.fetchReturnValue = [
-            .init(id: "123", word: "a", playedAt: .now),
-            .init(id: "345", word: "b", playedAt: .now)
+            .init(id: .init(rawValue: "123"), word: "a", playedAt: .now),
+            .init(id: .init(rawValue: "345"), word: "b", playedAt: .now)
         ]
         mockRandomWordProducer.randomElementReturnValue = "a"
         mockDateService.isDateInTodayReturnValue = false
@@ -97,8 +97,8 @@ struct WordProviderUseCaseTests {
         mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
         mockWordContext.fetchReturnValue = [
-            .init(id: "123", word: "a", playedAt: .now),
-            .init(id: "345", word: "b", playedAt: .now)
+            .init(id: .init(rawValue: "123"), word: "a", playedAt: .now),
+            .init(id: .init(rawValue: "345"), word: "b", playedAt: .now)
         ]
         mockRandomWordProducer.randomElementReturnValue = "a"
         mockDateService.isDateInTodayReturnValue = true
@@ -116,8 +116,8 @@ struct WordProviderUseCaseTests {
         mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b", "c", "d"])
         mockWordContext.fetchReturnValue = [
-            .init(id: "123", word: "a", playedAt: .now),
-            .init(id: "345", word: "b", playedAt: .now)
+            .init(id: .init(rawValue: "123"), word: "a", playedAt: .now),
+            .init(id: .init(rawValue: "345"), word: "b", playedAt: .now)
         ]
         mockRandomWordProducer.randomElementReturnValue = "c"
         mockDateService.isDateInTodayReturnValue = false
@@ -138,7 +138,7 @@ struct WordProviderUseCaseTests {
         
         sut.store(word: "a")
         #expect(mockUserSettings.setCurrentWordCall == [.currentWord(.set(nil))])
-        #expect(mockWordContext.calls == [.insert(model: .init(id: "123", word: "a", playedAt: referenceDate)), .save])
+        #expect(mockWordContext.calls == [.insert(model: .init(id: .init(rawValue: "123"), word: "a", playedAt: referenceDate)), .save])
         #expect(mockPlayedWordsLibrary.calls == [.reload])
         #expect(mockFinishGameRelay.calls == [.finishGame])
     }

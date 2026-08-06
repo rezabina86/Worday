@@ -19,8 +19,8 @@ struct WordListViewStateConverterTests {
         let fakeDate: Date = .init(timeIntervalSince1970: 123)
 
         mockPlayedWordsLibrary.words = [
-            .init(id: "1", word: "ABCDE", playedAt: fakeDate),
-            .init(id: "2", word: "QWXYZ", playedAt: fakeDate)
+            .init(id: .init(rawValue: "1"), word: "ABCDE", playedAt: fakeDate),
+            .init(id: .init(rawValue: "2"), word: "QWXYZ", playedAt: fakeDate)
         ]
 
         let result = sut.make()
@@ -29,8 +29,9 @@ struct WordListViewStateConverterTests {
             result == .init(
                 navigationTitle: "Words",
                 cards: [
-                    .init(id: "0", dateSection: .init(title: "Played on", date: fakeDate), word: "ABCDE", onTap: .fake),
-                    .init(id: "1", dateSection: .init(title: "Played on", date: fakeDate), word: "QWXYZ", onTap: .fake)
+                    // Cards are keyed on the stored word's identity, not its list position.
+                    .init(id: .init(rawValue: "1"), dateSection: .init(title: "Played on", date: fakeDate), word: "ABCDE", onTap: .fake),
+                    .init(id: .init(rawValue: "2"), dateSection: .init(title: "Played on", date: fakeDate), word: "QWXYZ", onTap: .fake)
                 ]
             )
         )
@@ -40,8 +41,8 @@ struct WordListViewStateConverterTests {
         let fakeDate: Date = .init(timeIntervalSince1970: 123)
 
         mockPlayedWordsLibrary.words = [
-            .init(id: "1", word: "ABCDE", playedAt: fakeDate),
-            .init(id: "2", word: "QWXYZ", playedAt: fakeDate)
+            .init(id: .init(rawValue: "1"), word: "ABCDE", playedAt: fakeDate),
+            .init(id: .init(rawValue: "2"), word: "QWXYZ", playedAt: fakeDate)
         ]
 
         let result = sut.make()
