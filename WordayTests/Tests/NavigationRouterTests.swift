@@ -4,27 +4,28 @@ import Foundation
 @testable import Worday
 
 struct NavigationRouterTests {
-    var sut: NavigationRouter
-    private let testSubscriber: TestableSubscriber<NavigationPath, Never>
-    
+    let sut: NavigationRouter
+
     init() {
         sut = .init()
-        
-        testSubscriber = .init()
-        sut.currentPath
-            .dropFirst()
-            .subscribe(testSubscriber)
     }
-    
-    @Test func testSetCurrentPath() async throws {
-        sut.setCurrentPath(.init([NavigationDestination.none]))
-        
-        #expect(testSubscriber.receivedValues == [.init([NavigationDestination.none])])
+
+    @Test("it starts with an empty path")
+    func startsEmpty() {
+        #expect(sut.path == NavigationPath())
     }
-    
-    @Test func testGotoDestination() async throws {
+
+    @Test("setting the path replaces it")
+    func setPath() {
+        sut.path = NavigationPath([NavigationDestination.none])
+
+        #expect(sut.path == NavigationPath([NavigationDestination.none]))
+    }
+
+    @Test("goto appends the destination to the path")
+    func gotoDestination() {
         sut.gotoDestination(.none)
-        
-        #expect(testSubscriber.receivedValues == [.init([NavigationDestination.none])])
+
+        #expect(sut.path == NavigationPath([NavigationDestination.none]))
     }
 }

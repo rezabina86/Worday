@@ -1,12 +1,17 @@
-import Combine
 import Foundation
 @testable import Worday
 
 final class WordMeaningViewModelMock: WordMeaningViewModelType {
-    
-    var viewState: AnyPublisher<WordMeaningViewState, Never> {
-        viewStateSubject.eraseToAnyPublisher()
+
+    enum Call: Equatable {
+        case load
     }
-    
-    var viewStateSubject: CurrentValueSubject<WordMeaningViewState, Never> = .init(.loading)
+
+    var viewState: WordMeaningViewState = .loading
+
+    func load() async {
+        calls.append(.load)
+    }
+
+    private(set) var calls: [Call] = []
 }

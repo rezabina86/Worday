@@ -1,26 +1,20 @@
 import SwiftUI
-import Combine
 @testable import Worday
 
 final class NavigationRouterMock: NavigationRouterType {
-    
+
     enum Call: Equatable {
-        case setCurrentPath(path: NavigationPath)
+        case setPath(path: NavigationPath)
         case gotoDestination(id: String)
     }
-    
-    var currentPath: AnyPublisher<NavigationPath, Never> {
-        currentPathRelay.eraseToAnyPublisher()
+
+    var path: NavigationPath = .init() {
+        didSet { calls.append(.setPath(path: path)) }
     }
-    
-    func setCurrentPath(_ path: NavigationPath) {
-        calls.append(.setCurrentPath(path: path))
-    }
-    
+
     func gotoDestination(_ destination: NavigationDestination) {
         calls.append(.gotoDestination(id: destination.id))
     }
-    
-    var currentPathRelay: PassthroughSubject<NavigationPath, Never> = .init()
-    var calls: [Call] = []
+
+    private(set) var calls: [Call] = []
 }

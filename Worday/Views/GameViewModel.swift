@@ -1,128 +1,106 @@
 import Foundation
-import Combine
 import SwiftUI
+import Observation
 
 protocol GameViewModelFactoryType {
-    func create() -> GameViewModelType
+    func make() -> GameViewModelType
 }
 
 struct GameViewModelFactory: GameViewModelFactoryType {
     let fetchWordUseCase: WordProviderUseCaseType
     let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
     let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
-    let scenePhaseObserver: ScenePhaseObserverType
-    let appTriggerFactory: AppTriggerFactoryType
+    let finishGameRelay: FinishGameRelayType
     let modalCoordinator: ModalCoordinatorType
     let navigationRouter: NavigationRouterType
-    
-    func create() -> GameViewModelType {
+
+    func make() -> GameViewModelType {
         GameViewModel(wordProviderUseCase: fetchWordUseCase,
                       ongoingGameViewModelFactory: ongoingGameViewModelFactory,
                       finishedGameViewModelFactory: finishedGameViewModelFactory,
-                      scenePhaseObserver: scenePhaseObserver,
-                      appTriggerFactory: appTriggerFactory,
+                      finishGameRelay: finishGameRelay,
                       modalCoordinator: modalCoordinator,
                       navigationRouter: navigationRouter)
     }
 }
 
-protocol GameViewModelType {
-    var viewState: AnyPublisher<GameViewState, Never> { get }
-    func scenePhaseChanged(_ scenePhase: ScenePhase)
-    
-    // Modal Coordinator
-    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> { get }
-    func setModalDestination(_ destination: ModalCoordinatorDestination?)
-    
-    // Navigation Router
-    var currentNavigationPath: AnyPublisher<NavigationPath, Never> { get }
-    func setNavigationCurrentPath(_ path: NavigationPath)
+protocol GameViewModelType: AnyObject {
+    var viewState: GameViewState { get }
+    var navigationPath: NavigationPath { get set }
+    var modalDestination: ModalCoordinatorDestination? { get set }
+
+    /// Re-reads the day's state and rebuilds the view state. Called on appear and when the app
+    /// becomes active. Deduped against the last result.
+    func refresh()
+
+    /// Awaits game-finished events for the app's lifetime, re-fetching after each.
+    func observeGameFinished() async
 }
 
+@Observable
 final class GameViewModel: GameViewModelType {
-    
+
+    // MARK: - Life Cycle
+
     init(wordProviderUseCase: WordProviderUseCaseType,
          ongoingGameViewModelFactory: OngoingGameViewModelFactoryType,
          finishedGameViewModelFactory: FinishedGameViewModelFactoryType,
-         scenePhaseObserver: ScenePhaseObserverType,
-         appTriggerFactory: AppTriggerFactoryType,
+         finishGameRelay: FinishGameRelayType,
          modalCoordinator: ModalCoordinatorType,
          navigationRouter: NavigationRouterType) {
         self.wordProviderUseCase = wordProviderUseCase
         self.ongoingGameViewModelFactory = ongoingGameViewModelFactory
         self.finishedGameViewModelFactory = finishedGameViewModelFactory
-        self.scenePhaseObserver = scenePhaseObserver
-        self.appTriggerFactory = appTriggerFactory
+        self.finishGameRelay = finishGameRelay
         self.modalCoordinator = modalCoordinator
         self.navigationRouter = navigationRouter
-        
-        makeTrigger
-            .sink { [weak self] _ in
-                guard let self else { return }
-                self.fetchWord()
-            }
-            .store(in: &cancellables)
     }
-    
-    var viewState: AnyPublisher<GameViewState, Never> {
-        viewStateSubject.eraseToAnyPublisher()
+
+    // MARK: - Publics
+
+    private(set) var viewState: GameViewState = .empty
+
+    var navigationPath: NavigationPath {
+        get { navigationRouter.path }
+        set { navigationRouter.path = newValue }
     }
-    
-    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> {
-        modalCoordinator.currentDestination.eraseToAnyPublisher()
+
+    var modalDestination: ModalCoordinatorDestination? {
+        get { modalCoordinator.destination }
+        set { modalCoordinator.present(newValue) }
     }
-    
-    func scenePhaseChanged(_ scenePhase: ScenePhase) {
-        scenePhaseObserver.phaseChanged(scenePhase)
-    }
-    
-    func setModalDestination(_ destination: ModalCoordinatorDestination?) {
-        modalCoordinator.present(destination)
-    }
-    
-    var currentNavigationPath: AnyPublisher<NavigationPath, Never> {
-        navigationRouter.currentPath.eraseToAnyPublisher()
-    }
-    
-    func setNavigationCurrentPath(_ path: NavigationPath) {
-        navigationRouter.setCurrentPath(path)
-    }
-    
-    // MARK: - Privates
-    private let wordProviderUseCase: WordProviderUseCaseType
-    private let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
-    private let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
-    private let scenePhaseObserver: ScenePhaseObserverType
-    private let appTriggerFactory: AppTriggerFactoryType
-    private let modalCoordinator: ModalCoordinatorType
-    private let navigationRouter: NavigationRouterType
-    
-    private let viewStateSubject: CurrentValueSubject<GameViewState, Never> = .init(.empty)
-    private var cancellables: Set<AnyCancellable> = []
-    
-    private var latestFetchResult: FetchWordModel?
-    
-    private func fetchWord() {
+
+    func refresh() {
         let result = wordProviderUseCase.fetch()
-        
+
         guard result != latestFetchResult else { return }
-        
+
         switch result {
         case .error:
-            viewStateSubject.send(.error)
+            viewState = .error
         case let .word(word):
-            viewStateSubject.send(.game(viewModel: ongoingGameViewModelFactory.create(with: word)))
+            viewState = .game(viewModel: ongoingGameViewModelFactory.make(with: word))
         case let .noWordToday(lastPlayedWord):
-            viewStateSubject.send(.noWordToday(viewModel: finishedGameViewModelFactory.create(for: lastPlayedWord)))
+            viewState = .noWordToday(viewModel: finishedGameViewModelFactory.make(for: lastPlayedWord))
         }
-        
+
         latestFetchResult = result
     }
-    
-    private var makeTrigger: AnyPublisher<Void, Never> {
-        appTriggerFactory.create(of: [
-            .appBecameActive,
-            .gameFinished
-        ])
+
+    func observeGameFinished() async {
+        for await _ in finishGameRelay.events {
+            refresh()
+        }
     }
+
+    // MARK: - Privates
+
+    @ObservationIgnored private let wordProviderUseCase: WordProviderUseCaseType
+    @ObservationIgnored private let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
+    @ObservationIgnored private let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
+    @ObservationIgnored private let finishGameRelay: FinishGameRelayType
+    @ObservationIgnored private let modalCoordinator: ModalCoordinatorType
+    @ObservationIgnored private let navigationRouter: NavigationRouterType
+
+    @ObservationIgnored private var latestFetchResult: FetchWordModel?
 }

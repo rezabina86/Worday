@@ -1,4 +1,3 @@
-import Combine
 import Foundation
 
 enum DictionaryDataState: Equatable {
@@ -8,30 +7,29 @@ enum DictionaryDataState: Equatable {
 }
 
 protocol DictionaryUseCaseType {
-    func create(for word: String) -> AnyPublisher<DictionaryDataState, Never>
+    func meaning(for word: String) async -> DictionaryDataState
 }
 
 struct DictionaryUseCase: DictionaryUseCaseType {
-    
+
+    // MARK: - Life Cycle
+
     init(dictionaryRepository: DictionaryRepositoryType) {
         self.dictionaryRepository = dictionaryRepository
     }
-    
-    func create(for word: String) -> AnyPublisher<DictionaryDataState, Never> {
-        Future<DictionaryDataState, Never> { promise in
-            Task {
-                do {
-                    let meaning = try await dictionaryRepository.meaning(for: word)
-                    promise(.success(.data(meaning)))
-                } catch {
-                    promise(.success(.error))
-                }
-            }
+
+    // MARK: - Publics
+
+    func meaning(for word: String) async -> DictionaryDataState {
+        do {
+            let meaning = try await dictionaryRepository.meaning(for: word)
+            return .data(meaning)
+        } catch {
+            return .error
         }
-        .prepend(.loading)
-        .eraseToAnyPublisher()
     }
-    
-    // MARK: - Private
+
+    // MARK: - Privates
+
     private let dictionaryRepository: DictionaryRepositoryType
 }

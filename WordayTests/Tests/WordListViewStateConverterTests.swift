@@ -18,15 +18,15 @@ struct WordListViewStateConverterTests {
                     navigationRouter: mockNavigationRouter)
     }
 
-    @Test func testCreate() async throws {
+    @Test func makesViewState() {
         let fakeDate: Date = .init(timeIntervalSince1970: 123)
-        
+
         mockWordContext.fetchReturnValue = [
             .init(id: "1", word: "ABCDE", playedAt: fakeDate),
             .init(id: "2", word: "QWXYZ", playedAt: fakeDate)
         ]
-        
-        let result = sut.create()
+
+        let result = sut.make()
         
         #expect(
             result == .init(
@@ -39,19 +39,19 @@ struct WordListViewStateConverterTests {
         )
     }
     
-    @Test func testTapOnWord() async throws {
+    @Test func tapsOnWord() {
         let fakeDate: Date = .init(timeIntervalSince1970: 123)
-        
+
         mockWordContext.fetchReturnValue = [
             .init(id: "1", word: "ABCDE", playedAt: fakeDate),
             .init(id: "2", word: "QWXYZ", playedAt: fakeDate)
         ]
-        
-        let result = sut.create()
-        
+
+        let result = sut.make()
+
         result.cards.first?.onTap.action()
-        
-        #expect(mockWordMeaningViewModelFactory.calls == [.create(word: "ABCDE")])
+
+        #expect(mockWordMeaningViewModelFactory.calls == [.make(word: "ABCDE")])
         #expect(mockNavigationRouter.calls == [.gotoDestination(id: "word_meaning_view")])
     }
     

@@ -5,9 +5,10 @@ struct OngoingGameView: View {
     init(viewModel: OngoingGameViewModelType) {
         self.viewModel = viewModel
     }
-    
+
     var body: some View {
-        VStack {
+        let viewState = viewModel.viewState
+        return VStack {
             ZStack {
                 HStack {
                     Spacer()
@@ -60,18 +61,11 @@ struct OngoingGameView: View {
             Spacer()
                 .frame(height: .size_128pt)
         }
-        .task {
-            for await vs in viewModel.viewState.values {
-                withAnimation {
-                    self.viewState = vs
-                }
-            }
-        }
+        .animation(.default, value: viewState)
     }
-    
+
     // MARK: - Privates
     private let viewModel: OngoingGameViewModelType
-    @State private var viewState: GameViewState.OngoingGameViewState = .empty
     
     // MARK: - Sub views
     @ViewBuilder

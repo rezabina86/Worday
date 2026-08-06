@@ -1,8 +1,8 @@
-import Combine
 import Foundation
+import Observation
 
 protocol FinishedGameViewModelFactoryType {
-    func create(for word: String) -> FinishedGameViewModelType
+    func make(for word: String) -> FinishedGameViewModelType
 }
 
 struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
@@ -11,155 +11,119 @@ struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
     let attemptTrackerUseCase: AttemptTrackerUseCaseType
     let wordListViewStateConverter: WordListViewStateConverterType
     let navigationRouter: NavigationRouterType
-    let schedulerFactory: SchedulerFactoryType
-    
-    func create(for word: String) -> FinishedGameViewModelType {
+
+    func make(for word: String) -> FinishedGameViewModelType {
         FinishedGameViewModel(word: word,
                               dictionaryUseCase: dictionaryUseCase,
                               streakUseCase: streakUseCase,
                               attemptTrackerUseCase: attemptTrackerUseCase,
                               wordListViewStateConverter: wordListViewStateConverter,
-                              navigationRouter: navigationRouter,
-                              schedulerFactory: schedulerFactory)
+                              navigationRouter: navigationRouter)
     }
 }
 
-protocol FinishedGameViewModelType {
-    var viewState: AnyPublisher<FinishedGameViewState, Never> { get }
+protocol FinishedGameViewModelType: AnyObject {
+    var viewState: FinishedGameViewState { get }
+    func load() async
 }
 
+@Observable
 final class FinishedGameViewModel: FinishedGameViewModelType {
-    
+
+    // MARK: - Life Cycle
+
     init(
         word: String,
         dictionaryUseCase: DictionaryUseCaseType,
         streakUseCase: StreakUseCaseType,
         attemptTrackerUseCase: AttemptTrackerUseCaseType,
         wordListViewStateConverter: WordListViewStateConverterType,
-        navigationRouter: NavigationRouterType,
-        schedulerFactory: SchedulerFactoryType
+        navigationRouter: NavigationRouterType
     ) {
-        self.streakUseCase = streakUseCase
+        self.word = word
+        self.dictionaryUseCase = dictionaryUseCase
         self.wordListViewStateConverter = wordListViewStateConverter
         self.navigationRouter = navigationRouter
-        self.schedulerFactory = schedulerFactory
         self.title = attemptTrackerUseCase.feedbackMessage()
         self.scoreMessage = "You solved it on your \(attemptTrackerUseCase.ordinalString()) try"
-        
-        dictionaryUseCase.create(for: word)
-            .combineLatest(selectedMeaningSubject)
-            .receive(on: schedulerFactory.makeMainScheduler())
-            .map { [weak self] dataState, selectedMeaning -> FinishedGameViewState in
-                guard let self else { return .empty }
-                switch dataState {
-                case .error:
-                    return .init(
-                        allWordButton: allWordsButtonState,
-                        title: title,
-                        scoreString: scoreMessage,
-                        currentStreak: createCurrentStreak(),
-                        totalPlayed: createTotalPlayed(),
-                        meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: word.uppercased()),
-                        subtitle: subtitle
-                    )
-                case .loading:
-                    return .init(
-                        allWordButton: allWordsButtonState,
-                        title: title,
-                        scoreString: scoreMessage,
-                        currentStreak: createCurrentStreak(),
-                        totalPlayed: createTotalPlayed(),
-                        meaning: .loading,
-                        subtitle: subtitle
-                    )
-                case let .data(model):
-                    let viewState = createLoadedViewState(from: model, selectedMeaning: selectedMeaning)
-                    defer {
-                        setSelectedMeaningIfNecessary(from: viewState)
-                    }
-                    return viewState
-                }
-            }
-            .assign(to: \.value, on: viewStateSubject)
-            .store(in: &cancellables)
+        self.currentStreakValue = streakUseCase.calculateStreak()
+        self.totalPlayedValue = streakUseCase.totalPlayed()
     }
-    
-    var viewState: AnyPublisher<FinishedGameViewState, Never> {
-        viewStateSubject.eraseToAnyPublisher()
-    }
-    
-    // MARK: - Privates
-    private var cancellables: Set<AnyCancellable> = []
-    private let viewStateSubject: CurrentValueSubject<FinishedGameViewState, Never> = .init(.empty)
-    private let selectedMeaningSubject: CurrentValueSubject<FinishedGameViewState.Meaning.MeaningViewState.Meaning?, Never> = .init(nil)
-    
-    private let streakUseCase: StreakUseCaseType
-    private let wordListViewStateConverter: WordListViewStateConverterType
-    private let navigationRouter: NavigationRouterType
-    private let schedulerFactory: SchedulerFactoryType
-    
-    private let title: String
-    private let scoreMessage: String
-    private let subtitle: String = "Come back tomorrow for another challenge!"
-    
-    private lazy var currentStreak: Int = {
-        streakUseCase.calculateStreak()
-    }()
-    
-    private lazy var totalPlayed: Int = {
-        streakUseCase.totalPlayed()
-    }()
-    
-    private func createCurrentStreak() -> FinishedGameViewState.Streak {
-        .init(title: "Current streak", value: currentStreak)
-    }
-    
-    private func createTotalPlayed() -> FinishedGameViewState.Streak {
-        .init(title: "Played", value: totalPlayed)
-    }
-    
-    private func createLoadedViewState(from model: WordMeaningModel,
-                                       selectedMeaning: FinishedGameViewState.Meaning.MeaningViewState.Meaning?) -> FinishedGameViewState {
-        let meanings: [FinishedGameViewState.Meaning.MeaningViewState.Meaning] = model.meanings
-            .enumerated()
-            .map { .init(
-                from: $0.element,
-                index: $0.offset
-            )}
 
-        return .init(
+    // MARK: - Publics
+
+    var viewState: FinishedGameViewState {
+        switch dataState {
+        case .error:
+            return makeViewState(
+                meaning: .error(message: "You’ve solved today’s puzzle. The word was", word: word.uppercased())
+            )
+        case .loading:
+            return makeViewState(meaning: .loading)
+        case let .data(model):
+            return makeViewState(meaning: makeMeaningSection(from: model))
+        }
+    }
+
+    func load() async {
+        dataState = await dictionaryUseCase.meaning(for: word)
+        selectDefaultMeaningIfNeeded()
+    }
+
+    // MARK: - Privates
+
+    @ObservationIgnored private let word: String
+    @ObservationIgnored private let dictionaryUseCase: DictionaryUseCaseType
+    @ObservationIgnored private let wordListViewStateConverter: WordListViewStateConverterType
+    @ObservationIgnored private let navigationRouter: NavigationRouterType
+
+    @ObservationIgnored private let title: String
+    @ObservationIgnored private let scoreMessage: String
+    @ObservationIgnored private let subtitle: String = "Come back tomorrow for another challenge!"
+    @ObservationIgnored private let currentStreakValue: Int
+    @ObservationIgnored private let totalPlayedValue: Int
+
+    private var dataState: DictionaryDataState = .loading
+    private var selectedMeaning: FinishedGameViewState.Meaning.MeaningViewState.Meaning?
+
+    private func makeViewState(meaning: FinishedGameViewState.Meaning) -> FinishedGameViewState {
+        .init(
             allWordButton: allWordsButtonState,
             title: title,
             scoreString: scoreMessage,
-            currentStreak: createCurrentStreak(),
-            totalPlayed: createTotalPlayed(),
-            meaning: .meaning(viewState: .init(
-                word: model.word.uppercased(),
-                meanings: meanings,
-                selectedMeaning: selectedMeaning,
-                onSelectMeaning: { [selectedMeaningSubject] meaning in
-                    selectedMeaningSubject.send(meaning)
-                }
-            )),
+            currentStreak: .init(title: "Current streak", value: currentStreakValue),
+            totalPlayed: .init(title: "Played", value: totalPlayedValue),
+            meaning: meaning,
             subtitle: subtitle
         )
     }
-    
-    private func setSelectedMeaningIfNecessary(from viewState: FinishedGameViewState) {
-        guard selectedMeaningSubject.value == nil else { return }
-        switch viewState.meaning {
-        case .loading, .error: return
-        case let .meaning(viewState):
-            self.selectedMeaningSubject.send(viewState.meanings.first)
-        }
+
+    private func makeMeaningSection(from model: WordMeaningModel) -> FinishedGameViewState.Meaning {
+        .meaning(viewState: .init(
+            word: model.word.uppercased(),
+            meanings: meanings(from: model),
+            selectedMeaning: selectedMeaning,
+            onSelectMeaning: { [weak self] meaning in self?.selectedMeaning = meaning }
+        ))
     }
-    
+
+    private func meanings(from model: WordMeaningModel) -> [FinishedGameViewState.Meaning.MeaningViewState.Meaning] {
+        model.meanings
+            .enumerated()
+            .map { .init(from: $0.element, index: $0.offset) }
+    }
+
+    private func selectDefaultMeaningIfNeeded() {
+        guard selectedMeaning == nil, case let .data(model) = dataState else { return }
+        selectedMeaning = meanings(from: model).first
+    }
+
     private var allWordsButtonState: FinishedGameViewState.AllWordButton {
         .init(
             title: "All words",
             onTap: .init { [wordListViewStateConverter, navigationRouter] in
                 navigationRouter
-                    .gotoDestination(.wordList(viewState: wordListViewStateConverter.create()))
+                    .gotoDestination(.wordList(viewState: wordListViewStateConverter.make()))
             }
         )
     }

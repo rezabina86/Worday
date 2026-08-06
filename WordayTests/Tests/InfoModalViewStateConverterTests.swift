@@ -11,10 +11,10 @@ struct InfoModalViewStateConverterTests {
         sut = .init(bundle: mockBundle)
     }
 
-    @Test func testCreate() async throws {
+    @Test func makesViewState() {
         mockBundle.version = "1.3.0"
         mockBundle.build = "1"
-        let result = sut.create()
+        let result = sut.make()
         
         #expect(
             result == .init(

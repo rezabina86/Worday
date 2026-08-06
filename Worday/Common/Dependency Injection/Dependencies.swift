@@ -51,8 +51,7 @@ public func injectDependencies(into container: ContainerType) {
         GameViewModelFactory(fetchWordUseCase: container.resolve(),
                              ongoingGameViewModelFactory: container.resolve(),
                              finishedGameViewModelFactory: container.resolve(),
-                             scenePhaseObserver: container.resolve(),
-                             appTriggerFactory: container.resolve(),
+                             finishGameRelay: container.resolve(),
                              modalCoordinator: container.resolve(),
                              navigationRouter: container.resolve())
     }
@@ -81,16 +80,7 @@ public func injectDependencies(into container: ContainerType) {
         ArrayShuffle()
     }
     
-    container.register(in: .weakContainer) { container -> AppTriggerFactoryType in
-        AppTriggerFactory(scenePhaseObserver: container.resolve(),
-                          finishGameRelay: container.resolve())
-    }
-    
-    container.register(in: .weakContainer) { _ -> ScenePhaseObserverType in
-        ScenePhaseObserver()
-    }
-    
-    container.register(in: .weakContainer) { _ -> FinishGameRelayType in
+    container.register(in: .container) { _ -> FinishGameRelayType in
         FinishGameRelay()
     }
     
@@ -120,11 +110,10 @@ public func injectDependencies(into container: ContainerType) {
                                      streakUseCase: container.resolve(),
                                      attemptTrackerUseCase: container.resolve(),
                                      wordListViewStateConverter: container.resolve(),
-                                     navigationRouter: container.resolve(),
-                                     schedulerFactory: container.resolve())
+                                     navigationRouter: container.resolve())
     }
-    
-    container.register(in: .weakContainer) { container -> ModalCoordinatorType in
+
+    container.register(in: .container) { _ -> ModalCoordinatorType in
         ModalCoordinator()
     }
     
@@ -137,11 +126,11 @@ public func injectDependencies(into container: ContainerType) {
                       calendarService: container.resolve())
     }
     
-    container.register(in: .weakContainer) { container -> AttemptTrackerUseCaseType in
+    container.register(in: .container) { container -> AttemptTrackerUseCaseType in
         AttemptTrackerUseCase(userSettings: container.resolve())
     }
-    
-    container.register(in: .weakContainer) { _ -> NavigationRouterType in
+
+    container.register(in: .container) { _ -> NavigationRouterType in
         NavigationRouter()
     }
     
@@ -152,11 +141,6 @@ public func injectDependencies(into container: ContainerType) {
     }
     
     container.register { container -> WordMeaningViewModelFactoryType in
-        WordMeaningViewModelFactory(dictionaryUseCase: container.resolve(),
-                                    schedulerFactory: container.resolve())
-    }
-    
-    container.register { _ -> SchedulerFactoryType in
-        SchedulerFactory()
+        WordMeaningViewModelFactory(dictionaryUseCase: container.resolve())
     }
 }

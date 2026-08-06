@@ -1,80 +1,92 @@
-import Combine
 import Testing
+import SwiftUI
 import Foundation
 @testable import Worday
 
-final class GameViewModelTests {
-    let sut: GameViewModel!
+struct GameViewModelTests {
+    let sut: GameViewModel
     let mockWordProviderUseCase: WordProviderUseCaseMock
     let mockOngoingGameViewModelFactory: OngoingGameViewModelFactoryMock
     let mockFinishedGameViewModelFactory: FinishedGameViewModelFactoryMock
-    let mockScenePhaseObserver: ScenePhaseObserverMock
-    let mockAppTriggerFactory: AppTriggerFactoryMock
+    let mockFinishGameRelay: FinishGameRelayMock
     let mockModalCoordinator: ModalCoordinatorMock
     let mockNavigationRouter: NavigationRouterMock
-    
-    var cancellables: Set<AnyCancellable>
-    var viewState: GameViewState?
-    
+
     init() {
-        cancellables = []
         mockWordProviderUseCase = .init()
         mockOngoingGameViewModelFactory = .init()
         mockFinishedGameViewModelFactory = .init()
-        mockScenePhaseObserver = .init()
-        mockAppTriggerFactory = .init()
+        mockFinishGameRelay = .init()
         mockModalCoordinator = .init()
         mockNavigationRouter = .init()
-        
+
         sut = .init(
             wordProviderUseCase: mockWordProviderUseCase,
             ongoingGameViewModelFactory: mockOngoingGameViewModelFactory,
             finishedGameViewModelFactory: mockFinishedGameViewModelFactory,
-            scenePhaseObserver: mockScenePhaseObserver,
-            appTriggerFactory: mockAppTriggerFactory,
+            finishGameRelay: mockFinishGameRelay,
             modalCoordinator: mockModalCoordinator,
             navigationRouter: mockNavigationRouter
         )
-        
-        sut.viewState
-            .sink { [weak self] state in
-                self?.viewState = state
-            }
-            .store(in: &cancellables)
     }
-    
-    @Test func testCreateWithWord() async throws {
+
+    @Test("refresh builds the ongoing-game state when there is a word")
+    func refreshCreatesGameState() {
         mockWordProviderUseCase.fetchReturnValue = .word(word: "abcde")
-        mockAppTriggerFactory.triggerRelay.send(())
-        #expect(mockOngoingGameViewModelFactory.calls == [.create(word: "abcde")])
+        sut.refresh()
+        #expect(mockOngoingGameViewModelFactory.calls == [.make(word: "abcde")])
         #expect(mockFinishedGameViewModelFactory.calls.isEmpty)
-        #expect(viewState?.isGame ?? false)
+        #expect(sut.viewState.isGame)
     }
-    
-    @Test func testCreateWithoutWord() async throws {
+
+    @Test("refresh builds the finished state when today is already played")
+    func refreshCreatesFinishedState() {
         mockWordProviderUseCase.fetchReturnValue = .noWordToday(lastPlayedWord: "abcde")
-        mockAppTriggerFactory.triggerRelay.send(())
+        sut.refresh()
         #expect(mockOngoingGameViewModelFactory.calls.isEmpty)
-        #expect(mockFinishedGameViewModelFactory.calls == [.create(word: "abcde")])
-        #expect(viewState?.isNotGameToday ?? false)
+        #expect(mockFinishedGameViewModelFactory.calls == [.make(word: "abcde")])
+        #expect(sut.viewState.isNotGameToday)
     }
-    
-    @Test func testCreateWithError() async throws {
+
+    @Test("refresh builds the error state when fetching fails")
+    func refreshCreatesErrorState() {
         mockWordProviderUseCase.fetchReturnValue = .error
-        mockAppTriggerFactory.triggerRelay.send(())
+        sut.refresh()
         #expect(mockOngoingGameViewModelFactory.calls.isEmpty)
         #expect(mockFinishedGameViewModelFactory.calls.isEmpty)
-        #expect(viewState == .error)
+        #expect(sut.viewState == .error)
     }
-    
-    @Test func testPresentInfoModal() async throws {
-        sut.setModalDestination(.info(.init(topics: [], versionString: "")))
+
+    @Test("refresh dedupes an unchanged fetch result")
+    func refreshDedupesUnchangedResult() {
+        mockWordProviderUseCase.fetchReturnValue = .noWordToday(lastPlayedWord: "abcde")
+        sut.refresh()
+        sut.refresh()
+        #expect(mockFinishedGameViewModelFactory.calls == [.make(word: "abcde")])
+    }
+
+    @Test("a game-finished event re-fetches the day's state")
+    func gameFinishedEventRefetches() async {
+        mockWordProviderUseCase.fetchReturnValue = .noWordToday(lastPlayedWord: "abcde")
+        mockFinishGameRelay.finishGame()
+        mockFinishGameRelay.finishStream()
+
+        await sut.observeGameFinished()
+
+        #expect(mockFinishedGameViewModelFactory.calls == [.make(word: "abcde")])
+        #expect(sut.viewState.isNotGameToday)
+    }
+
+    @Test("setting the modal destination presents it through the coordinator")
+    func presentsInfoModal() {
+        sut.modalDestination = .info(.init(topics: [], versionString: ""))
         #expect(mockModalCoordinator.calls == [.present(destination: .info(.init(topics: [], versionString: "")))])
     }
-    
-    @Test func testPhaseChanged() async throws {
-        sut.scenePhaseChanged(.active)
-        #expect(mockScenePhaseObserver.calls == [.phaseChanged(scenePhase: .active)])
+
+    @Test("the navigation path is projected from the router")
+    func navigationPathProxiesRouter() {
+        sut.navigationPath = NavigationPath([NavigationDestination.none])
+        #expect(mockNavigationRouter.calls == [.setPath(path: NavigationPath([NavigationDestination.none]))])
     }
 }
 
@@ -85,7 +97,7 @@ private extension GameViewState {
         case .empty, .error, .noWordToday: return false
         }
     }
-    
+
     var isNotGameToday: Bool {
         switch self {
         case .empty, .error, .game: return false

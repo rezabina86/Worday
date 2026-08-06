@@ -1,20 +1,36 @@
-import Combine
+import Foundation
 @testable import Worday
 
 final class FinishGameRelayMock: FinishGameRelayType {
-    
+
+    // MARK: - Life Cycle
+
+    init() {
+        (events, continuation) = AsyncStream<Void>.makeStream()
+    }
+
+    // MARK: - Publics
+
     enum Call: Equatable {
         case finishGame
     }
-    
+
+    let events: AsyncStream<Void>
+
     func finishGame() {
         calls.append(.finishGame)
+        continuation.yield(())
     }
-    
-    var gameFinished: AnyPublisher<Void, Never> {
-        gameFinishedSubject.eraseToAnyPublisher()
+
+    /// Terminates the event stream so a `for await` consumer's loop exits — lets tests
+    /// deterministically drain buffered events then return.
+    func finishStream() {
+        continuation.finish()
     }
-    
-    var calls: [Call] = []
-    var gameFinishedSubject: PassthroughSubject<Void,Never> = .init()
+
+    private(set) var calls: [Call] = []
+
+    // MARK: - Privates
+
+    private let continuation: AsyncStream<Void>.Continuation
 }

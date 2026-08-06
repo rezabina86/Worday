@@ -16,7 +16,7 @@ struct WordayApp: App {
     
     var body: some Scene {
         WindowGroup {
-            GameView(viewModel: gameViewModelFactory.create())
+            GameView(viewModel: gameViewModelFactory.make())
         }
     }
     

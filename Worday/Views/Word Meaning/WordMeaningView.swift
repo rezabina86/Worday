@@ -7,7 +7,8 @@ struct WordMeaningView: View {
     }
     
     var body: some View {
-        ZStack {
+        let viewState = viewModel.viewState
+        return ZStack {
             WDBackground()
             makeBody(with: viewState)
                 .transition(.opacity)
@@ -16,15 +17,10 @@ struct WordMeaningView: View {
                 .padding(.top, .space_8pt)
                 .ignoresSafeArea(edges: .bottom)
         }
-        .task {
-            for await vs in viewModel.viewState.values {
-                self.viewState = vs
-            }
-        }
+        .task { await viewModel.load() }
     }
-    
+
     // MARK: - Privates
-    @State private var viewState: WordMeaningViewState = .loading
     private let viewModel: WordMeaningViewModelType
     
     @ViewBuilder

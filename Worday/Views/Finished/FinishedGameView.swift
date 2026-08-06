@@ -8,19 +8,15 @@ struct FinishedGameView: View {
     
     var body: some View {
         makeBody
-            .task {
-                for await vs in viewModel.viewState.values {
-                    self.viewState = vs
-                }
-            }
+            .task { await viewModel.load() }
     }
-    
+
     // MARK: - Privates
     private let viewModel: FinishedGameViewModelType
-    @State private var viewState: FinishedGameViewState = .empty
-    
+
     private var makeBody: some View {
-        VStack(alignment: .center, spacing: .space_16pt) {
+        let viewState = viewModel.viewState
+        return VStack(alignment: .center, spacing: .space_16pt) {
             HStack {
                 Spacer()
                 Button(viewState.allWordButton.title) {

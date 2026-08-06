@@ -1,7 +1,7 @@
 import Foundation
 
 protocol InfoModalViewStateConverterType {
-    func create() -> InfoModalViewState
+    func make() -> InfoModalViewState
 }
 
 struct InfoModalViewStateConverter: InfoModalViewStateConverterType {
@@ -10,7 +10,7 @@ struct InfoModalViewStateConverter: InfoModalViewStateConverterType {
         self.bundle = bundle
     }
     
-    func create() -> InfoModalViewState {
+    func make() -> InfoModalViewState {
         .init(
             topics: [
                 "Each day, the game provides a new word for you to guess.",

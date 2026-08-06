@@ -3,61 +3,57 @@ import Foundation
 @testable import Worday
 
 struct AttemptTrackerUseCaseTests {
-    var sut: AttemptTrackerUseCase
-    var mockUserSettings: UserSettingsMock
-    
-    private let testSubscriber: TestableSubscriber<Int, Never>
-    
+    let sut: AttemptTrackerUseCase
+    let mockUserSettings: UserSettingsMock
+
     init() {
         mockUserSettings = .init()
         sut = .init(userSettings: mockUserSettings)
-        
-        testSubscriber = .init()
-        sut.numberOfTries
-            .subscribe(testSubscriber)
     }
-    
-    @Test func testCleanup() async throws {
-        sut.advance()
-        sut.cleanup()
-        
-        #expect(mockUserSettings.setNumberOfTriesCall == [
-            .numberOfTries(.set(1)),
-            .numberOfTries(.set(nil))
-        ])
-        
-        #expect(testSubscriber.receivedValues == [0, 1, 0])
-    }
-    
-    @Test func testAdvance() async throws {
+
+    @Test("it seeds from user settings and advances the counter, persisting each step")
+    func advance() {
         #expect(mockUserSettings.getNumberOfTriesCall == [.numberOfTries(.get)])
-        
+        #expect(sut.numberOfTries == 0)
+
         sut.advance()
+        #expect(sut.numberOfTries == 1)
+
         sut.advance()
-        
+        #expect(sut.numberOfTries == 2)
+
         #expect(mockUserSettings.setNumberOfTriesCall == [
             .numberOfTries(.set(1)),
             .numberOfTries(.set(2))
         ])
-        
-        #expect(testSubscriber.receivedValues == [0, 1, 2])
     }
-    
-    @Test func testOrdinalString() async throws {
+
+    @Test("it resets the counter and clears the persisted value")
+    func cleanup() {
         sut.advance()
-        
+        #expect(sut.numberOfTries == 1)
+
+        sut.cleanup()
+        #expect(sut.numberOfTries == 0)
+
+        #expect(mockUserSettings.setNumberOfTriesCall == [
+            .numberOfTries(.set(1)),
+            .numberOfTries(.set(nil))
+        ])
+    }
+
+    @Test("it renders the ordinal for the current try count")
+    func ordinalString() {
+        sut.advance()
         #expect(sut.ordinalString() == "1st")
-        
+
         sut.advance()
-        
         #expect(sut.ordinalString() == "2nd")
-        
+
         sut.advance()
-        
         #expect(sut.ordinalString() == "3rd")
-        
+
         sut.advance()
-        
         #expect(sut.ordinalString() == "4th")
     }
 }

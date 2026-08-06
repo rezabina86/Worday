@@ -1,20 +1,18 @@
-import Combine
+import Foundation
 @testable import Worday
 
 final class ModalCoordinatorMock: ModalCoordinatorType {
-    
+
     enum Call: Equatable {
         case present(destination: ModalCoordinatorDestination?)
     }
-    
-    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> {
-        currentDestinationSubject.eraseToAnyPublisher()
-    }
-    
+
+    var destination: ModalCoordinatorDestination?
+
     func present(_ destination: ModalCoordinatorDestination?) {
+        self.destination = destination
         calls.append(.present(destination: destination))
     }
-    
-    var calls: [Call] = []
-    var currentDestinationSubject: CurrentValueSubject<ModalCoordinatorDestination?, Never> = .init(nil)
+
+    private(set) var calls: [Call] = []
 }

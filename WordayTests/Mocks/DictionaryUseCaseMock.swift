@@ -1,17 +1,17 @@
-import Combine
+import Foundation
 @testable import Worday
 
 final class DictionaryUseCaseMock: DictionaryUseCaseType {
-    
+
     enum Call: Equatable {
-        case create(word: String)
+        case meaning(word: String)
     }
-    
-    func create(for word: String) -> AnyPublisher<DictionaryDataState, Never> {
-        calls.append(.create(word: word))
-        return createSubject.eraseToAnyPublisher()
+
+    func meaning(for word: String) async -> DictionaryDataState {
+        calls.append(.meaning(word: word))
+        return meaningReturnValue
     }
-    
-    var calls: [Call] = []
-    var createSubject: PassthroughSubject<DictionaryDataState, Never> = .init()
+
+    private(set) var calls: [Call] = []
+    var meaningReturnValue: DictionaryDataState = .loading
 }

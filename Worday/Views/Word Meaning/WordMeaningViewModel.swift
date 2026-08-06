@@ -1,88 +1,77 @@
-import Combine
 import Foundation
+import Observation
 
 protocol WordMeaningViewModelFactoryType {
-    func create(word: String) -> WordMeaningViewModelType
+    func make(word: String) -> WordMeaningViewModelType
 }
 
 struct WordMeaningViewModelFactory: WordMeaningViewModelFactoryType {
     let dictionaryUseCase: DictionaryUseCaseType
-    let schedulerFactory: SchedulerFactoryType
-    
-    func create(word: String) -> WordMeaningViewModelType {
-        WordMeaningViewModel(word: word,
-                             dictionaryUseCase: dictionaryUseCase,
-                             schedulerFactory: schedulerFactory)
+
+    func make(word: String) -> WordMeaningViewModelType {
+        WordMeaningViewModel(word: word, dictionaryUseCase: dictionaryUseCase)
     }
 }
 
-protocol WordMeaningViewModelType {
-    var viewState: AnyPublisher<WordMeaningViewState, Never> { get }
+protocol WordMeaningViewModelType: AnyObject {
+    var viewState: WordMeaningViewState { get }
+    func load() async
 }
 
+@Observable
 final class WordMeaningViewModel: WordMeaningViewModelType {
-    
-    init(word: String,
-         dictionaryUseCase: DictionaryUseCaseType,
-         schedulerFactory: SchedulerFactoryType) {
-        
-        dictionaryUseCase.create(for: word)
-            .combineLatest(selectedMeaningSubject)
-            .receive(on: schedulerFactory.makeMainScheduler())
-            .map { [weak self] dataState, selectedMeaning -> WordMeaningViewState in
-                guard let self else { return .loading }
-                switch dataState {
-                case .error:
-                    return .error(message: "There was an error loading the word. The word is", word: word.uppercased())
-                case .loading:
-                    return .loading
-                case let .data(model):
-                    let viewState = createLoadedViewState(from: model, selectedMeaning: selectedMeaning)
-                    defer {
-                        setSelectedMeaningIfNecessary(from: viewState)
-                    }
-                    return viewState
-                }
-            }
-            .assign(to: \.value, on: viewStateSubject)
-            .store(in: &cancellables)
-    }
-    
-    var viewState: AnyPublisher<WordMeaningViewState, Never> {
-        viewStateSubject.eraseToAnyPublisher()
-    }
-    
-    // MARK: - Privates
-    private var cancellables: Set<AnyCancellable> = []
-    private let viewStateSubject: CurrentValueSubject<WordMeaningViewState, Never> = .init(.loading)
-    private let selectedMeaningSubject: CurrentValueSubject<WordMeaningViewState.MeaningViewState.Meaning?, Never> = .init(nil)
-    
-    private func createLoadedViewState(from model: WordMeaningModel,
-                                       selectedMeaning: WordMeaningViewState.MeaningViewState.Meaning?) -> WordMeaningViewState {
-        let meanings: [WordMeaningViewState.MeaningViewState.Meaning] = model.meanings
-            .enumerated()
-            .map { .init(
-                from: $0.element,
-                index: $0.offset
-            )}
 
-        return .meaning(viewState: .init(
+    // MARK: - Life Cycle
+
+    init(word: String, dictionaryUseCase: DictionaryUseCaseType) {
+        self.word = word
+        self.dictionaryUseCase = dictionaryUseCase
+    }
+
+    // MARK: - Publics
+
+    var viewState: WordMeaningViewState {
+        switch dataState {
+        case .error:
+            return .error(message: "There was an error loading the word. The word is", word: word.uppercased())
+        case .loading:
+            return .loading
+        case let .data(model):
+            return makeMeaningViewState(from: model)
+        }
+    }
+
+    func load() async {
+        dataState = await dictionaryUseCase.meaning(for: word)
+        selectDefaultMeaningIfNeeded()
+    }
+
+    // MARK: - Privates
+
+    @ObservationIgnored private let word: String
+    @ObservationIgnored private let dictionaryUseCase: DictionaryUseCaseType
+
+    private var dataState: DictionaryDataState = .loading
+    private var selectedMeaning: WordMeaningViewState.MeaningViewState.Meaning?
+
+    private func makeMeaningViewState(from model: WordMeaningModel) -> WordMeaningViewState {
+        .meaning(viewState: .init(
             word: model.word.uppercased(),
-            meanings: meanings,
+            meanings: meanings(from: model),
             selectedMeaning: selectedMeaning,
-            onSelectMeaning: { [selectedMeaningSubject] meaning in
-                selectedMeaningSubject.send(meaning)
-            }
+            onSelectMeaning: { [weak self] meaning in self?.selectedMeaning = meaning }
         ))
     }
-    
-    private func setSelectedMeaningIfNecessary(from viewState: WordMeaningViewState) {
-        guard selectedMeaningSubject.value == nil else { return }
-        switch viewState {
-        case .loading, .error: return
-        case let .meaning(viewState):
-            self.selectedMeaningSubject.send(viewState.meanings.first)
-        }
+
+    private func meanings(from model: WordMeaningModel) -> [WordMeaningViewState.MeaningViewState.Meaning] {
+        model.meanings
+            .enumerated()
+            .map { .init(from: $0.element, index: $0.offset) }
+    }
+
+    private func selectDefaultMeaningIfNeeded() {
+        guard selectedMeaning == nil, case let .data(model) = dataState else { return }
+        selectedMeaning = meanings(from: model).first
     }
 }
 
