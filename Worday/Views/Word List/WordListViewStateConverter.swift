@@ -6,14 +6,14 @@ protocol WordListViewStateConverterType {
 
 struct WordListViewStateConverter: WordListViewStateConverterType {
     
-    init(wordContext: WordStorageModelContextType,
+    init(playedWordsLibrary: PlayedWordsLibraryType,
          navigationRouter: NavigationRouterType) {
-        self.wordContext = wordContext
+        self.playedWordsLibrary = playedWordsLibrary
         self.navigationRouter = navigationRouter
     }
     
     func make() -> WordListViewState {
-        let allWords = (try? self.wordContext.fetchAll()) ?? []
+        let allWords = playedWordsLibrary.words
         let cards: [WordListViewState.Card] = allWords.enumerated()
             .compactMap { index, word in
                 .init(
@@ -33,6 +33,6 @@ struct WordListViewStateConverter: WordListViewStateConverterType {
     }
     
     // MARK: - Privates
-    private let wordContext: WordStorageModelContextType
+    private let playedWordsLibrary: PlayedWordsLibraryType
     private let navigationRouter: NavigationRouterType
 }

@@ -38,5 +38,9 @@ extension ContainerType {
         register(in: .container) { container in
             AttemptTrackerUseCase(userSettings: container.resolve()) as AttemptTrackerUseCaseType
         }
+
+        register(in: .container) { container in
+            PlayedWordsLibrary(wordContext: container.resolve()) as PlayedWordsLibraryType
+        }
     }
 }

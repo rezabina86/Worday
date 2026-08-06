@@ -492,6 +492,28 @@ immediately; it is not captured at construction.
 
 ---
 
+## Shared Store Projections
+
+When **multiple surfaces read the same persisted collection**, don't let each call the store's
+`fetchAll()` itself. Introduce **one `.container`-scoped `@Observable` read-projection** over the store —
+the observable window everyone reads.
+
+- **`PlayedWordsLibrary`** (`PlayedWordsLibraryType`, `@Observable`, `.container`) is the projection over
+  `WordStorageModelContextType`: it owns `words`, derived via `load()` at launch (hydrated in
+  `WordayApp.init`) and `reload()` after a change. The **store stays the single source of truth** — the
+  projection only ever derives from it, so the readers can't disagree.
+- **Readers take the projection, not the store.** `WordListViewStateConverter` and `StreakUseCase` read
+  `playedWordsLibrary.words` — never `wordContext.fetchAll()`. Because it's a shared `@Observable`, a
+  change re-renders every reader natively.
+- **The writer owns the store and refreshes the projection.** `WordProviderUseCase` writes through
+  `WordStorageModelContextType` (insert/save) and then calls `playedWordsLibrary.reload()` — a direct
+  call, not a signal. The writer may still read the canonical store directly for its own logic; the
+  projection is for the *display* readers.
+- `.container` scope + `===` in `DependencyGraphTests` (one stable shared instance). A new display reader
+  of the stored words takes `PlayedWordsLibraryType`; a new *store* is given its own projection.
+
+---
+
 ## Networking
 
 The API layer is already fully **async/await** and stays that way:

@@ -5,15 +5,15 @@ import Foundation
 struct StreakUseCaseTests {
     
     var sut: StreakUseCase
-    var mockWordContext: WordStorageModelContextMock
+    var mockPlayedWordsLibrary: PlayedWordsLibraryMock
     var mockCalendarService: CalendarServiceMock
-    
+
     init() {
-        mockWordContext = .init()
+        mockPlayedWordsLibrary = .init()
         mockCalendarService = .init()
-        
+
         sut = .init(
-            wordContext: mockWordContext,
+            playedWordsLibrary: mockPlayedWordsLibrary,
             calendarService: mockCalendarService
         )
         
@@ -32,7 +32,7 @@ struct StreakUseCaseTests {
     }
 
     @Test func totalPlayed() async throws {
-        mockWordContext.fetchReturnValue = [
+        mockPlayedWordsLibrary.words = [
             .init(id: "1", word: "abcde", playedAt: .now),
             .init(id: "2", word: "abcde", playedAt: .now),
             .init(id: "3", word: "abcde", playedAt: .now)
@@ -42,7 +42,7 @@ struct StreakUseCaseTests {
     }
     
     @Test func streakConsecutiveDates() async throws {
-        mockWordContext.fetchReturnValue = [
+        mockPlayedWordsLibrary.words = [
             .init(id: "1", word: "abcde", playedAt: date1),
             .init(id: "2", word: "abcde", playedAt: date2),
             .init(id: "3", word: "abcde", playedAt: date3)
@@ -52,7 +52,7 @@ struct StreakUseCaseTests {
     }
     
     @Test func streakPlayedOnce() async throws {
-        mockWordContext.fetchReturnValue = [
+        mockPlayedWordsLibrary.words = [
             .init(id: "1", word: "abcde", playedAt: date1)
         ]
         
@@ -60,7 +60,7 @@ struct StreakUseCaseTests {
     }
     
     @Test func streakNonConsecutiveDates() async throws {
-        mockWordContext.fetchReturnValue = [
+        mockPlayedWordsLibrary.words = [
             .init(id: "1", word: "abcde", playedAt: date1),
             .init(id: "2", word: "abcde", playedAt: date3),
             .init(id: "3", word: "abcde", playedAt: date4)
@@ -70,7 +70,7 @@ struct StreakUseCaseTests {
     }
     
     @Test func streakNotPlayedToday() async throws {
-        mockWordContext.fetchReturnValue = [
+        mockPlayedWordsLibrary.words = [
             .init(id: "2", word: "abcde", playedAt: date3),
             .init(id: "3", word: "abcde", playedAt: date4)
         ]

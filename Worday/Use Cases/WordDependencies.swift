@@ -15,12 +15,13 @@ extension ContainerType {
                                 uuidProvider: container.resolve(),
                                 dateProvider: Date(),
                                 finishGameRelay: container.resolve(),
-                                attemptTrackerUseCase: container.resolve())
+                                attemptTrackerUseCase: container.resolve(),
+                                playedWordsLibrary: container.resolve())
             as WordProviderUseCaseType
         }
 
         register { container in
-            StreakUseCase(wordContext: container.resolve(),
+            StreakUseCase(playedWordsLibrary: container.resolve(),
                           calendarService: container.resolve())
             as StreakUseCaseType
         }
