@@ -38,7 +38,7 @@ struct WordProviderUseCaseTests {
         )
     }
     
-    @Test func testWhenThereIsUnplayedWord() async throws {
+    @Test func whenThereIsUnplayedWord() async throws {
         mockUserSettings.currentWordReturnValue = "hello"
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
         mockWordContext.fetchReturnValue = []
@@ -54,7 +54,7 @@ struct WordProviderUseCaseTests {
         #expect(mockAttemptTrackerUseCase.calls.isEmpty)
     }
 
-    @Test func testFetchSuccessfully() async throws {
+    @Test func fetchSuccessfully() async throws {
         mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
         mockWordContext.fetchReturnValue = []
@@ -70,7 +70,7 @@ struct WordProviderUseCaseTests {
         #expect(mockAttemptTrackerUseCase.calls == [.cleanup])
     }
     
-    @Test func testFetchSuccessfullyWhenAllWordsCompleted() async throws {
+    @Test func fetchSuccessfullyWhenAllWordsCompleted() async throws {
         mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
         mockWordContext.fetchReturnValue = [
@@ -90,7 +90,7 @@ struct WordProviderUseCaseTests {
         #expect(mockAttemptTrackerUseCase.calls.isEmpty)
     }
     
-    @Test func testFetchTodayWordIsCompleted() async throws {
+    @Test func fetchTodayWordIsCompleted() async throws {
         mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
         mockWordContext.fetchReturnValue = [
@@ -109,7 +109,7 @@ struct WordProviderUseCaseTests {
         #expect(mockAttemptTrackerUseCase.calls.isEmpty)
     }
     
-    @Test func testFetchSuccessfullyWhenWordsPartiallyCompleted() async throws {
+    @Test func fetchSuccessfullyWhenWordsPartiallyCompleted() async throws {
         mockUserSettings.currentWordReturnValue = nil
         mockWordRepository.wordsReturnValue = .fake(words: ["a", "b", "c", "d"])
         mockWordContext.fetchReturnValue = [
@@ -128,7 +128,7 @@ struct WordProviderUseCaseTests {
         #expect(mockAttemptTrackerUseCase.calls == [.cleanup])
     }
     
-    @Test func testStoreWord() async throws {
+    @Test func storeWord() async throws {
         let referenceDate = Date.fake(hour: 12, minute: 23, day: 2, month: 10, year: 2023)!
         mockDateProvider.nowReturnValue = referenceDate
         mockUUIDProvider.createReturnValue = "123"

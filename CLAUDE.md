@@ -131,27 +131,39 @@ deallocate in that window and the next resolve would return a fresh, reset insta
 in-flight task or a counter). These holders are cheap; permanence costs nothing and correctness depends
 on it — use `.container`.
 
-### Per-feature registration (target convention)
+### Per-area registration
 
-The composition root should be a thin aggregator. Each feature owns its wiring in a
-`<Feature>Dependencies.swift` file in the feature's own folder, declared as an `@MainActor` extension
-method on `ContainerType`:
+The composition root is a thin aggregator. Each area owns its wiring in a `<Area>Dependencies.swift`
+file (in that area's folder), declared as an extension method on `ContainerType` — main-actor by
+default, no explicit `@MainActor`:
 
 ```swift
-@MainActor
 extension ContainerType {
-    func registerGameDependencies() {
+    func registerViewDependencies() {
         register { container in
             GameViewModelFactory(fetchWordUseCase: container.resolve(), /* … */)
         }
+        // … the rest of the view factories/converters …
     }
 }
 ```
 
-`Dependencies.swift` then only calls each feature's method — no `register` calls of its own. Adding a
-feature means adding its `<Feature>Dependencies.swift` and one line in the aggregator, never growing a
-monolithic registration function. Cross-cutting seams (`UserDefaultsType`, `BundleType`, the clock) live
-in `registerCommonDependencies()`.
+`Dependencies.swift` then only calls each area's method — no `register` calls of its own:
+
+```swift
+func injectDependencies(into container: ContainerType) {
+    container.registerCommonDependencies()
+    container.registerAPIClientDependencies()
+    container.registerDictionaryDependencies()
+    container.registerWordDependencies()
+    container.registerViewDependencies()
+}
+```
+
+Adding a dependency means adding its `register` to the matching area file (or a new `<Area>Dependencies.swift`
+plus one aggregator line), never growing a monolith. Cross-cutting seams (`UserDefaultsType`, `BundleType`,
+the clock) and the shared `.container` holders (routers, coordinator, relay, attempt tracker) live in
+`registerCommonDependencies()`. Every new registration is also added to `DependencyGraphTests`.
 
 ---
 
@@ -333,15 +345,14 @@ mutate the source of truth and `viewState` re-derives:
 has a factory:
 
 - A protocol `<Name>ViewModelFactoryType` and a concrete `<Name>ViewModelFactory`, declared together.
-- The factory is `@MainActor`, holds the view model's collaborators (injected, private), and exposes a
-  single `make(...) -> <Name>ViewModel`.
+- The factory holds the view model's collaborators (injected, private) and exposes a single
+  `make(...) -> <Name>ViewModel` (main-actor by default — no explicit `@MainActor` needed).
 - The factory is registered in the DI container; consumers depend on the `…FactoryType` protocol and call
   `make(...)`, never the view model's initializer.
 
-**Canonical shape (target):**
+**Canonical shape:**
 
 ```swift
-@MainActor
 @Observable
 final class OngoingGameViewModel {
 

@@ -17,7 +17,7 @@ struct ResourceLoaderTests {
         )
     }
 
-    @Test func testLoad() async throws {
+    @Test func load() async throws {
         let fakeURL = URL(string: "http://example.com/")!
         mockBundle.urlForResourceReturn = fakeURL
         mockURLContentLoader.contentReturnValue = fakeData

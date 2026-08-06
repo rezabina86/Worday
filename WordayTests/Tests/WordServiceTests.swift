@@ -14,7 +14,7 @@ struct WordServiceTests {
     
     let expectedEntity: WordEntity = .init(commonWords: ["right", "tibet"])
 
-    @Test func testLoad() async throws {
+    @Test func load() async throws {
         let words = try sut.load()
         #expect(words == expectedEntity)
         #expect(mockResourceLoader.calls == [.loadResource(name: "common", ext: "json")])
