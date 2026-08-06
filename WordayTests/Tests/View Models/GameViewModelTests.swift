@@ -1,5 +1,4 @@
 import Testing
-import SwiftUI
 import Foundation
 @testable import Worday
 
@@ -9,24 +8,18 @@ struct GameViewModelTests {
     let mockOngoingGameViewModelFactory: OngoingGameViewModelFactoryMock
     let mockFinishedGameViewModelFactory: FinishedGameViewModelFactoryMock
     let mockFinishGameRelay: FinishGameRelayMock
-    let mockModalCoordinator: ModalCoordinatorMock
-    let mockNavigationRouter: NavigationRouterMock
 
     init() {
         mockWordProviderUseCase = .init()
         mockOngoingGameViewModelFactory = .init()
         mockFinishedGameViewModelFactory = .init()
         mockFinishGameRelay = .init()
-        mockModalCoordinator = .init()
-        mockNavigationRouter = .init()
 
         sut = .init(
             wordProviderUseCase: mockWordProviderUseCase,
             ongoingGameViewModelFactory: mockOngoingGameViewModelFactory,
             finishedGameViewModelFactory: mockFinishedGameViewModelFactory,
-            finishGameRelay: mockFinishGameRelay,
-            modalCoordinator: mockModalCoordinator,
-            navigationRouter: mockNavigationRouter
+            finishGameRelay: mockFinishGameRelay
         )
     }
 
@@ -75,18 +68,6 @@ struct GameViewModelTests {
 
         #expect(mockFinishedGameViewModelFactory.calls == [.make(word: "abcde")])
         #expect(sut.viewState.isNotGameToday)
-    }
-
-    @Test("setting the modal destination presents it through the coordinator")
-    func presentsInfoModal() {
-        sut.modalDestination = .info(.init(topics: [], versionString: ""))
-        #expect(mockModalCoordinator.calls == [.present(destination: .info(.init(topics: [], versionString: "")))])
-    }
-
-    @Test("the navigation path is projected from the router")
-    func navigationPathProxiesRouter() {
-        sut.navigationPath = NavigationPath([NavigationDestination.none])
-        #expect(mockNavigationRouter.calls == [.setPath(path: NavigationPath([NavigationDestination.none]))])
     }
 }
 

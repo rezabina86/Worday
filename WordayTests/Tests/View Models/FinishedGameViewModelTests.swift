@@ -8,14 +8,12 @@ struct FinishedGameViewModelTests {
     let mockDictionaryUseCase: DictionaryUseCaseMock
     let mockStreakUseCase: StreakUseCaseMock
     let mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
-    let mockWordListViewStateConverter: WordListViewStateConverterMock
     let mockNavigationRouter: NavigationRouterMock
 
     init() {
         mockDictionaryUseCase = .init()
         mockStreakUseCase = .init()
         mockAttemptTrackerUseCase = .init()
-        mockWordListViewStateConverter = .init()
         mockNavigationRouter = .init()
 
         mockAttemptTrackerUseCase.ordinalStringReturnValue = "1st"
@@ -27,7 +25,6 @@ struct FinishedGameViewModelTests {
                     dictionaryUseCase: mockDictionaryUseCase,
                     streakUseCase: mockStreakUseCase,
                     attemptTrackerUseCase: mockAttemptTrackerUseCase,
-                    wordListViewStateConverter: mockWordListViewStateConverter,
                     navigationRouter: mockNavigationRouter)
     }
 
@@ -36,7 +33,7 @@ struct FinishedGameViewModelTests {
         #expect(sut.viewState == makeExpectedState(meaning: .loading))
 
         sut.viewState.allWordButton.onTap.action()
-        #expect(mockWordListViewStateConverter.calls == [.make])
+        #expect(mockNavigationRouter.calls == [.push(destination: .wordList)])
     }
 
     @Test("it shows the error state when the lookup fails")
@@ -51,7 +48,7 @@ struct FinishedGameViewModelTests {
         #expect(mockDictionaryUseCase.calls == [.meaning(word: "abcde")])
 
         sut.viewState.allWordButton.onTap.action()
-        #expect(mockWordListViewStateConverter.calls == [.make])
+        #expect(mockNavigationRouter.calls == [.push(destination: .wordList)])
     }
 
     @Test("it shows the loaded state with the first meaning selected by default")
@@ -73,7 +70,7 @@ struct FinishedGameViewModelTests {
         ))))
 
         sut.viewState.allWordButton.onTap.action()
-        #expect(mockWordListViewStateConverter.calls == [.make])
+        #expect(mockNavigationRouter.calls == [.push(destination: .wordList)])
     }
 
     @Test("selecting a meaning updates the selection")

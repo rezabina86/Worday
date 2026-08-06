@@ -9,7 +9,6 @@ struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
     let dictionaryUseCase: DictionaryUseCaseType
     let streakUseCase: StreakUseCaseType
     let attemptTrackerUseCase: AttemptTrackerUseCaseType
-    let wordListViewStateConverter: WordListViewStateConverterType
     let navigationRouter: NavigationRouterType
 
     func make(for word: String) -> FinishedGameViewModelType {
@@ -17,7 +16,6 @@ struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
                               dictionaryUseCase: dictionaryUseCase,
                               streakUseCase: streakUseCase,
                               attemptTrackerUseCase: attemptTrackerUseCase,
-                              wordListViewStateConverter: wordListViewStateConverter,
                               navigationRouter: navigationRouter)
     }
 }
@@ -37,12 +35,10 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
         dictionaryUseCase: DictionaryUseCaseType,
         streakUseCase: StreakUseCaseType,
         attemptTrackerUseCase: AttemptTrackerUseCaseType,
-        wordListViewStateConverter: WordListViewStateConverterType,
         navigationRouter: NavigationRouterType
     ) {
         self.word = word
         self.dictionaryUseCase = dictionaryUseCase
-        self.wordListViewStateConverter = wordListViewStateConverter
         self.navigationRouter = navigationRouter
         self.title = attemptTrackerUseCase.feedbackMessage()
         self.scoreMessage = "You solved it on your \(attemptTrackerUseCase.ordinalString()) try"
@@ -74,7 +70,6 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
 
     @ObservationIgnored private let word: String
     @ObservationIgnored private let dictionaryUseCase: DictionaryUseCaseType
-    @ObservationIgnored private let wordListViewStateConverter: WordListViewStateConverterType
     @ObservationIgnored private let navigationRouter: NavigationRouterType
 
     @ObservationIgnored private let title: String
@@ -121,9 +116,8 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     private var allWordsButtonState: FinishedGameViewState.AllWordButton {
         .init(
             title: "All words",
-            onTap: .init { [wordListViewStateConverter, navigationRouter] in
-                navigationRouter
-                    .gotoDestination(.wordList(viewState: wordListViewStateConverter.make()))
+            onTap: .init { [navigationRouter] in
+                navigationRouter.push(.wordList)
             }
         )
     }

@@ -6,21 +6,18 @@ struct OngoingGameViewModelFactoryTests {
     let sut: OngoingGameViewModelFactory!
     let mockWordProviderUseCase: WordProviderUseCaseMock
     let mockArrayShuffle: ArrayShuffleMock
-    let mockModalCoordinator: ModalCoordinatorMock
+    let mockModalRouter: ModalRouterMock
     let mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
-    let mockInfoModalViewStateConverter: InfoModalViewStateConverterMock
-    
+
     init() {
         mockWordProviderUseCase = .init()
         mockArrayShuffle = .init()
-        mockModalCoordinator = .init()
+        mockModalRouter = .init()
         mockAttemptTrackerUseCase = .init()
-        mockInfoModalViewStateConverter = .init()
         sut = .init(wordProviderUseCase: mockWordProviderUseCase,
                     arrayShuffle: mockArrayShuffle,
-                    modalCoordinator: mockModalCoordinator,
-                    attemptTrackerUseCase: mockAttemptTrackerUseCase,
-                    infoModalViewStateConverter: mockInfoModalViewStateConverter)
+                    modalRouter: mockModalRouter,
+                    attemptTrackerUseCase: mockAttemptTrackerUseCase)
     }
 
     @Test func makesViewModel() {

@@ -8,17 +8,15 @@ protocol OngoingGameViewModelFactoryType {
 struct OngoingGameViewModelFactory: OngoingGameViewModelFactoryType {
     let wordProviderUseCase: WordProviderUseCaseType
     let arrayShuffle: ArrayShuffleType
-    let modalCoordinator: ModalCoordinatorType
+    let modalRouter: ModalRouterType
     let attemptTrackerUseCase: AttemptTrackerUseCaseType
-    let infoModalViewStateConverter: InfoModalViewStateConverterType
 
     func make(with word: String) -> OngoingGameViewModelType {
         OngoingGameViewModel(word: word,
                              wordProviderUseCase: wordProviderUseCase,
                              arrayShuffle: arrayShuffle,
-                             modalCoordinator: modalCoordinator,
-                             attemptTrackerUseCase: attemptTrackerUseCase,
-                             infoModalViewStateConverter: infoModalViewStateConverter)
+                             modalRouter: modalRouter,
+                             attemptTrackerUseCase: attemptTrackerUseCase)
     }
 }
 
@@ -34,16 +32,14 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
     init(word: String,
          wordProviderUseCase: WordProviderUseCaseType,
          arrayShuffle: ArrayShuffleType,
-         modalCoordinator: ModalCoordinatorType,
-         attemptTrackerUseCase: AttemptTrackerUseCaseType,
-         infoModalViewStateConverter: InfoModalViewStateConverterType) {
+         modalRouter: ModalRouterType,
+         attemptTrackerUseCase: AttemptTrackerUseCaseType) {
         self.word = word.split(separator: "").map { String($0) }
         self.shuffledCharacters = arrayShuffle.shuffle(array: self.word)
         self.wordProviderUseCase = wordProviderUseCase
         self.arrayShuffle = arrayShuffle
-        self.modalCoordinator = modalCoordinator
+        self.modalRouter = modalRouter
         self.attemptTrackerUseCase = attemptTrackerUseCase
-        self.infoModalViewStateConverter = infoModalViewStateConverter
     }
 
     // MARK: - Publics
@@ -64,9 +60,8 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
 
     @ObservationIgnored private let wordProviderUseCase: WordProviderUseCaseType
     @ObservationIgnored private let arrayShuffle: ArrayShuffleType
-    @ObservationIgnored private let modalCoordinator: ModalCoordinatorType
+    @ObservationIgnored private let modalRouter: ModalRouterType
     @ObservationIgnored private let attemptTrackerUseCase: AttemptTrackerUseCaseType
-    @ObservationIgnored private let infoModalViewStateConverter: InfoModalViewStateConverterType
 
     private var characters: [GameViewState.OngoingGameViewState.Character] = [
         .empty(id: "0"), .empty(id: "1"), .empty(id: "2"), .empty(id: "3"), .empty(id: "4")
@@ -89,7 +84,7 @@ final class OngoingGameViewModel: OngoingGameViewModelType {
     }
 
     private func presentInfoModal() {
-        modalCoordinator.present(.info(infoModalViewStateConverter.make()))
+        modalRouter.present(.info)
     }
 
     private func updateCharacters(with char: String) {

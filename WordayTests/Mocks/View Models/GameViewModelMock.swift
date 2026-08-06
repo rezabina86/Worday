@@ -1,4 +1,3 @@
-import SwiftUI
 @testable import Worday
 
 final class GameViewModelMock: GameViewModelType {
@@ -9,8 +8,6 @@ final class GameViewModelMock: GameViewModelType {
     }
 
     var viewState: GameViewState = .empty
-    var navigationPath: NavigationPath = .init()
-    var modalDestination: ModalCoordinatorDestination?
 
     func refresh() {
         calls.append(.refresh)
