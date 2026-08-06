@@ -467,9 +467,14 @@ parts per concern, and a **lightweight value destination** enum:
 - **Behaviour is asserted where it originates** — the view model/converter that pushes/presents
   (`push(.wordList)`, `present(.info)`), against a `…RouterMock`.
 
-This is the general **presentation-host** rule: any app-wide decoration (navigation, modals, and future
-alerts) is a `ViewModifier` host + provider driven by a `.container` `@Observable` router — never an
-inline container or a nested host `View`. See `ProjectPrivacyMigration-Design.md`.
+This is the general **presentation-host** rule: any app-wide decoration (navigation, modals, alerts) is a
+`ViewModifier` host driven by a `.container` `@Observable` router — never an inline container or a nested
+host `View`. Hosts are applied at the app root and **order is layering**: `.navigationHost` (innermost) →
+`.modalHost` → `.alertHost` (outermost), so a modal covers a pushed screen and an alert covers everything.
+A navigation/modal host also takes a `…ViewProvider` (the destination→screen map); the **alert** host
+needs none — an `AlertState` is a plain value, and feature-specific alert content is built by small
+factories kept next to the feature (e.g. `AlertState.meaningLoadFailure(onRetry:)` in `Domain/Dictionary`).
+See `Alert Routing/AlertRouting.md` and `ProjectPrivacyMigration-Design.md`.
 
 ---
 

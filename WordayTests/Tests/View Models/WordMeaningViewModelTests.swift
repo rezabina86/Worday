@@ -5,10 +5,42 @@ import Foundation
 struct WordMeaningViewModelTests {
     let sut: WordMeaningViewModel
     let mockDictionaryUseCase: DictionaryUseCaseMock
+    let mockAlertRouter: AlertRouterMock
 
     init() {
         mockDictionaryUseCase = .init()
-        sut = .init(word: "abcde", dictionaryUseCase: mockDictionaryUseCase)
+        mockAlertRouter = .init()
+        sut = .init(word: "abcde", dictionaryUseCase: mockDictionaryUseCase, alertRouter: mockAlertRouter)
+    }
+
+    @Test("it presents a retry alert when the meaning fails to load")
+    func presentsRetryAlertOnError() async {
+        mockDictionaryUseCase.meaningReturnValue = .error
+
+        await sut.load()
+
+        #expect(mockAlertRouter.presented?.buttons.map(\.title) == ["Retry", "OK"])
+    }
+
+    @Test("the retry button re-loads the meaning")
+    func retryReloadsTheMeaning() async {
+        mockDictionaryUseCase.meaningReturnValue = .error
+        await sut.load()
+        #expect(mockDictionaryUseCase.calls == [.meaning(word: "abcde")])
+
+        mockAlertRouter.presented?.buttons.first?.onTap.action()   // Retry
+        for _ in 0..<100 where mockDictionaryUseCase.calls.count < 2 { await Task.yield() }
+
+        #expect(mockDictionaryUseCase.calls == [.meaning(word: "abcde"), .meaning(word: "abcde")])
+    }
+
+    @Test("it does not present an alert on success")
+    func noAlertOnSuccess() async {
+        mockDictionaryUseCase.meaningReturnValue = .data(.fake())
+
+        await sut.load()
+
+        #expect(mockAlertRouter.calls == [])
     }
 
     @Test("it shows the loading state before the meaning is loaded")

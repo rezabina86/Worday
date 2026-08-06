@@ -33,6 +33,8 @@ extension ContainerType {
 
         register(in: .container) { _ in ModalRouter() as ModalRouterType }
 
+        register(in: .container) { _ in AlertRouter() as AlertRouterType }
+
         register(in: .container) { _ in FinishGameRelay() as FinishGameRelayType }
 
         register(in: .container) { container in

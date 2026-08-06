@@ -10,13 +10,15 @@ struct FinishedGameViewModelFactory: FinishedGameViewModelFactoryType {
     let streakUseCase: StreakUseCaseType
     let attemptTrackerUseCase: AttemptTrackerUseCaseType
     let navigationRouter: NavigationRouterType
+    let alertRouter: AlertRouterType
 
     func make(for word: String) -> FinishedGameViewModelType {
         FinishedGameViewModel(word: word,
                               dictionaryUseCase: dictionaryUseCase,
                               streakUseCase: streakUseCase,
                               attemptTrackerUseCase: attemptTrackerUseCase,
-                              navigationRouter: navigationRouter)
+                              navigationRouter: navigationRouter,
+                              alertRouter: alertRouter)
     }
 }
 
@@ -35,11 +37,13 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
         dictionaryUseCase: DictionaryUseCaseType,
         streakUseCase: StreakUseCaseType,
         attemptTrackerUseCase: AttemptTrackerUseCaseType,
-        navigationRouter: NavigationRouterType
+        navigationRouter: NavigationRouterType,
+        alertRouter: AlertRouterType
     ) {
         self.word = word
         self.dictionaryUseCase = dictionaryUseCase
         self.navigationRouter = navigationRouter
+        self.alertRouter = alertRouter
         self.title = attemptTrackerUseCase.feedbackMessage()
         self.scoreMessage = "You solved it on your \(attemptTrackerUseCase.ordinalString()) try"
         self.currentStreakValue = streakUseCase.calculateStreak()
@@ -64,6 +68,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     func load() async {
         dataState = await dictionaryUseCase.meaning(for: word)
         selectDefaultMeaningIfNeeded()
+        if case .error = dataState { presentRetryAlert() }
     }
 
     // MARK: - Privates
@@ -71,6 +76,7 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     @ObservationIgnored private let word: String
     @ObservationIgnored private let dictionaryUseCase: DictionaryUseCaseType
     @ObservationIgnored private let navigationRouter: NavigationRouterType
+    @ObservationIgnored private let alertRouter: AlertRouterType
 
     @ObservationIgnored private let title: String
     @ObservationIgnored private let scoreMessage: String
@@ -111,6 +117,14 @@ final class FinishedGameViewModel: FinishedGameViewModelType {
     private func selectDefaultMeaningIfNeeded() {
         guard selectedMeaning == nil, case let .data(model) = dataState else { return }
         selectedMeaning = meanings(from: model).first
+    }
+
+    private func presentRetryAlert() {
+        alertRouter.present(.meaningLoadFailure(onRetry: { [weak self] in self?.retry() }))
+    }
+
+    private func retry() {
+        Task { await load() }
     }
 
     private var allWordsButtonState: FinishedGameViewState.AllWordButton {
