@@ -15,11 +15,7 @@ struct DictionaryService: DictionaryServiceType {
             throw ResourceError.invalidParameters
         }
         
-        let result = try await client.load(resource: resource)
-        
-        return await MainActor.run {
-            return result
-        }
+        return try await client.load(resource: resource)
     }
     
     // MARK: - Privates
