@@ -34,13 +34,15 @@ struct DependencyGraphTests {
         _ = container.resolve() as DictionaryRepositoryType
         _ = container.resolve() as DictionaryUseCaseType
         _ = container.resolve() as FinishedGameViewModelFactoryType
-        _ = container.resolve() as ModalCoordinatorType
+        _ = container.resolve() as ModalRouterType
         _ = container.resolve() as CalendarServiceType
         _ = container.resolve() as StreakUseCaseType
         _ = container.resolve() as AttemptTrackerUseCaseType
         _ = container.resolve() as NavigationRouterType
         _ = container.resolve() as WordListViewStateConverterType
         _ = container.resolve() as WordMeaningViewModelFactoryType
+        _ = container.resolve() as NavigationDestinationViewProviderType
+        _ = container.resolve() as ModalDestinationViewProviderType
     }
 
     @Test("a .container-scoped dependency resolves to the same instance")

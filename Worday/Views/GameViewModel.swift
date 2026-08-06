@@ -1,5 +1,4 @@
 import Foundation
-import SwiftUI
 import Observation
 
 protocol GameViewModelFactoryType {
@@ -11,23 +10,17 @@ struct GameViewModelFactory: GameViewModelFactoryType {
     let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
     let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
     let finishGameRelay: FinishGameRelayType
-    let modalCoordinator: ModalCoordinatorType
-    let navigationRouter: NavigationRouterType
 
     func make() -> GameViewModelType {
         GameViewModel(wordProviderUseCase: fetchWordUseCase,
                       ongoingGameViewModelFactory: ongoingGameViewModelFactory,
                       finishedGameViewModelFactory: finishedGameViewModelFactory,
-                      finishGameRelay: finishGameRelay,
-                      modalCoordinator: modalCoordinator,
-                      navigationRouter: navigationRouter)
+                      finishGameRelay: finishGameRelay)
     }
 }
 
 protocol GameViewModelType: AnyObject {
     var viewState: GameViewState { get }
-    var navigationPath: NavigationPath { get set }
-    var modalDestination: ModalCoordinatorDestination? { get set }
 
     /// Re-reads the day's state and rebuilds the view state. Called on appear and when the app
     /// becomes active. Deduped against the last result.
@@ -45,30 +38,16 @@ final class GameViewModel: GameViewModelType {
     init(wordProviderUseCase: WordProviderUseCaseType,
          ongoingGameViewModelFactory: OngoingGameViewModelFactoryType,
          finishedGameViewModelFactory: FinishedGameViewModelFactoryType,
-         finishGameRelay: FinishGameRelayType,
-         modalCoordinator: ModalCoordinatorType,
-         navigationRouter: NavigationRouterType) {
+         finishGameRelay: FinishGameRelayType) {
         self.wordProviderUseCase = wordProviderUseCase
         self.ongoingGameViewModelFactory = ongoingGameViewModelFactory
         self.finishedGameViewModelFactory = finishedGameViewModelFactory
         self.finishGameRelay = finishGameRelay
-        self.modalCoordinator = modalCoordinator
-        self.navigationRouter = navigationRouter
     }
 
     // MARK: - Publics
 
     private(set) var viewState: GameViewState = .empty
-
-    var navigationPath: NavigationPath {
-        get { navigationRouter.path }
-        set { navigationRouter.path = newValue }
-    }
-
-    var modalDestination: ModalCoordinatorDestination? {
-        get { modalCoordinator.destination }
-        set { modalCoordinator.present(newValue) }
-    }
 
     func refresh() {
         let result = wordProviderUseCase.fetch()
@@ -99,8 +78,6 @@ final class GameViewModel: GameViewModelType {
     @ObservationIgnored private let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
     @ObservationIgnored private let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
     @ObservationIgnored private let finishGameRelay: FinishGameRelayType
-    @ObservationIgnored private let modalCoordinator: ModalCoordinatorType
-    @ObservationIgnored private let navigationRouter: NavigationRouterType
 
     @ObservationIgnored private var latestFetchResult: FetchWordModel?
 }

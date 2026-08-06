@@ -11,21 +11,11 @@ struct GameView: View {
     // MARK: - Publics
 
     var body: some View {
-        NavigationStack(
-            path: Binding(
-                get: { viewModel.navigationPath },
-                set: { viewModel.navigationPath = $0 }
-            )
-        ) {
-            ZStack {
-                WDBackground()
-                view(for: viewModel.viewState)
-            }
-            .navigationDestination(for: NavigationDestination.self) { route in
-                destination(for: route)
-            }
-            .navigationBarHidden(true)
+        ZStack {
+            WDBackground()
+            view(for: viewModel.viewState)
         }
+        .navigationBarHidden(true)
         .task {
             viewModel.refresh()
             await viewModel.observeGameFinished()
@@ -33,15 +23,6 @@ struct GameView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 viewModel.refresh()
-            }
-        }
-        .sheet(item: Binding(
-            get: { viewModel.modalDestination },
-            set: { viewModel.modalDestination = $0 }
-        )) { destination in
-            switch destination {
-            case let .info(viewState):
-                InfoModalView(viewState: viewState)
             }
         }
     }
@@ -72,20 +53,6 @@ struct GameView: View {
             OngoingGameView(viewModel: viewModel)
                 .transition(.opacity)
                 .animation(.easeInOut(duration: 0.2), value: viewState)
-        }
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func destination(for destination: NavigationDestination) -> some View {
-        switch destination {
-        case let .wordList(viewState):
-            WordListView(viewState: viewState)
-        case let .wordMeaning(viewModel):
-            WordMeaningView(viewModel: viewModel)
-        case .none:
-            EmptyView()
         }
     }
 }

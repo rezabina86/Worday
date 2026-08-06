@@ -55,6 +55,39 @@ durably captured. Keep the two in sync whenever either changes.
 
 ---
 
+## Feature Workflow
+
+**This workflow is opt-in, triggered by the word "brainstorm."** When the user says some
+variant of *"let's brainstorm"* / *"we need to start brainstorming"* a new feature, follow the
+full seven-stage flow below, in order. When the user already knows how to design and architect
+the feature and does **not** ask to brainstorm, skip this path entirely and implement directly
+(still honoring every other convention in this file). Brainstorming is the gate; absent it, do
+not impose these stages.
+
+The stages (each is a phase to actually run, not just to mention):
+
+1. **Brainstorming** — *before any code.* Refine the rough idea through questions, explore
+   alternatives, and present the design in sections for the user to validate one at a time. Save
+   the agreed design as a design document.
+2. **Using git worktrees** — *after the design is approved.* Create an isolated workspace on a
+   new branch (per the [Branching & Pull Requests](#branching--pull-requests) naming rules), run
+   project setup, and verify a clean test baseline before writing anything.
+3. **Writing plans** — *with the approved design.* Break the work into bite-sized tasks (2–5
+   minutes each). Every task lists exact file paths, the complete code, and its verification
+   steps.
+4. **Subagent-driven development / executing plans** — *with the plan.* Either dispatch a fresh
+   subagent per task with a two-stage review (first spec compliance, then code quality), or
+   execute the plan in batches with human checkpoints.
+5. **Test-driven development** — *during implementation.* Enforce RED-GREEN-REFACTOR: write a
+   failing test, watch it fail, write the minimal code, watch it pass, commit. Delete any code
+   that was written before its test.
+6. **Requesting code review** — *between tasks.* Review against the plan and report issues by
+   severity; critical issues block further progress until resolved.
+7. **Finishing a development branch** — *when the tasks are complete.* Verify the tests, present
+   the options (merge / open a PR / keep the branch / discard), and clean up the worktree.
+
+---
+
 ## Architecture Conventions
 
 The app is a layered, protocol-oriented, dependency-injected SwiftUI app:
@@ -409,17 +442,34 @@ VM's factory.
 
 ## Navigation & Modal Routing
 
-- **Navigation** is one DI-owned `@Observable` **`NavigationRouter`** (`.container` scope) holding a
-  `NavigationPath`. A feature navigates via `navigationRouter.goto(_ destination:)`; the root view binds
-  its `NavigationStack(path:)` to the router's path. `NavigationDestination` is an enum of push targets; a
-  destination view provider is a dumb `switch` returning the bare `…View(viewModel: factory.make())` —
-  navigation chrome (title, toolbar) belongs to the screen, set from its view state, never bolted on by
-  the provider.
-- **Modals** are one DI-owned `@Observable` **`ModalCoordinator`** (`.container` scope) holding an
-  optional `ModalCoordinatorDestination`. A feature presents via `modalCoordinator.present(_:)`; the root
-  view binds `.sheet(item:)` to it. The Info modal is the current case.
-- Both replace their former `CurrentValueSubject`/`AnyPublisher` shape with plain `@Observable` state —
-  the root view reads them directly, no `.values` bridge.
+Routing follows ProjectPrivacy's **router (state) + `ViewModifier` host + `…ViewProvider`** shape. Three
+parts per concern, and a **lightweight value destination** enum:
+
+- **The router holds only state.** `NavigationRouter` (`@Observable`, `.container`) owns
+  `path: [NavigationDestination]` with `push`/`pop`/`popToRoot`/`setPath`; `ModalRouter` (`@Observable`,
+  `.container`) owns `presented: ModalDestination?` with `present`/`dismiss`. A feature injects the
+  `…RouterType` and calls `push(_:)` / `present(_:)` — it never touches a `NavigationStack` or `.sheet`.
+- **The host is a dumb `ViewModifier`, applied via a `View` extension** — `.navigationHost(router:provider:)`
+  and `.modalHost(router:provider:)`, applied at the app root in `WordayApp` (`.modalHost` **outermost** so
+  a modal covers a pushed screen). The host observes the router, drives `NavigationStack` /
+  `.sheet(item:)` / `.fullScreenCover(item:)`, and routes SwiftUI's own pops/dismiss back through the
+  router (`setPath` / `dismiss`). It owns no logic and is **not** unit-tested (recorded in a
+  `…TestNotes.md`). Never present with an inline `NavigationStack`/`.sheet` in a screen.
+- **The provider is the only place that maps a destination to a screen.** `NavigationDestinationViewProvider`
+  / `ModalDestinationViewProvider` (protocol + concrete) build the screen lazily via injected
+  factories/converters (`WordListView(viewState: converter.make())`,
+  `WordMeaningView(viewModel: factory.make(word:))`, `InfoModalView(...)`). Adding a destination is a case
+  here, never a change to the host. Providers return `AnyView` and are view-layer (not unit-tested).
+- **Destinations are lightweight `Hashable` value enums** — `NavigationDestination` (`.wordList`,
+  `.wordMeaning(word:)`) and `ModalDestination` (`.info`, each declaring a `presentationStyle`). **Never
+  carry a view model or a pre-built view state through a destination** — that smuggles reference/mutable
+  state into navigation; carry ids/values and let the provider build the screen.
+- **Behaviour is asserted where it originates** — the view model/converter that pushes/presents
+  (`push(.wordList)`, `present(.info)`), against a `…RouterMock`.
+
+This is the general **presentation-host** rule: any app-wide decoration (navigation, modals, and future
+alerts) is a `ViewModifier` host + provider driven by a `.container` `@Observable` router — never an
+inline container or a nested host `View`. See `ProjectPrivacyMigration-Design.md`.
 
 ---
 

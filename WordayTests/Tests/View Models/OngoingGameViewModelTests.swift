@@ -6,26 +6,23 @@ struct OngoingGameViewModelTests {
     let sut: OngoingGameViewModel
     let mockWordProviderUseCase: WordProviderUseCaseMock
     let mockArrayShuffle: ArrayShuffleMock
-    let mockModalCoordinator: ModalCoordinatorMock
+    let mockModalRouter: ModalRouterMock
     let mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
-    let mockInfoModalViewStateConverter: InfoModalViewStateConverterMock
 
     private var viewState: GameViewState.OngoingGameViewState { sut.viewState }
 
     init() {
         mockWordProviderUseCase = .init()
         mockArrayShuffle = .init()
-        mockModalCoordinator = .init()
+        mockModalRouter = .init()
         mockAttemptTrackerUseCase = .init()
         mockArrayShuffle.shuffleReturnValue = ["a", "b", "c", "d", "e"]
         mockAttemptTrackerUseCase.numberOfTries = 1
-        mockInfoModalViewStateConverter = .init()
         sut = .init(word: "abcde",
                     wordProviderUseCase: mockWordProviderUseCase,
                     arrayShuffle: mockArrayShuffle,
-                    modalCoordinator: mockModalCoordinator,
-                    attemptTrackerUseCase: mockAttemptTrackerUseCase,
-                    infoModalViewStateConverter: mockInfoModalViewStateConverter)
+                    modalRouter: mockModalRouter,
+                    attemptTrackerUseCase: mockAttemptTrackerUseCase)
     }
 
     @Test func createsInitialViewState() {
@@ -100,9 +97,8 @@ struct OngoingGameViewModelTests {
     }
 
     @Test func presentsInfoModal() {
-        mockInfoModalViewStateConverter.makeReturnValue = .init(topics: [], versionString: "")
         viewState.onTapInfoButton.action()
-        #expect(mockModalCoordinator.calls == [.present(destination: .info(.init(topics: [], versionString: "")))])
+        #expect(mockModalRouter.calls == [.present(destination: .info)])
     }
 
     @Test func advancesTheAttemptTrackerOnEnter() {

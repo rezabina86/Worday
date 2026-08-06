@@ -31,7 +31,7 @@ extension ContainerType {
 
         register(in: .container) { _ in NavigationRouter() as NavigationRouterType }
 
-        register(in: .container) { _ in ModalCoordinator() as ModalCoordinatorType }
+        register(in: .container) { _ in ModalRouter() as ModalRouterType }
 
         register(in: .container) { _ in FinishGameRelay() as FinishGameRelayType }
 
