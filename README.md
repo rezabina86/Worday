@@ -19,3 +19,38 @@
 - Learn as You Play: Guess the word correctly to unlock its meaning!
 - Daily Challenge: A fresh word puzzle every day to keep you engaged.
 
+## Architecture
+
+A layered, protocol-oriented, dependency-injected **SwiftUI + Swift 6** app (main-actor by default, no
+Combine — `@Observable` and `async/await` throughout):
+
+```
+View  →  ViewModel (@Observable)  →  UseCase  →  Repository  →  Service
+                                                                 ├─ HTTPClient        (network, async/await)
+                                                                 ├─ ResourceLoader    (bundled word list)
+                                                                 └─ ModelContext      (SwiftData history)
+```
+
+- **Screens** are `View + ViewState + ViewModel + Factory`; the view is a dumb function of a computed
+  `viewState`.
+- **Routing** is `router (state) + ViewModifier host + provider` for both navigation and modals
+  (`Navigation Routing/`, `Modal Routing/`).
+- **Persistence** is SwiftData with versioned schemas + a migration plan; display surfaces read the
+  `PlayedWordsLibrary` projection (`Storage/`).
+- **DI** is a small container with per-area registration files aggregated by
+  `Common/Dependency Injection/Dependencies.swift`.
+
+Engineering conventions live in [`CLAUDE.md`](CLAUDE.md); each feature folder carries its own
+`*.md` "how to use" doc.
+
+## Building & testing
+
+The repo uses the full Xcode toolchain. If `xcode-select` points at the Command Line Tools, override it
+per command:
+
+```bash
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+xcodebuild test -project Worday.xcodeproj -scheme Worday \
+  -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+
