@@ -55,6 +55,39 @@ durably captured. Keep the two in sync whenever either changes.
 
 ---
 
+## Feature Workflow
+
+**This workflow is opt-in, triggered by the word "brainstorm."** When the user says some
+variant of *"let's brainstorm"* / *"we need to start brainstorming"* a new feature, follow the
+full seven-stage flow below, in order. When the user already knows how to design and architect
+the feature and does **not** ask to brainstorm, skip this path entirely and implement directly
+(still honoring every other convention in this file). Brainstorming is the gate; absent it, do
+not impose these stages.
+
+The stages (each is a phase to actually run, not just to mention):
+
+1. **Brainstorming** — *before any code.* Refine the rough idea through questions, explore
+   alternatives, and present the design in sections for the user to validate one at a time. Save
+   the agreed design as a design document.
+2. **Using git worktrees** — *after the design is approved.* Create an isolated workspace on a
+   new branch (per the [Branching & Pull Requests](#branching--pull-requests) naming rules), run
+   project setup, and verify a clean test baseline before writing anything.
+3. **Writing plans** — *with the approved design.* Break the work into bite-sized tasks (2–5
+   minutes each). Every task lists exact file paths, the complete code, and its verification
+   steps.
+4. **Subagent-driven development / executing plans** — *with the plan.* Either dispatch a fresh
+   subagent per task with a two-stage review (first spec compliance, then code quality), or
+   execute the plan in batches with human checkpoints.
+5. **Test-driven development** — *during implementation.* Enforce RED-GREEN-REFACTOR: write a
+   failing test, watch it fail, write the minimal code, watch it pass, commit. Delete any code
+   that was written before its test.
+6. **Requesting code review** — *between tasks.* Review against the plan and report issues by
+   severity; critical issues block further progress until resolved.
+7. **Finishing a development branch** — *when the tasks are complete.* Verify the tests, present
+   the options (merge / open a PR / keep the branch / discard), and clean up the worktree.
+
+---
+
 ## Architecture Conventions
 
 The app is a layered, protocol-oriented, dependency-injected SwiftUI app:
