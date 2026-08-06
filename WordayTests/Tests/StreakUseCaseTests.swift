@@ -31,7 +31,7 @@ struct StreakUseCaseTests {
         ]
     }
 
-    @Test func testTotalPlayed() async throws {
+    @Test func totalPlayed() async throws {
         mockWordContext.fetchReturnValue = [
             .init(id: "1", word: "abcde", playedAt: .now),
             .init(id: "2", word: "abcde", playedAt: .now),
@@ -41,7 +41,7 @@ struct StreakUseCaseTests {
         #expect(sut.totalPlayed() == 3)
     }
     
-    @Test func testStreakConsecutiveDates() async throws {
+    @Test func streakConsecutiveDates() async throws {
         mockWordContext.fetchReturnValue = [
             .init(id: "1", word: "abcde", playedAt: date1),
             .init(id: "2", word: "abcde", playedAt: date2),
@@ -51,7 +51,7 @@ struct StreakUseCaseTests {
         #expect(sut.calculateStreak() == 3)
     }
     
-    @Test func testStreakPlayedOnce() async throws {
+    @Test func streakPlayedOnce() async throws {
         mockWordContext.fetchReturnValue = [
             .init(id: "1", word: "abcde", playedAt: date1)
         ]
@@ -59,7 +59,7 @@ struct StreakUseCaseTests {
         #expect(sut.calculateStreak() == 1)
     }
     
-    @Test func testStreakNonConsecutiveDates() async throws {
+    @Test func streakNonConsecutiveDates() async throws {
         mockWordContext.fetchReturnValue = [
             .init(id: "1", word: "abcde", playedAt: date1),
             .init(id: "2", word: "abcde", playedAt: date3),
@@ -69,7 +69,7 @@ struct StreakUseCaseTests {
         #expect(sut.calculateStreak() == 1)
     }
     
-    @Test func testStreakNotPlayedToday() async throws {
+    @Test func streakNotPlayedToday() async throws {
         mockWordContext.fetchReturnValue = [
             .init(id: "2", word: "abcde", playedAt: date3),
             .init(id: "3", word: "abcde", playedAt: date4)

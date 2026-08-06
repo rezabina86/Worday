@@ -12,7 +12,7 @@ struct DictionaryServiceTests {
         sut = .init(client: mockHTTPClient)
     }
     
-    @Test func testLoad() async throws {
+    @Test func load() async throws {
         mockHTTPClient.loadReturnValue = .success([WordMeaningAPIEntity.fake()])
         
         let entity = try await sut.meaning(for: "abcde")
