@@ -43,6 +43,7 @@ struct DependencyGraphTests {
         _ = container.resolve() as WordMeaningViewModelFactoryType
         _ = container.resolve() as NavigationDestinationViewProviderType
         _ = container.resolve() as ModalDestinationViewProviderType
+        _ = container.resolve() as PlayedWordsLibraryType
     }
 
     @Test("a .container-scoped dependency resolves to the same instance")
@@ -51,6 +52,16 @@ struct DependencyGraphTests {
 
         let first = container.resolve() as HTTPClientType
         let second = container.resolve() as HTTPClientType
+
+        #expect(first === second)
+    }
+
+    @Test("the shared played-words library resolves to the same instance")
+    func playedWordsLibraryIsShared() {
+        let container = makeWiredContainer()
+
+        let first = container.resolve() as PlayedWordsLibraryType
+        let second = container.resolve() as PlayedWordsLibraryType
 
         #expect(first === second)
     }

@@ -34,7 +34,7 @@ extension ContainerType {
         }
 
         register { container in
-            WordListViewStateConverter(wordContext: container.resolve(),
+            WordListViewStateConverter(playedWordsLibrary: container.resolve(),
                                        navigationRouter: container.resolve())
             as WordListViewStateConverterType
         }

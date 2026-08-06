@@ -5,20 +5,20 @@ import Foundation
 struct WordListViewStateConverterTests {
     
     let sut: WordListViewStateConverter
-    let mockWordContext: WordStorageModelContextMock
+    let mockPlayedWordsLibrary: PlayedWordsLibraryMock
     let mockNavigationRouter: NavigationRouterMock
 
     init() {
-        mockWordContext = .init()
+        mockPlayedWordsLibrary = .init()
         mockNavigationRouter = .init()
-        sut = .init(wordContext: mockWordContext,
+        sut = .init(playedWordsLibrary: mockPlayedWordsLibrary,
                     navigationRouter: mockNavigationRouter)
     }
 
     @Test func makesViewState() {
         let fakeDate: Date = .init(timeIntervalSince1970: 123)
 
-        mockWordContext.fetchReturnValue = [
+        mockPlayedWordsLibrary.words = [
             .init(id: "1", word: "ABCDE", playedAt: fakeDate),
             .init(id: "2", word: "QWXYZ", playedAt: fakeDate)
         ]
@@ -39,7 +39,7 @@ struct WordListViewStateConverterTests {
     @Test func tapsOnWord() {
         let fakeDate: Date = .init(timeIntervalSince1970: 123)
 
-        mockWordContext.fetchReturnValue = [
+        mockPlayedWordsLibrary.words = [
             .init(id: "1", word: "ABCDE", playedAt: fakeDate),
             .init(id: "2", word: "QWXYZ", playedAt: fakeDate)
         ]

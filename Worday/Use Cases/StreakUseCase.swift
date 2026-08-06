@@ -7,21 +7,20 @@ protocol StreakUseCaseType {
 
 struct StreakUseCase: StreakUseCaseType {
     
-    init(wordContext: WordStorageModelContextType,
+    init(playedWordsLibrary: PlayedWordsLibraryType,
          calendarService: CalendarServiceType) {
-        self.wordContext = wordContext
+        self.playedWordsLibrary = playedWordsLibrary
         self.calendarService = calendarService
     }
-    
+
     func totalPlayed() -> Int {
-        guard let playedDates = try? wordContext.fetchAll() else { return 0 }
-        return playedDates.count
+        playedWordsLibrary.words.count
     }
-    
+
     func calculateStreak() -> Int {
-        // Fetch played dates and check if the user has played yet or not
-        guard let playedDates = try? wordContext.fetchAll().compactMap({ $0.playedAt }),
-                playedDates.isEmpty == false else { return 0 }
+        // Read played dates and check if the user has played yet or not
+        let playedDates = playedWordsLibrary.words.map { $0.playedAt }
+        guard playedDates.isEmpty == false else { return 0 }
         
         // Check if the last played date is today
         guard let lastPlayedDate = playedDates.first,
@@ -52,6 +51,6 @@ struct StreakUseCase: StreakUseCaseType {
     }
     
     // MARK: - Privates
-    private let wordContext: WordStorageModelContextType
+    private let playedWordsLibrary: PlayedWordsLibraryType
     private let calendarService: CalendarServiceType
 }

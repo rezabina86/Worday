@@ -14,7 +14,8 @@ struct WordProviderUseCaseTests {
     var mockDateProvider: DateProviderMock
     var mockFinishGameRelay: FinishGameRelayMock
     var mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
-    
+    var mockPlayedWordsLibrary: PlayedWordsLibraryMock
+
     init() {
         mockWordRepository = .init()
         mockWordContext = .init()
@@ -25,6 +26,7 @@ struct WordProviderUseCaseTests {
         mockDateProvider = .init()
         mockFinishGameRelay = .init()
         mockAttemptTrackerUseCase = .init()
+        mockPlayedWordsLibrary = .init()
         sut = .init(
             wordRepository: mockWordRepository,
             wordContext: mockWordContext,
@@ -34,7 +36,8 @@ struct WordProviderUseCaseTests {
             uuidProvider: mockUUIDProvider,
             dateProvider: mockDateProvider,
             finishGameRelay: mockFinishGameRelay,
-            attemptTrackerUseCase: mockAttemptTrackerUseCase
+            attemptTrackerUseCase: mockAttemptTrackerUseCase,
+            playedWordsLibrary: mockPlayedWordsLibrary
         )
     }
     
@@ -136,6 +139,7 @@ struct WordProviderUseCaseTests {
         sut.store(word: "a")
         #expect(mockUserSettings.setCurrentWordCall == [.currentWord(.set(nil))])
         #expect(mockWordContext.calls == [.insert(model: .init(id: "123", word: "a", playedAt: referenceDate)), .save])
+        #expect(mockPlayedWordsLibrary.calls == [.reload])
         #expect(mockFinishGameRelay.calls == [.finishGame])
     }
 }

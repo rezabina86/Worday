@@ -14,6 +14,10 @@ struct WordayApp: App {
         self.navigationDestinationViewProvider = container.resolve()
         self.modalRouter = container.resolve()
         self.modalDestinationViewProvider = container.resolve()
+
+        // Hydrate the shared played-words projection once at launch; writers reload() it thereafter.
+        let playedWordsLibrary: PlayedWordsLibraryType = container.resolve()
+        playedWordsLibrary.load()
     }
 
     init() {
