@@ -14,10 +14,10 @@ struct WordListViewStateConverter: WordListViewStateConverterType {
     
     func make() -> WordListViewState {
         let allWords = playedWordsLibrary.words
-        let cards: [WordListViewState.Card] = allWords.enumerated()
-            .compactMap { index, word in
+        let cards: [WordListViewState.Card] = allWords
+            .map { word in
                 .init(
-                    id: "\(index)",
+                    id: word.id,
                     dateSection: .init(
                         title: "Played on",
                         date: word.playedAt

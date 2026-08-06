@@ -514,6 +514,41 @@ the observable window everyone reads.
 
 ---
 
+## Entity Identifiers (`EntityID<T>`)
+
+A genuine entity's id is an **`EntityID<Entity>`** (`Common/Entity ID`) — a phantom-typed wrapper around a
+`String` raw value — never a bare `String`/`Int`. The phantom `Entity` parameter is compile-time only
+(only `rawValue` is stored/encoded), so the compiler stops an `EntityID<WordStorageEntity>` being used
+where another entity's id belongs.
+
+- **Use it for real entity identity, not list positions.** `WordStorageEntity.id` is an
+  `EntityID<WordStorageEntity>`, and a view state that represents a stored entity keys on that identity
+  (`WordListViewState.Card.id = word.id`). Do **not** wrap purely **positional `ForEach` render-keys**
+  (keyboard keys, character tiles, the enumerated meaning/definition ids) — those stay `String`; an
+  `EntityID` there is ceremony, and phantom-typing a list index buys nothing.
+- **`nonisolated`.** The module is main-actor-by-default, but an id is a plain value SwiftData and
+  `Codable` touch off the main actor, so `EntityID` is declared `nonisolated`. It encodes as the **bare
+  string** (a `singleValueContainer`) so its on-disk/on-wire form is just the id.
+
+### SwiftData schema migrations
+
+**Changing a persisted `@Model` property is a schema change — never do it in place on a shipped app.**
+Retyping `WordStorageEntity.id` from `String` to `EntityID` would crash existing installs at
+`ModelContainer` init (the `fatalError` in `sharedModelContainer`) with no lightweight migration. The
+rule:
+
+- Version the schema: a `VersionedSchema` per shape (`WordStorageSchemaV1` = the old `String` id,
+  `WordStorageSchemaV2` = the current one), with `typealias WordStorageEntity = <latest>.WordStorageEntity`.
+- Provide a `SchemaMigrationPlan` (`WordStorageMigrationPlan`) wired into `sharedModelContainer`. For a
+  property **type** change (which SwiftData can't map automatically), the custom stage reads the old rows
+  in `willMigrate`, empties the store so the structural change is trivial, and re-inserts them in
+  `didMigrate` — **preserving every field**, not just adding/removing columns.
+- **Prove the upgrade path with a migration test.** A fresh-install run can't catch a broken migration.
+  `WordStorageMigrationTests` writes a real on-disk V1 store and re-opens it with V2 + the plan, asserting
+  the rows survived. Any future `@Model` change adds a new version + stage + a migration test.
+
+---
+
 ## Networking
 
 The API layer is already fully **async/await** and stays that way:

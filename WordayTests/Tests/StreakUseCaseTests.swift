@@ -33,9 +33,9 @@ struct StreakUseCaseTests {
 
     @Test func totalPlayed() async throws {
         mockPlayedWordsLibrary.words = [
-            .init(id: "1", word: "abcde", playedAt: .now),
-            .init(id: "2", word: "abcde", playedAt: .now),
-            .init(id: "3", word: "abcde", playedAt: .now)
+            .init(id: .init(rawValue: "1"), word: "abcde", playedAt: .now),
+            .init(id: .init(rawValue: "2"), word: "abcde", playedAt: .now),
+            .init(id: .init(rawValue: "3"), word: "abcde", playedAt: .now)
         ]
         
         #expect(sut.totalPlayed() == 3)
@@ -43,9 +43,9 @@ struct StreakUseCaseTests {
     
     @Test func streakConsecutiveDates() async throws {
         mockPlayedWordsLibrary.words = [
-            .init(id: "1", word: "abcde", playedAt: date1),
-            .init(id: "2", word: "abcde", playedAt: date2),
-            .init(id: "3", word: "abcde", playedAt: date3)
+            .init(id: .init(rawValue: "1"), word: "abcde", playedAt: date1),
+            .init(id: .init(rawValue: "2"), word: "abcde", playedAt: date2),
+            .init(id: .init(rawValue: "3"), word: "abcde", playedAt: date3)
         ]
         
         #expect(sut.calculateStreak() == 3)
@@ -53,7 +53,7 @@ struct StreakUseCaseTests {
     
     @Test func streakPlayedOnce() async throws {
         mockPlayedWordsLibrary.words = [
-            .init(id: "1", word: "abcde", playedAt: date1)
+            .init(id: .init(rawValue: "1"), word: "abcde", playedAt: date1)
         ]
         
         #expect(sut.calculateStreak() == 1)
@@ -61,9 +61,9 @@ struct StreakUseCaseTests {
     
     @Test func streakNonConsecutiveDates() async throws {
         mockPlayedWordsLibrary.words = [
-            .init(id: "1", word: "abcde", playedAt: date1),
-            .init(id: "2", word: "abcde", playedAt: date3),
-            .init(id: "3", word: "abcde", playedAt: date4)
+            .init(id: .init(rawValue: "1"), word: "abcde", playedAt: date1),
+            .init(id: .init(rawValue: "2"), word: "abcde", playedAt: date3),
+            .init(id: .init(rawValue: "3"), word: "abcde", playedAt: date4)
         ]
         
         #expect(sut.calculateStreak() == 1)
@@ -71,8 +71,8 @@ struct StreakUseCaseTests {
     
     @Test func streakNotPlayedToday() async throws {
         mockPlayedWordsLibrary.words = [
-            .init(id: "2", word: "abcde", playedAt: date3),
-            .init(id: "3", word: "abcde", playedAt: date4)
+            .init(id: .init(rawValue: "2"), word: "abcde", playedAt: date3),
+            .init(id: .init(rawValue: "3"), word: "abcde", playedAt: date4)
         ]
         
         #expect(sut.calculateStreak() == 0)

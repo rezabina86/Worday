@@ -54,7 +54,7 @@ struct WordListViewState: Equatable {
 
 extension WordListViewState {
     struct Card: Identifiable, Equatable {
-        let id: String
+        let id: EntityID<WordStorageEntity>
         let dateSection: DateSection
         let word: String
         let onTap: UserAction
@@ -72,11 +72,11 @@ extension WordListViewState.Card {
     WordListView(viewState: .init(
         navigationTitle: "Words",
         cards: [
-            .init(id: "1", dateSection: .init(title: "Played on:", date: .now), word: "ABCDE", onTap: .empty),
-            .init(id: "2", dateSection: .init(title: "Played on:", date: .now), word: "FGHIJ", onTap: .empty),
-            .init(id: "3", dateSection: .init(title: "Played on:", date: .now), word: "KLMNO", onTap: .empty),
-            .init(id: "4", dateSection: .init(title: "Played on:", date: .now), word: "PQRST", onTap: .empty),
-            .init(id: "5", dateSection: .init(title: "Played on:", date: .now), word: "UVWXY", onTap: .empty)
+            .init(id: .init(rawValue: "1"), dateSection: .init(title: "Played on:", date: .now), word: "ABCDE", onTap: .empty),
+            .init(id: .init(rawValue: "2"), dateSection: .init(title: "Played on:", date: .now), word: "FGHIJ", onTap: .empty),
+            .init(id: .init(rawValue: "3"), dateSection: .init(title: "Played on:", date: .now), word: "KLMNO", onTap: .empty),
+            .init(id: .init(rawValue: "4"), dateSection: .init(title: "Played on:", date: .now), word: "PQRST", onTap: .empty),
+            .init(id: .init(rawValue: "5"), dateSection: .init(title: "Played on:", date: .now), word: "UVWXY", onTap: .empty)
         ])
     )
 }
