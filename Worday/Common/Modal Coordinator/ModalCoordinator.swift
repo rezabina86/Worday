@@ -1,9 +1,9 @@
-import Combine
 import Foundation
+import Observation
 
 enum ModalCoordinatorDestination: Identifiable, Equatable {
     case info(InfoModalViewState)
-    
+
     var id: String {
         switch self {
         case .info:
@@ -12,21 +12,19 @@ enum ModalCoordinatorDestination: Identifiable, Equatable {
     }
 }
 
-protocol ModalCoordinatorType {
+protocol ModalCoordinatorType: AnyObject {
+    var destination: ModalCoordinatorDestination? { get set }
     func present(_ destination: ModalCoordinatorDestination?)
-    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> { get }
 }
 
+@Observable
 final class ModalCoordinator: ModalCoordinatorType {
-    
-    var currentDestination: AnyPublisher<ModalCoordinatorDestination?, Never> {
-        currentDestinationSubject.eraseToAnyPublisher()
-    }
-    
+
+    // MARK: - Publics
+
+    var destination: ModalCoordinatorDestination?
+
     func present(_ destination: ModalCoordinatorDestination?) {
-        currentDestinationSubject.send(destination)
+        self.destination = destination
     }
-    
-    // MARK: - Privates
-    private let currentDestinationSubject: CurrentValueSubject<ModalCoordinatorDestination?, Never> = .init(nil)
 }

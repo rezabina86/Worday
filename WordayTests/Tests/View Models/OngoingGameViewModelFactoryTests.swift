@@ -23,8 +23,8 @@ struct OngoingGameViewModelFactoryTests {
                     infoModalViewStateConverter: mockInfoModalViewStateConverter)
     }
 
-    @Test func testCreate() async throws {
-        let result = sut.create(with: "Test")
+    @Test func makesViewModel() {
+        let result = sut.make(with: "Test")
         #expect(result is OngoingGameViewModel)
     }
 }

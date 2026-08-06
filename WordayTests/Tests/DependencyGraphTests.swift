@@ -27,8 +27,6 @@ struct DependencyGraphTests {
         _ = container.resolve() as OngoingGameViewModelFactoryType
         _ = container.resolve() as InfoModalViewStateConverterType
         _ = container.resolve() as ArrayShuffleType
-        _ = container.resolve() as AppTriggerFactoryType
-        _ = container.resolve() as ScenePhaseObserverType
         _ = container.resolve() as FinishGameRelayType
         _ = container.resolve() as HTTPClientType
         _ = container.resolve() as URLSessionFactoryType
@@ -43,7 +41,6 @@ struct DependencyGraphTests {
         _ = container.resolve() as NavigationRouterType
         _ = container.resolve() as WordListViewStateConverterType
         _ = container.resolve() as WordMeaningViewModelFactoryType
-        _ = container.resolve() as SchedulerFactoryType
     }
 
     @Test("a .container-scoped dependency resolves to the same instance")
@@ -53,7 +50,7 @@ struct DependencyGraphTests {
         let first = container.resolve() as HTTPClientType
         let second = container.resolve() as HTTPClientType
 
-        #expect((first as AnyObject) === (second as AnyObject))
+        #expect(first === second)
     }
 
     // MARK: - Privates

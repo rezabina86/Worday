@@ -1,79 +1,57 @@
 import SwiftUI
-import Combine
 
 struct GameView: View {
-    
+
+    // MARK: - Life Cycle
+
     init(viewModel: GameViewModelType) {
         self.viewModel = viewModel
-        
-        viewModel.currentNavigationPath
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.currentNavigationPath, on: self)
-            .store(in: &subscriptions)
     }
-    
+
+    // MARK: - Publics
+
     var body: some View {
         NavigationStack(
-            path: .init(
-                get: {
-                    return currentNavigationPath
-                },
-                set: {
-                    viewModel.setNavigationCurrentPath($0)
-                }
+            path: Binding(
+                get: { viewModel.navigationPath },
+                set: { viewModel.navigationPath = $0 }
             )
         ) {
             ZStack {
                 WDBackground()
-                view(for: viewState)
+                view(for: viewModel.viewState)
             }
-                .navigationDestination(
-                    for: NavigationDestination.self
-                ) { route in
-                    destination(for: route)
-                }
-                .navigationBarHidden(true)
+            .navigationDestination(for: NavigationDestination.self) { route in
+                destination(for: route)
+            }
+            .navigationBarHidden(true)
         }
         .task {
-            for await vs in viewModel.viewState.values {
-                withAnimation {
-                    self.viewState = vs
-                }
+            viewModel.refresh()
+            await viewModel.observeGameFinished()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                viewModel.refresh()
             }
         }
-        .task {
-            for await destination in viewModel.currentDestination.values {
-                self.currentModalDestination = destination
-            }
-        }
-        .onChange(of: scenePhase) { old, new in
-            viewModel.scenePhaseChanged(new)
-        }
-        .sheet(item: .init(get: {
-            self.currentModalDestination
-        }, set: { destination in
-            viewModel.setModalDestination(destination)
-        })) { destination in
-            switch currentModalDestination {
+        .sheet(item: Binding(
+            get: { viewModel.modalDestination },
+            set: { viewModel.modalDestination = $0 }
+        )) { destination in
+            switch destination {
             case let .info(viewState):
                 InfoModalView(viewState: viewState)
-            case nil:
-                EmptyView()
             }
         }
     }
-    
+
     // MARK: - Privates
+
     private let viewModel: GameViewModelType
-    private var subscriptions: Set<AnyCancellable> = []
-    
-    @State private var viewState: GameViewState = .empty
-    @State private var currentModalDestination: ModalCoordinatorDestination?
-    @ObservedState private var currentNavigationPath: NavigationPath = .init()
+
     @Environment(\.scenePhase) private var scenePhase
-    
-    
-    // MARK: - View Builders
+
     @ViewBuilder
     private func view(for viewState: GameViewState) -> some View {
         switch viewState {
@@ -117,16 +95,16 @@ enum GameViewState: Equatable {
     case error
     case noWordToday(viewModel: FinishedGameViewModelType)
     case game(viewModel: OngoingGameViewModelType)
-    
+
     var id: String {
         switch self {
         case .empty: return "empty"
         case .error: return "error"
-        case let .noWordToday(viewModel): return String(describing: viewModel.self)
-        case let .game(viewModel): return String(describing: viewModel.self)
+        case let .noWordToday(viewModel): return ObjectIdentifier(viewModel).debugDescription
+        case let .game(viewModel): return ObjectIdentifier(viewModel).debugDescription
         }
     }
-    
+
     static func == (lhs: GameViewState, rhs: GameViewState) -> Bool {
         lhs.id == rhs.id
     }

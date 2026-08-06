@@ -9,7 +9,7 @@ extension URL {
 }
 
 /// A protocol that handles basic HTTP communication
-protocol HTTPClientType {
+protocol HTTPClientType: AnyObject {
     /// Load an endpoint described by `resource`
     func load<Entity>(resource: Resource<Entity>) async throws -> Entity
 }
@@ -87,9 +87,6 @@ private func parseHTTPError(code: Int, data: Data?, headers: HTTPHeaders) -> Swi
     default: return HTTPClient.Error.http(code: code, data: data, headers: headers)
     }
 }
-
-// MARK: - JSONDecoder
-private let decoder = JSONDecoder()
 
 extension URL {
     var isValid: Bool {

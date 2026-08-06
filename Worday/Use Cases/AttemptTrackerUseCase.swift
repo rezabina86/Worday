@@ -1,51 +1,50 @@
-import Combine
 import Foundation
+import Observation
 
-protocol AttemptTrackerUseCaseType {
-    var numberOfTries: AnyPublisher<Int, Never> { get }
+protocol AttemptTrackerUseCaseType: AnyObject {
+    var numberOfTries: Int { get }
     func advance()
     func cleanup()
     func feedbackMessage() -> String
     func ordinalString() -> String
 }
 
+@Observable
 final class AttemptTrackerUseCase: AttemptTrackerUseCaseType {
-    
+
+    // MARK: - Life Cycle
+
     init(userSettings: UserSettingsType) {
         self.userSettings = userSettings
-        self.numberOfTriesSubject = .init(userSettings.numberOfTries ?? 0)
+        self.numberOfTries = userSettings.numberOfTries ?? 0
     }
-    
-    var numberOfTries: AnyPublisher<Int, Never> {
-        numberOfTriesSubject.eraseToAnyPublisher()
-    }
-    
+
+    // MARK: - Publics
+
+    private(set) var numberOfTries: Int
+
     func advance() {
-        let numberOfTries = numberOfTriesSubject.value + 1
+        numberOfTries += 1
         userSettings.numberOfTries = numberOfTries
-        numberOfTriesSubject.send(numberOfTries)
     }
-    
+
     func cleanup() {
+        numberOfTries = 0
         userSettings.numberOfTries = nil
-        numberOfTriesSubject.send(0)
     }
-    
+
     func feedbackMessage() -> String {
-        let numberOfTries = numberOfTriesSubject.value
-        return feedbackMessage(for: numberOfTries)
+        feedbackMessage(for: numberOfTries)
     }
-    
+
     func ordinalString() -> String {
-        let numberOfTries = numberOfTriesSubject.value
-        return numberOfTries.ordinalString
+        numberOfTries.ordinalString
     }
-    
+
     // MARK: - Privates
-    private let userSettings: UserSettingsType
-    
-    private let numberOfTriesSubject: CurrentValueSubject<Int, Never>
-    
+
+    @ObservationIgnored private let userSettings: UserSettingsType
+
     private func feedbackMessage(for tries: Int) -> String {
         let messages = [
             "Genius",         // 1st try
@@ -57,7 +56,7 @@ final class AttemptTrackerUseCase: AttemptTrackerUseCaseType {
             "Good effort",    // 7th try
             "You got it!"     // 8th try
         ]
-        
+
         return tries > 0 && tries <= messages.count ? messages[tries - 1] : "Not bad"
     }
 }

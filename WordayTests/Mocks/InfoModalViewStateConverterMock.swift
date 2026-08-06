@@ -2,15 +2,16 @@ import Foundation
 @testable import Worday
 
 final class InfoModalViewStateConverterMock: InfoModalViewStateConverterType {
+
     enum Call: Equatable {
-        case create
+        case make
     }
-    
-    func create() -> InfoModalViewState {
-        calls.append(.create)
-        return createReturnValue
+
+    func make() -> InfoModalViewState {
+        calls.append(.make)
+        return makeReturnValue
     }
-    
-    var calls: [Call] = []
-    var createReturnValue: InfoModalViewState = .init(topics: [], versionString: "")
+
+    private(set) var calls: [Call] = []
+    var makeReturnValue: InfoModalViewState = .init(topics: [], versionString: "")
 }

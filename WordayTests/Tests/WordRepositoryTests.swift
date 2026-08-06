@@ -13,7 +13,7 @@ struct WordRepositoryTests {
         sut = .init(wordService: mockWordService)
     }
 
-    @Test func testLoad() async throws {
+    @Test func load() async throws {
         let fakeEntity: WordEntity = .fake(commonWords: ["a", "b"])
         mockWordService.loadReturnValue = fakeEntity
         

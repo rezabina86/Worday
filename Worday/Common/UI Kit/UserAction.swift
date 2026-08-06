@@ -1,4 +1,4 @@
-public struct UserAction {
+public struct UserAction: @unchecked Sendable {
     // MARK: Lifecycle
 
     public init(_ action: @escaping () -> Void) {

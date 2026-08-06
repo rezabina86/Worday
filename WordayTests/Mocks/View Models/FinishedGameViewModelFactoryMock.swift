@@ -2,16 +2,16 @@ import Foundation
 @testable import Worday
 
 final class FinishedGameViewModelFactoryMock: FinishedGameViewModelFactoryType {
-    
+
     enum Call: Equatable {
-        case create(word: String)
+        case make(word: String)
     }
-    
-    func create(for word: String) -> FinishedGameViewModelType {
-        calls.append(.create(word: word))
-        return createReturnValue
+
+    func make(for word: String) -> FinishedGameViewModelType {
+        calls.append(.make(word: word))
+        return makeReturnValue
     }
-    
-    var calls: [Call] = []
-    var createReturnValue: FinishedGameViewModelType = FinishedGameViewModelMock()
+
+    private(set) var calls: [Call] = []
+    var makeReturnValue: FinishedGameViewModelType = FinishedGameViewModelMock()
 }

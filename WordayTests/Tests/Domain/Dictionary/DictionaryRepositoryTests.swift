@@ -12,7 +12,7 @@ struct DictionaryRepositoryTests {
         sut = .init(dictionaryService: mockDictionaryService)
     }
     
-    @Test func testSuccess() async throws {
+    @Test func success() async throws {
         mockDictionaryService.meaningReturnValue = .success([.fake()])
         
         let result = try await sut.meaning(for: "abcde")

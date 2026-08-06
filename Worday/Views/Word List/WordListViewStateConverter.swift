@@ -1,7 +1,7 @@
 import Foundation
 
 protocol WordListViewStateConverterType {
-    func create() -> WordListViewState
+    func make() -> WordListViewState
 }
 
 struct WordListViewStateConverter: WordListViewStateConverterType {
@@ -14,7 +14,7 @@ struct WordListViewStateConverter: WordListViewStateConverterType {
         self.navigationRouter = navigationRouter
     }
     
-    func create() -> WordListViewState {
+    func make() -> WordListViewState {
         let allWords = (try? self.wordContext.fetchAll()) ?? []
         let cards: [WordListViewState.Card] = allWords.enumerated()
             .compactMap { index, word in
@@ -27,7 +27,7 @@ struct WordListViewStateConverter: WordListViewStateConverterType {
                     word: word.word,
                     onTap: .init { [navigationRouter, wordMeaningViewModelFactory] in
                         navigationRouter.gotoDestination(
-                            .wordMeaning(viewModel: wordMeaningViewModelFactory.create(word: word.word))
+                            .wordMeaning(viewModel: wordMeaningViewModelFactory.make(word: word.word))
                         )
                     }
                 )

@@ -1,13 +1,17 @@
-import Combine
 import Foundation
 @testable import Worday
 
 final class FinishedGameViewModelMock: FinishedGameViewModelType {
-    
-    var viewState: AnyPublisher<FinishedGameViewState, Never> {
-        viewStateSubject.eraseToAnyPublisher()
+
+    enum Call: Equatable {
+        case load
     }
-    
-    let viewStateSubject: CurrentValueSubject<FinishedGameViewState, Never> = .init(.empty)
-    
+
+    var viewState: FinishedGameViewState = .empty
+
+    func load() async {
+        calls.append(.load)
+    }
+
+    private(set) var calls: [Call] = []
 }

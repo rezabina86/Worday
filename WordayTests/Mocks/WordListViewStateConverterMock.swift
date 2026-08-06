@@ -2,15 +2,16 @@ import Foundation
 @testable import Worday
 
 final class WordListViewStateConverterMock: WordListViewStateConverterType {
+
     enum Call: Equatable {
-        case create
+        case make
     }
-    
-    func create() -> WordListViewState {
-        calls.append(.create)
-        return createReturnValue
+
+    func make() -> WordListViewState {
+        calls.append(.make)
+        return makeReturnValue
     }
-    
-    var calls: [Call] = []
-    var createReturnValue: WordListViewState = .init(navigationTitle: "", cards: [])
+
+    private(set) var calls: [Call] = []
+    var makeReturnValue: WordListViewState = .init(navigationTitle: "", cards: [])
 }

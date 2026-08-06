@@ -2,15 +2,16 @@ import Foundation
 @testable import Worday
 
 final class WordMeaningViewModelFactoryMock: WordMeaningViewModelFactoryType {
+
     enum Call: Equatable {
-        case create(word: String)
+        case make(word: String)
     }
-    
-    func create(word: String) -> WordMeaningViewModelType {
-        calls.append(.create(word: word))
-        return createReturnValue
+
+    func make(word: String) -> WordMeaningViewModelType {
+        calls.append(.make(word: word))
+        return makeReturnValue
     }
- 
-    var calls: [Call] = []
-    var createReturnValue: WordMeaningViewModelType = WordMeaningViewModelMock()
+
+    private(set) var calls: [Call] = []
+    var makeReturnValue: WordMeaningViewModelType = WordMeaningViewModelMock()
 }
