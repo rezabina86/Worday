@@ -10,7 +10,7 @@ struct DateServiceTests {
         sut = .init()
     }
 
-    @Test func testTodayMethod() async throws {
+    @Test func todayMethod() async throws {
         let now = Date()
         let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: now)!
         

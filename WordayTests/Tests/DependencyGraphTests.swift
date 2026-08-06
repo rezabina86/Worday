@@ -50,7 +50,7 @@ struct DependencyGraphTests {
         let first = container.resolve() as HTTPClientType
         let second = container.resolve() as HTTPClientType
 
-        #expect((first as AnyObject) === (second as AnyObject))
+        #expect(first === second)
     }
 
     // MARK: - Privates

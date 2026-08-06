@@ -131,63 +131,86 @@ deallocate in that window and the next resolve would return a fresh, reset insta
 in-flight task or a counter). These holders are cheap; permanence costs nothing and correctness depends
 on it — use `.container`.
 
-### Per-feature registration (target convention)
+### Per-area registration
 
-The composition root should be a thin aggregator. Each feature owns its wiring in a
-`<Feature>Dependencies.swift` file in the feature's own folder, declared as an `@MainActor` extension
-method on `ContainerType`:
+The composition root is a thin aggregator. Each area owns its wiring in a `<Area>Dependencies.swift`
+file (in that area's folder), declared as an extension method on `ContainerType` — main-actor by
+default, no explicit `@MainActor`:
 
 ```swift
-@MainActor
 extension ContainerType {
-    func registerGameDependencies() {
+    func registerViewDependencies() {
         register { container in
             GameViewModelFactory(fetchWordUseCase: container.resolve(), /* … */)
         }
+        // … the rest of the view factories/converters …
     }
 }
 ```
 
-`Dependencies.swift` then only calls each feature's method — no `register` calls of its own. Adding a
-feature means adding its `<Feature>Dependencies.swift` and one line in the aggregator, never growing a
-monolithic registration function. Cross-cutting seams (`UserDefaultsType`, `BundleType`, the clock) live
-in `registerCommonDependencies()`.
+`Dependencies.swift` then only calls each area's method — no `register` calls of its own:
+
+```swift
+func injectDependencies(into container: ContainerType) {
+    container.registerCommonDependencies()
+    container.registerAPIClientDependencies()
+    container.registerDictionaryDependencies()
+    container.registerWordDependencies()
+    container.registerViewDependencies()
+}
+```
+
+Adding a dependency means adding its `register` to the matching area file (or a new `<Area>Dependencies.swift`
+plus one aggregator line), never growing a monolith. Cross-cutting seams (`UserDefaultsType`, `BundleType`,
+the clock) and the shared `.container` holders (routers, coordinator, relay, attempt tracker) live in
+`registerCommonDependencies()`. Every new registration is also added to `DependencyGraphTests`.
 
 ---
 
 ## Concurrency (Swift 6)
 
-The project targets the **Swift 6 language mode** with strict concurrency checking. The rules:
+The project builds in the **Swift 6 language mode** with complete concurrency checking, and the module is
+**main-actor-isolated by default** (`SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` on both targets). This is
+the idiomatic model for a UI app of this size: everything — views, view models, factories, routers, the
+coordinator, `@Observable` holders, use cases, converters, the DI container, and even the thin network
+layer — is `@MainActor` unless explicitly opted out. The rules:
 
+- **Don't sprinkle `@MainActor`.** It is the default, so annotating a view model/router/use case with
+  `@MainActor` is redundant — omit it. Only reach for isolation attributes to *opt out*: mark a type or
+  member `nonisolated` when it genuinely must run off the main actor, and only after measuring that it
+  needs to.
 - **All async work uses `async/await` and structured concurrency.** No Combine, no `DispatchQueue`, no
   completion handlers. A one-shot operation is an `async` function; a genuine multi-value stream is an
   `AsyncStream`/`AsyncSequence` or an `@Observable` state holder (see
-  [Reactive State & Events](#reactive-state--events)).
-- **UI and UI-adjacent types are `@MainActor`.** Every view model, factory, router, coordinator, and
-  `@Observable` holder is `@MainActor`. Annotate the composition root and any main-thread-bound code
-  `@MainActor`.
-- **Types shared across actor boundaries conform to `Sendable`.** A `final class` with immutable
-  `Sendable` dependencies and no mutable stored state qualifies without `@unchecked`. Value types
-  (structs/enums of `Sendable` members) are `Sendable` for free.
-- **SwiftData is the main isolation surface.** `ModelContext`, `ModelContainer`, and the `@Model`
-  `WordStorageEntity` are **not** `Sendable`. Keep all `WordStorageModelContextType` access on a single
-  actor (`@MainActor`, matching the view models that ultimately consume it) — never capture a
-  `ModelContext` or a `@Model` object into a detached task. Reach for `@ModelActor` only if a real
+  [Reactive State & Events](#reactive-state--events)). The network call stays on the main actor — the
+  actual socket I/O happens inside `URLSession` off-main, and only the tiny JSON decode runs on-main,
+  which is negligible. Introduce a `nonisolated` data path only if a heavy off-main workload appears.
+- **`Sendable` for the value types that escape the main actor.** `UserAction` (a closure box invoked only
+  on the main actor) is `@unchecked Sendable` so it can live in `static` members and value states; the
+  shared JSON codecs are `Sendable`. A type crossing into a `nonisolated` context must be `Sendable`.
+- **SwiftData is naturally main-actor here.** `ModelContext`, `ModelContainer`, and the `@Model`
+  `WordStorageEntity` are not `Sendable`; because the whole app is main-actor, all
+  `WordStorageModelContextType` access already sits on one actor. Never capture a `ModelContext` or a
+  `@Model` object into a detached/`nonisolated` task. Reach for `@ModelActor` only if a real
   background-persistence need appears (none today).
 - **No timing via a Combine scheduler.** Deterministic waits use an injected clock/sleeper seam, not
-  `DispatchQueue.main`. The `AnySchedulerType`/`SchedulerFactory` Combine machinery is being removed —
-  do not add new uses.
+  `DispatchQueue.main`.
 - Use `@preconcurrency import` only when a framework has not yet adopted concurrency annotations.
+
+**A class-bound `…Type` protocol you assert `===` on must be declared `: AnyObject`** (e.g.
+`HTTPClientType`). Comparing two `any Protocol` values with `===` forces an `as AnyObject` bridge that
+crashes SILGen in the current toolchain (hit in `DependencyGraphTests`); a class-bound protocol compares
+with the native class `===` and sidesteps it.
 
 ---
 
 ## Reactive State & Events
 
-Worday is migrating **off Combine** onto `@Observable` and `async/await`. When wiring state or events,
-pick by the *shape of the signal*:
+The app uses **`@Observable` and `async/await` — never Combine** (there is no `import Combine` anywhere;
+adding one is a regression). When wiring state or events, pick by the *shape of the signal*:
 
-- **Observable state (a value that changes over time and drives the UI)** → an **`@Observable`
-  `@MainActor final class`** with a plain stored property. This replaces every `CurrentValueSubject` +
+- **Observable state (a value that changes over time and drives the UI)** → an **`@Observable final
+  class`** (main-actor by default) with a plain stored property. This replaces every `CurrentValueSubject` +
   `AnyPublisher` pair. The counter in `AttemptTrackerUseCase`, the `NavigationPath` in `NavigationRouter`,
   the current destination in `ModalCoordinator`, and every view model's `viewState` are `@Observable`
   state, **not** publishers.
@@ -196,9 +219,11 @@ pick by the *shape of the signal*:
   caller renders `.loading` while it is in flight.
 - **Fire-and-forget event (a "something happened" pulse with no value)** → an **`AsyncStream`** the
   consumer drives with `for await` inside a `.task`, **or** an `@Observable` generation counter when many
-  UI surfaces must merely re-render off it. `FinishGameRelay`, `ScenePhaseObserver.appBecameActive`, and
-  the `AppTrigger` fan-in are events of this kind. Prefer driving app-active from SwiftUI's `scenePhase`
-  directly (`.onChange(of:)`) rather than re-broadcasting it.
+  UI surfaces must merely re-render off it. The game-finished event is `FinishGameRelay.events`
+  (`AsyncStream`), consumed by `GameViewModel.observeGameFinished()` from `GameView`'s `.task`.
+  App-became-active flows straight from SwiftUI's `scenePhase` (`GameView`'s `.onChange(of:)` calls
+  `refresh()`) — there is deliberately **no** `ScenePhaseObserver`/`AppTrigger` re-broadcaster (both were
+  removed in the Combine migration); don't reintroduce that indirection.
 
 Never store-and-reassign a view state, and never expose a `viewState` as a publisher. A view reads
 `viewModel.viewState` directly and SwiftUI re-renders because the model is `@Observable`. The custom
@@ -288,8 +313,8 @@ exactly what the view shows. User interactions are carried as **`UserAction`** (
 `() -> Void`), so the whole state stays `Equatable` and snapshot-testable. In tests, use `UserAction.fake`
 as the expected value to assert a state's shape while ignoring its closures.
 
-**The view model owns the logic.** It is an **`@Observable @MainActor final class`** exposing a
-**computed** `var viewState: <Name>ViewState`. It holds the collaborators and any mutable UI state
+**The view model owns the logic.** It is an **`@Observable final class`** (main-actor by default — see
+[Concurrency](#concurrency-swift-6)) exposing a **computed** `var viewState: <Name>ViewState`. It holds the collaborators and any mutable UI state
 (private under `Privates`), and maps state → view-state through a pure `private static func
 makeViewState(...)` or an injected converter. It has no `…Type` protocol of its own — its factory is the
 seam.
@@ -320,15 +345,14 @@ mutate the source of truth and `viewState` re-derives:
 has a factory:
 
 - A protocol `<Name>ViewModelFactoryType` and a concrete `<Name>ViewModelFactory`, declared together.
-- The factory is `@MainActor`, holds the view model's collaborators (injected, private), and exposes a
-  single `make(...) -> <Name>ViewModel`.
+- The factory holds the view model's collaborators (injected, private) and exposes a single
+  `make(...) -> <Name>ViewModel` (main-actor by default — no explicit `@MainActor` needed).
 - The factory is registered in the DI container; consumers depend on the `…FactoryType` protocol and call
   `make(...)`, never the view model's initializer.
 
-**Canonical shape (target):**
+**Canonical shape:**
 
 ```swift
-@MainActor
 @Observable
 final class OngoingGameViewModel {
 

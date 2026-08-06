@@ -16,13 +16,7 @@ extension ResourceFactoryType {
 }
 
 // MARK: - JSONDecoder
-private let decoder: JSONDecoder = {
-    let decoder = JSONDecoder()
-    return decoder
-}()
+private let decoder = JSONDecoder()
 
 // MARK: - JSONEncoder
-private let encoder: JSONEncoder = {
-    let encoder = JSONEncoder()
-    return encoder
-}()
+private let encoder = JSONEncoder()

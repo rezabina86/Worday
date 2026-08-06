@@ -4,7 +4,7 @@ import Foundation
 
 struct WordMeaningAPIEntityTests {
     
-    @Test func testParseResponse() {
+    @Test func parseResponse() {
         let result: [WordMeaningAPIEntity]?
         
         result = try? JSONDecoder().decode(

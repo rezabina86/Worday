@@ -12,7 +12,7 @@ struct UserSettingsTests {
         sut = .init(userDefaults: mockUserDefaults)
     }
 
-    @Test func testSettingCurrentWord() async throws {
+    @Test func settingCurrentWord() async throws {
         sut.currentWord = "a"
         
         // Writes the data once
@@ -25,7 +25,7 @@ struct UserSettingsTests {
         #expect(mockUserDefaults.setForKeyCalls.first?.value as? String == "a")
     }
     
-    @Test func testSettingCurrentWordToNil() async throws {
+    @Test func settingCurrentWordToNil() async throws {
         sut.currentWord = nil
         
         // Writes the data once
@@ -38,7 +38,7 @@ struct UserSettingsTests {
         #expect(mockUserDefaults.setForKeyCalls.first?.value as? String == nil)
     }
     
-    @Test func testReset() async throws {
+    @Test func reset() async throws {
         sut.reset()
         
         // Writes the data once
