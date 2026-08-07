@@ -1,7 +1,7 @@
 import SwiftData
 import Foundation
 
-protocol WordStorageModelContextType {
+protocol WordStorageModelContextType: AnyObject {
     func insert(_ model: WordStorageEntity)
     func save() throws
     func fetchAll() throws -> [WordStorageEntity]

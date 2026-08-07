@@ -67,6 +67,16 @@ struct DependencyGraphTests {
         #expect(first === second)
     }
 
+    @Test("the shared model context resolves to the same instance")
+    func modelContextIsShared() {
+        let container = makeWiredContainer()
+
+        let first = container.resolve() as WordStorageModelContextType
+        let second = container.resolve() as WordStorageModelContextType
+
+        #expect(first === second)
+    }
+
     // MARK: - Privates
 
     private func makeWiredContainer() -> ContainerType {

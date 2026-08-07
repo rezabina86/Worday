@@ -9,6 +9,6 @@ let sharedModelContainer: ModelContainer = {
         )
         return container
     } catch {
-        fatalError("Failed to create container")
+        fatalError("Failed to create ModelContainer: \(error)")
     }
 }()

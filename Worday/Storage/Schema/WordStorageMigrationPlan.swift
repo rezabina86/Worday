@@ -27,7 +27,9 @@ enum WordStorageMigrationPlan: SchemaMigrationPlan {
     }
 
     // The rows read in `willMigrate` and re-inserted in `didMigrate`. Migration is sequential (one stage,
-    // will-then-did) during container init, so there is no concurrent access.
+    // will-then-did) during container init, so there is no concurrent access. Both callbacks must run in
+    // the same migration pass: `willMigrate` empties and *saves* the store, so a process kill between the
+    // two would leave the store empty (the drain-empty-refill tradeoff for a non-mappable type change).
     private nonisolated(unsafe) static var carried: [Carried] = []
 
     private static let migrateV1toV2 = MigrationStage.custom(
