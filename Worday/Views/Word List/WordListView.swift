@@ -32,10 +32,10 @@ struct WordListView: View {
                     .dsFont(.title)
                 
                 Text(card.dateSection.title)
-                    .font(.caption)
+                    .dsFont(.caption)
                 
                 Text(card.dateSection.date, style: .date)
-                    .font(.caption)
+                    .dsFont(.caption)
                 
             }
             .padding(.space_12pt)

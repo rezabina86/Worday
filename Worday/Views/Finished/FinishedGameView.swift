@@ -35,13 +35,13 @@ struct FinishedGameView: View {
             VStack(spacing: .space_4pt) {
                 Text(viewState.scoreString)
                     .multilineTextAlignment(.center)
-                    .font(.caption)
+                    .dsFont(.caption)
                     .bold()
                     .animation(nil, value: viewState)
                 
                 Text(viewState.subtitle)
                     .multilineTextAlignment(.center)
-                    .font(.caption)
+                    .dsFont(.caption)
                     .bold()
                     .animation(nil, value: viewState)
             }
@@ -50,12 +50,12 @@ struct FinishedGameView: View {
                 VStack {
                     Text("\(viewState.totalPlayed.value)")
                         .multilineTextAlignment(.center)
-                        .font(.footnote)
+                        .dsFont(.footnote)
                         .bold()
                         .foregroundStyle(Color.orange)
                     Text(viewState.totalPlayed.title)
                         .multilineTextAlignment(.center)
-                        .font(.footnote)
+                        .dsFont(.footnote)
                         .bold()
                 }
                 Spacer()
@@ -63,12 +63,12 @@ struct FinishedGameView: View {
                 VStack {
                     Text("\(viewState.currentStreak.value)")
                         .multilineTextAlignment(.center)
-                        .font(.footnote)
+                        .dsFont(.footnote)
                         .bold()
                         .foregroundStyle(Color.orange)
                     Text(viewState.currentStreak.title)
                         .multilineTextAlignment(.center)
-                        .font(.footnote)
+                        .dsFont(.footnote)
                         .bold()
                 }
             }
@@ -144,7 +144,7 @@ struct FinishedGameView: View {
                                         .bold()
                                     
                                     Text(def.definition)
-                                        .font(.callout)
+                                        .dsFont(.callout)
                                     Spacer()
                                 }
                                 .padding([.horizontal], .space_32pt)
