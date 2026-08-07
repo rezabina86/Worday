@@ -164,39 +164,63 @@ deallocate in that window and the next resolve would return a fresh, reset insta
 in-flight task or a counter). These holders are cheap; permanence costs nothing and correctness depends
 on it — use `.container`.
 
-### Per-area registration
+### Per-feature registration
 
-The composition root is a thin aggregator. Each area owns its wiring in a `<Area>Dependencies.swift`
-file (in that area's folder), declared as an extension method on `ContainerType` — main-actor by
-default, no explicit `@MainActor`:
+The composition root is a thin aggregator. **Each feature owns its wiring in a `<Feature>Dependencies.swift`
+file co-located in that feature's own folder** — the registration lives next to the type it constructs, not
+in a distant grab-bag. It's declared as an extension method on `ContainerType` — main-actor by default, no
+explicit `@MainActor`:
 
 ```swift
+// Worday/Views/Game/GameDependencies.swift
 extension ContainerType {
-    func registerViewDependencies() {
+    func registerGameDependencies() {
         register { container in
             GameViewModelFactory(fetchWordUseCase: container.resolve(), /* … */)
+            as GameViewModelFactoryType
         }
-        // … the rest of the view factories/converters …
     }
 }
 ```
 
-`Dependencies.swift` then only calls each area's method — no `register` calls of its own:
+`Dependencies.swift` then only calls each feature's method — no `register` calls of its own:
 
 ```swift
 func injectDependencies(into container: ContainerType) {
+    // Cross-cutting seams + persistence
     container.registerCommonDependencies()
+    container.registerStorageDependencies()
+    // Routing
+    container.registerNavigationRoutingDependencies()
+    container.registerModalRoutingDependencies()
+    container.registerAlertRoutingDependencies()
+    // Network + domain
     container.registerAPIClientDependencies()
     container.registerDictionaryDependencies()
-    container.registerWordDependencies()
-    container.registerViewDependencies()
+    // Application use cases
+    container.registerUseCasesDependencies()
+    // Screens
+    container.registerGameDependencies()
+    container.registerOngoingGameDependencies()
+    container.registerFinishedGameDependencies()
+    container.registerWordMeaningDependencies()
+    container.registerWordListDependencies()
+    container.registerInfoModalDependencies()
 }
 ```
 
-Adding a dependency means adding its `register` to the matching area file (or a new `<Area>Dependencies.swift`
-plus one aggregator line), never growing a monolith. Cross-cutting seams (`UserDefaultsType`, `BundleType`,
-the clock) and the shared `.container` holders (routers, coordinator, relay, attempt tracker) live in
-`registerCommonDependencies()`. Every new registration is also added to `DependencyGraphTests`.
+The concrete homes: each **screen** folder (`Views/<Screen>/`) registers its own view-model factory or
+converter; each **routing** folder (`Routing/Navigation`, `Routing/Modal`, `Routing/Alert`) registers its
+router and provider; `Storage/` registers the `ModelContext` seam and `PlayedWordsLibrary`; `Use Cases/`
+registers the use cases plus the word-provider pipeline (service → repository → provider) they build on.
+Only genuinely **cross-cutting** system seams that belong to no single feature — the bundle loaders, the
+clock (`CalendarServiceType`/`DateServiceType`), `UserSettingsType`/`UserDefaultsType`, and the app-wide
+`FinishGameRelay` — stay grouped in `registerCommonDependencies()` (they *are* the Common area). A one-off
+wrapper seam does not get its own DI file; a feature does.
+
+Adding a dependency means adding its `register` to its feature's file (or a new `<Feature>Dependencies.swift`
+plus one aggregator line), never growing a monolith. Every new registration is also added to
+`DependencyGraphTests`.
 
 ---
 
@@ -474,7 +498,11 @@ host `View`. Hosts are applied at the app root and **order is layering**: `.navi
 A navigation/modal host also takes a `…ViewProvider` (the destination→screen map); the **alert** host
 needs none — an `AlertState` is a plain value, and feature-specific alert content is built by small
 factories kept next to the feature (e.g. `AlertState.meaningLoadFailure(onRetry:)` in `Domain/Dictionary`).
-See `Alert Routing/AlertRouting.md` and `ProjectPrivacyMigration-Design.md`.
+
+All three flavours live under a single **`Routing/`** parent — `Routing/Navigation`, `Routing/Modal`,
+`Routing/Alert` — each subfolder holding its router, host, provider (nav/modal), destinations, doc, and
+its own co-located `…RoutingDependencies.swift`. See `Routing/Alert/AlertRouting.md` and
+`ProjectPrivacyMigration-Design.md`.
 
 ---
 
@@ -577,7 +605,6 @@ font in a view:
 - **`ColorTokens`** — semantic `Color`s loaded from the asset catalog (`backgroundColor`, `textColor`,
   `borderActiveColor`, `correct`, `misplaced`, …).
 - **`MeasurementTokens`** — `CGFloat` size/space/radius tokens (`size_*pt`, `space_*pt`, `radius_*`).
-  *(The file is currently misspelled `MeasurmentTokens.swift`; fix the spelling when touched.)*
 - **`WDFont`** — the app's `Font` constants (`wdFont*`, `titleFont`, `bodyFont`).
 - **`Buttons` / `GlassView` / `GlassPane` / `View+Glassify` / `WDBackground`** — the DS primitives (the
   glass surfaces gate the iOS 26 Liquid Glass API behind an availability check with a pre-26 fallback).
@@ -716,21 +743,30 @@ Source and test files mirror each other folder-for-folder:
 
 ```
 Worday/
-├── Application/            (App entry, composition root)
-├── Common/                 (DI, routers, coordinator, UI Kit, seams, helpers)
-├── Views/<Feature>/        (View + ViewState + ViewModel + Factory, or View + Converter)
-├── Use Cases/              (application use cases)
-├── Domain/<Feature>/       (domain models + repositories)
+├── Application/            (App entry, WordayApp)
+├── Common/                 (DI aggregator + common seams, UI Kit, helpers, entity id)
+├── Routing/                (presentation hosts, one subfolder per flavour)
+│   ├── Navigation/         (router + host + provider + destinations + its DI file)
+│   ├── Modal/
+│   └── Alert/
+├── Views/<Screen>/         (View + ViewState + ViewModel + Factory (or Converter) + its DI file)
+├── Use Cases/              (application use cases + word-provider pipeline DI)
+├── Domain/<Feature>/       (domain models + repositories + its DI file)
 ├── Repositories/
-├── API Client/             (HTTPClient, Resource, Services)
-└── Storage/                (SwiftData model, container, context seam)
+├── API Client/             (HTTPClient, Resource, Services + its DI file)
+└── Storage/                (SwiftData model, schema/migration, context seam, projection + its DI file)
 
 WordayTests/
-├── Tests/   (mirrors source)
-├── Mocks/   (mirrors source)
-├── Fakes/   (value-type fake builders)
+├── Tests/   (mirrors source folder-for-folder)
+├── Mocks/   (mirrors source folder-for-folder)
+├── Fakes/   (value-type fake builders — flat)
 └── Helpers/ (shared test support)
 ```
+
+The project uses Xcode **file-system-synchronized groups** (`PBXFileSystemSynchronizedRootGroup`), so the
+folder layout on disk *is* the Xcode group structure — moving a file with `git mv` reorganizes the project
+with no `.pbxproj` edit. DI files are **co-located per feature** (see [Per-feature registration](#per-feature-registration)),
+not gathered into one `Views`/area file.
 
 ---
 

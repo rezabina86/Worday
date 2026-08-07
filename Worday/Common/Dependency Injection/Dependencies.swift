@@ -1,12 +1,31 @@
 import Foundation
 
-/// The composition root. A thin aggregator — each area owns its own registrations in a
-/// `<Area>Dependencies.swift` extension on `ContainerType`. Add a new area by adding its file and one
-/// line here, and add every new registration to `DependencyGraphTests`.
+/// The composition root. A thin aggregator — each feature owns its own registrations in a
+/// `<Feature>Dependencies.swift` extension on `ContainerType`, co-located with the types it wires. Add a
+/// new feature by adding its file and one line here, and add every new registration to
+/// `DependencyGraphTests`.
 public func injectDependencies(into container: ContainerType) {
+    // Cross-cutting seams + persistence
     container.registerCommonDependencies()
+    container.registerStorageDependencies()
+
+    // Routing
+    container.registerNavigationRoutingDependencies()
+    container.registerModalRoutingDependencies()
+    container.registerAlertRoutingDependencies()
+
+    // Network + domain
     container.registerAPIClientDependencies()
     container.registerDictionaryDependencies()
-    container.registerWordDependencies()
-    container.registerViewDependencies()
+
+    // Application use cases
+    container.registerUseCasesDependencies()
+
+    // Screens
+    container.registerGameDependencies()
+    container.registerOngoingGameDependencies()
+    container.registerFinishedGameDependencies()
+    container.registerWordMeaningDependencies()
+    container.registerWordListDependencies()
+    container.registerInfoModalDependencies()
 }

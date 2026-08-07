@@ -1,9 +1,10 @@
 import Foundation
-import SwiftData
 
 extension ContainerType {
-    /// Cross-cutting system seams (codecs, clock, storage, bundle-backed loaders) and the shared
-    /// `.container`-scoped `@Observable` holders whose identity must survive view/view-model churn.
+    /// Cross-cutting system seams (bundle-backed loaders, the clock, user settings) and the app-wide
+    /// `FinishGameRelay` event bus. Feature-owned registrations live next to their feature: routing under
+    /// `Routing/`, persistence under `Storage/`, use cases under `Use Cases/`, screens under
+    /// `Views/<Screen>/`.
     func registerCommonDependencies() {
         register { container in
             ResourceLoader(bundle: Bundle.main,
@@ -12,8 +13,6 @@ extension ContainerType {
         }
 
         register { _ in URLContentLoader() as URLContentLoaderType }
-
-        register { _ in ModelContext(sharedModelContainer) as WordStorageModelContextType }
 
         register { _ in DateService() as DateServiceType }
 
@@ -29,20 +28,6 @@ extension ContainerType {
 
         register { _ in UserDefaults.standard as UserDefaultsType }
 
-        register(in: .container) { _ in NavigationRouter() as NavigationRouterType }
-
-        register(in: .container) { _ in ModalRouter() as ModalRouterType }
-
-        register(in: .container) { _ in AlertRouter() as AlertRouterType }
-
         register(in: .container) { _ in FinishGameRelay() as FinishGameRelayType }
-
-        register(in: .container) { container in
-            AttemptTrackerUseCase(userSettings: container.resolve()) as AttemptTrackerUseCaseType
-        }
-
-        register(in: .container) { container in
-            PlayedWordsLibrary(wordContext: container.resolve()) as PlayedWordsLibraryType
-        }
     }
 }
