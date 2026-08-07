@@ -10,12 +10,14 @@ struct GameViewModelFactory: GameViewModelFactoryType {
     let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
     let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
     let finishGameRelay: FinishGameRelayType
+    let alertRouter: AlertRouterType
 
     func make() -> GameViewModelType {
         GameViewModel(wordProviderUseCase: fetchWordUseCase,
                       ongoingGameViewModelFactory: ongoingGameViewModelFactory,
                       finishedGameViewModelFactory: finishedGameViewModelFactory,
-                      finishGameRelay: finishGameRelay)
+                      finishGameRelay: finishGameRelay,
+                      alertRouter: alertRouter)
     }
 }
 
@@ -38,11 +40,13 @@ final class GameViewModel: GameViewModelType {
     init(wordProviderUseCase: WordProviderUseCaseType,
          ongoingGameViewModelFactory: OngoingGameViewModelFactoryType,
          finishedGameViewModelFactory: FinishedGameViewModelFactoryType,
-         finishGameRelay: FinishGameRelayType) {
+         finishGameRelay: FinishGameRelayType,
+         alertRouter: AlertRouterType) {
         self.wordProviderUseCase = wordProviderUseCase
         self.ongoingGameViewModelFactory = ongoingGameViewModelFactory
         self.finishedGameViewModelFactory = finishedGameViewModelFactory
         self.finishGameRelay = finishGameRelay
+        self.alertRouter = alertRouter
     }
 
     // MARK: - Publics
@@ -57,6 +61,7 @@ final class GameViewModel: GameViewModelType {
         switch result {
         case .error:
             viewState = .error
+            presentFatalErrorAlert()
         case let .word(word):
             viewState = .game(viewModel: ongoingGameViewModelFactory.make(with: word))
         case let .noWordToday(lastPlayedWord):
@@ -78,6 +83,15 @@ final class GameViewModel: GameViewModelType {
     @ObservationIgnored private let ongoingGameViewModelFactory: OngoingGameViewModelFactoryType
     @ObservationIgnored private let finishedGameViewModelFactory: FinishedGameViewModelFactoryType
     @ObservationIgnored private let finishGameRelay: FinishGameRelayType
+    @ObservationIgnored private let alertRouter: AlertRouterType
 
     @ObservationIgnored private var latestFetchResult: FetchWordModel?
+
+    private func presentFatalErrorAlert() {
+        alertRouter.present(.init(
+            title: "Something went wrong",
+            message: "Please delete and re-install the app.",
+            buttons: [.init(title: "OK", role: .cancel, onTap: .empty)]
+        ))
+    }
 }

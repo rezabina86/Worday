@@ -44,6 +44,7 @@ struct DependencyGraphTests {
         _ = container.resolve() as NavigationDestinationViewProviderType
         _ = container.resolve() as ModalDestinationViewProviderType
         _ = container.resolve() as PlayedWordsLibraryType
+        _ = container.resolve() as AlertRouterType
     }
 
     @Test("a .container-scoped dependency resolves to the same instance")

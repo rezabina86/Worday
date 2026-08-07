@@ -8,18 +8,21 @@ struct GameViewModelTests {
     let mockOngoingGameViewModelFactory: OngoingGameViewModelFactoryMock
     let mockFinishedGameViewModelFactory: FinishedGameViewModelFactoryMock
     let mockFinishGameRelay: FinishGameRelayMock
+    let mockAlertRouter: AlertRouterMock
 
     init() {
         mockWordProviderUseCase = .init()
         mockOngoingGameViewModelFactory = .init()
         mockFinishedGameViewModelFactory = .init()
         mockFinishGameRelay = .init()
+        mockAlertRouter = .init()
 
         sut = .init(
             wordProviderUseCase: mockWordProviderUseCase,
             ongoingGameViewModelFactory: mockOngoingGameViewModelFactory,
             finishedGameViewModelFactory: mockFinishedGameViewModelFactory,
-            finishGameRelay: mockFinishGameRelay
+            finishGameRelay: mockFinishGameRelay,
+            alertRouter: mockAlertRouter
         )
     }
 
@@ -48,6 +51,7 @@ struct GameViewModelTests {
         #expect(mockOngoingGameViewModelFactory.calls.isEmpty)
         #expect(mockFinishedGameViewModelFactory.calls.isEmpty)
         #expect(sut.viewState == .error)
+        #expect(mockAlertRouter.presented?.title == "Something went wrong")
     }
 
     @Test("refresh dedupes an unchanged fetch result")

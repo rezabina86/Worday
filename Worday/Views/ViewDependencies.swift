@@ -8,7 +8,8 @@ extension ContainerType {
             GameViewModelFactory(fetchWordUseCase: container.resolve(),
                                  ongoingGameViewModelFactory: container.resolve(),
                                  finishedGameViewModelFactory: container.resolve(),
-                                 finishGameRelay: container.resolve())
+                                 finishGameRelay: container.resolve(),
+                                 alertRouter: container.resolve())
             as GameViewModelFactoryType
         }
 
@@ -24,12 +25,14 @@ extension ContainerType {
             FinishedGameViewModelFactory(dictionaryUseCase: container.resolve(),
                                          streakUseCase: container.resolve(),
                                          attemptTrackerUseCase: container.resolve(),
-                                         navigationRouter: container.resolve())
+                                         navigationRouter: container.resolve(),
+                                         alertRouter: container.resolve())
             as FinishedGameViewModelFactoryType
         }
 
         register { container in
-            WordMeaningViewModelFactory(dictionaryUseCase: container.resolve())
+            WordMeaningViewModelFactory(dictionaryUseCase: container.resolve(),
+                                        alertRouter: container.resolve())
             as WordMeaningViewModelFactoryType
         }
 

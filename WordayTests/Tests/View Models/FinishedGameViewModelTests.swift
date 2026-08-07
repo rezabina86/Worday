@@ -9,12 +9,14 @@ struct FinishedGameViewModelTests {
     let mockStreakUseCase: StreakUseCaseMock
     let mockAttemptTrackerUseCase: AttemptTrackerUseCaseMock
     let mockNavigationRouter: NavigationRouterMock
+    let mockAlertRouter: AlertRouterMock
 
     init() {
         mockDictionaryUseCase = .init()
         mockStreakUseCase = .init()
         mockAttemptTrackerUseCase = .init()
         mockNavigationRouter = .init()
+        mockAlertRouter = .init()
 
         mockAttemptTrackerUseCase.ordinalStringReturnValue = "1st"
         mockAttemptTrackerUseCase.feedbackMessageReturnValue = "Great job! 🎉"
@@ -25,7 +27,17 @@ struct FinishedGameViewModelTests {
                     dictionaryUseCase: mockDictionaryUseCase,
                     streakUseCase: mockStreakUseCase,
                     attemptTrackerUseCase: mockAttemptTrackerUseCase,
-                    navigationRouter: mockNavigationRouter)
+                    navigationRouter: mockNavigationRouter,
+                    alertRouter: mockAlertRouter)
+    }
+
+    @Test("it presents a retry alert when the meaning fails to load")
+    func presentsRetryAlertOnError() async {
+        mockDictionaryUseCase.meaningReturnValue = .error
+
+        await sut.load()
+
+        #expect(mockAlertRouter.presented?.buttons.map(\.title) == ["Retry", "OK"])
     }
 
     @Test("it shows the loading state before the meaning is loaded")

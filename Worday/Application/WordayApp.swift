@@ -14,6 +14,7 @@ struct WordayApp: App {
         self.navigationDestinationViewProvider = container.resolve()
         self.modalRouter = container.resolve()
         self.modalDestinationViewProvider = container.resolve()
+        self.alertRouter = container.resolve()
 
         // Hydrate the shared played-words projection once at launch; writers reload() it thereafter.
         let playedWordsLibrary: PlayedWordsLibraryType = container.resolve()
@@ -31,6 +32,7 @@ struct WordayApp: App {
             GameView(viewModel: gameViewModelFactory.make())
                 .navigationHost(router: navigationRouter, provider: navigationDestinationViewProvider)
                 .modalHost(router: modalRouter, provider: modalDestinationViewProvider)
+                .alertHost(router: alertRouter)
         }
     }
 
@@ -44,4 +46,5 @@ struct WordayApp: App {
     private let navigationDestinationViewProvider: NavigationDestinationViewProviderType
     private let modalRouter: ModalRouterType
     private let modalDestinationViewProvider: ModalDestinationViewProviderType
+    private let alertRouter: AlertRouterType
 }
