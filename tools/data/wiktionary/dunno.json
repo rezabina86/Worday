@@ -1,6 +1,18 @@
 {
   "word": "dunno",
-  "pos": "noun",
-  "definition": "An utterance of the word dunno.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "An utterance of the word dunno."
+      ]
+    },
+    {
+      "pos": "contraction",
+      "definitions": [
+        "Pronunciation spelling of do not know; pronunciation spelling of does not know."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

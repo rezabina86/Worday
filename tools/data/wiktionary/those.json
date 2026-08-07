@@ -1,7 +1,18 @@
 {
   "word": "those",
-  "pos": "pronoun",
-  "definition": "plural of that",
-  "source": "wiktionary",
-  "example": "those who serve [those persons who serve]"
+  "meanings": [
+    {
+      "pos": "pronoun",
+      "definitions": [
+        "plural of that"
+      ]
+    },
+    {
+      "pos": "determiner",
+      "definitions": [
+        "plural of that"
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

@@ -1,7 +1,13 @@
 {
   "word": "nerdy",
-  "pos": "adjective",
-  "definition": "Being or like a nerd.",
-  "source": "wiktionary",
-  "example": "That guy is nerdy and weird."
+  "meanings": [
+    {
+      "pos": "adjective",
+      "definitions": [
+        "Being or like a nerd.",
+        "Of, pertaining to, in the style of, or appealing to nerds."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

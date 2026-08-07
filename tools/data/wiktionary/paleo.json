@@ -1,6 +1,13 @@
 {
   "word": "paleo",
-  "pos": "noun",
-  "definition": "Clipping of paleodiet.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "Clipping of paleodiet.",
+        "Clipping of paleoconservative."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

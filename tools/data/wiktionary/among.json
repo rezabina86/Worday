@@ -1,7 +1,22 @@
 {
   "word": "among",
-  "pos": "preposition",
-  "definition": "Of a person or thing: in the midst of and surrounded by (other people or things).",
-  "source": "wiktionary",
-  "example": "to put the cat among the pigeons"
+  "meanings": [
+    {
+      "pos": "preposition",
+      "definitions": [
+        "Of a person or thing: in the midst of and surrounded by (other people or things).",
+        "Of an event or a fact."
+      ]
+    },
+    {
+      "pos": "adverb",
+      "definitions": [
+        "Along with (someone or something); together.",
+        "At the same time, all the while, meanwhile.",
+        "In addition, beside.",
+        "Chiefly with contrasting adjectives or adverbs: from time to time, now and then; also, here and there."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

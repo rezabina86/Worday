@@ -1,7 +1,15 @@
 {
   "word": "multi",
-  "pos": "noun",
-  "definition": "Clipping of multistan.",
-  "source": "wiktionary",
-  "example": "Many K-pop fans of all the groups involved, known as \"multis,\" gave everyone their two cents on the matter."
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "Clipping of multistan.",
+        "A multituberculate.",
+        "Neolamprologus multifasciatus (small shell-dwelling cichlid endemic to Lake Tanganyika, popular as aquarium fish)",
+        "A contract bridge convention whereby the opening bid of 2\u2666 shows several possible types of hands."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

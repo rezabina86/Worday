@@ -50,7 +50,10 @@ TOOLS = Path(__file__).resolve().parent
 REPO = TOOLS.parent
 HUNSPELL = TOOLS / "data" / "hunspell" / "en_US"
 BLOCKLIST_FILE = TOOLS / "data" / "blocklist.txt"
-OLD_COMMON = REPO / "Worday" / "Common" / "Resources" / "common.json"
+# The pre-migration shipped word list, kept as pipeline input so regeneration can still
+# guarantee an offline definition for every word an existing install may hold in history,
+# even though the app no longer bundles common.json.
+OLD_COMMON = TOOLS / "data" / "legacy_common.json"
 OUT = TOOLS / "out"
 AUDIT = OUT / "audit"
 
@@ -130,21 +133,27 @@ def tidy_definition(text: str) -> str:
     return text
 
 
-def primary_definition(w: str):
-    """First (most frequent) WordNet sense -> (pos, definition, example|None).
-    WordNet orders synsets by frequency; glosses pack sense; example clauses via `;`."""
-    syns = wn.synsets(w)
-    if not syns:
-        return None
-    syn = syns[0]
-    gloss = syn.definition().strip()
-    # keep the primary clause only; trim trailing "; ..." elaborations
-    definition = gloss.split(";")[0].strip()
-    if not definition:
-        definition = gloss
-    examples = syn.examples()
-    example = examples[0].strip() if examples else None
-    return (POS_NAME.get(syn.pos(), syn.pos()), definition, example)
+def wordnet_meanings(w: str) -> list[dict] | None:
+    """All WordNet senses for `w`, grouped by part of speech and preserving frequency
+    order (WordNet orders synsets most-common-first; POS groups appear in first-seen
+    order). Returns `[{pos, definitions: [str, …]}, …]` or None if WordNet has nothing.
+    Proper-noun instance synsets are skipped."""
+    groups: dict[str, list[str]] = {}
+    order: list[str] = []
+    for syn in wn.synsets(w):
+        if syn.instance_hypernyms():                # skip proper-noun instances
+            continue
+        pos = POS_NAME.get(syn.pos(), syn.pos())
+        definition = tidy_definition(syn.definition())
+        if not definition:
+            continue
+        if pos not in groups:
+            groups[pos] = []
+            order.append(pos)
+        if definition not in groups[pos]:           # dedupe within a POS
+            groups[pos].append(definition)
+    meanings = [{"pos": pos, "definitions": groups[pos]} for pos in order if groups[pos]]
+    return meanings or None
 
 
 def main() -> int:
@@ -225,21 +234,17 @@ def main() -> int:
     definitions, no_definition = {}, []
     for w in sorted(def_targets):
         entry = None
-        d = primary_definition(w)               # 1) WordNet gloss (preferred base)
-        if d is not None:
-            pos, definition, example = d
-            entry = {"pos": pos, "definition": tidy_definition(definition),
-                     "source": "wordnet"}
-            if example:
-                entry["example"] = example
+        meanings = wordnet_meanings(w)          # 1) all WordNet senses, grouped by POS
+        if meanings is not None:
+            entry = {"meanings": meanings, "source": "wordnet"}
         else:                                   # 2) Wiktionary fill (CC BY-SA)
             wf = wiktionary_cache / f"{w}.json"
             if wf.exists():
                 wd = json.loads(wf.read_text())
-                entry = {"pos": wd["pos"], "definition": tidy_definition(wd["definition"]),
-                         "source": "wiktionary"}
-                if wd.get("example"):
-                    entry["example"] = wd["example"]
+                wm = [{"pos": m["pos"],
+                       "definitions": [tidy_definition(d) for d in m["definitions"]]}
+                      for m in wd["meanings"]]
+                entry = {"meanings": wm, "source": "wiktionary"}
         if entry is None:
             no_definition.append(w)
             continue
@@ -290,9 +295,14 @@ def main() -> int:
         "dropped_proper": len(dropped_proper),
         "excluded_from_answers": len(excluded),
         "blocked": len(dropped_blocked),
-        "avg_definition_len": round(
-            sum(len(e["definition"]) for e in definitions.values()) /
-            max(1, len(definitions)), 1),
+        "total_definitions": sum(
+            len(m["definitions"]) for e in definitions.values() for m in e["meanings"]),
+        "avg_meanings_per_word": round(
+            sum(len(e["meanings"]) for e in definitions.values()) /
+            max(1, len(definitions)), 2),
+        "avg_definitions_per_word": round(
+            sum(len(m["definitions"]) for e in definitions.values() for m in e["meanings"]) /
+            max(1, len(definitions)), 2),
         "answers_zipf_threshold": ANSWERS_ZIPF,
     }
     (OUT / "report.json").write_text(json.dumps(report, indent=2) + "\n")

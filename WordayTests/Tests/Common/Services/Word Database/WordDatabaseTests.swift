@@ -12,8 +12,13 @@ struct WordDatabaseTests {
       "answers": ["abbey", "crane"],
       "valid": ["abbey", "crane", "cores"],
       "definitions": {
-        "abbey": { "pos": "noun", "definition": "a church" },
-        "crane": { "pos": "verb", "definition": "to stretch" }
+        "abbey": { "meanings": [
+          { "pos": "noun", "definitions": ["a church"] }
+        ] },
+        "crane": { "meanings": [
+          { "pos": "noun", "definitions": ["a bird", "a machine"] },
+          { "pos": "verb", "definitions": ["to stretch"] }
+        ] }
       }
     }
     """
@@ -37,11 +42,15 @@ struct WordDatabaseTests {
         #expect(!sut.isValid("zzzzz"))
     }
 
-    @Test func meaningMapsToTheDomainModel() {
+    @Test func meaningMapsAllSensesGroupedByPartOfSpeech() {
         let (sut, _) = makeSUT(json: sampleJSON)
         #expect(sut.meaning(for: "crane") == WordMeaningModel(
             word: "crane",
-            meanings: [.init(partOfSpeech: .verb, definitions: [.init(definition: "to stretch")])]))
+            meanings: [
+                .init(partOfSpeech: .noun, definitions: [
+                    .init(definition: "a bird"), .init(definition: "a machine")]),
+                .init(partOfSpeech: .verb, definitions: [.init(definition: "to stretch")])
+            ]))
     }
 
     @Test func returnsNilMeaningForAValidButUndefinedWord() {
@@ -53,7 +62,7 @@ struct WordDatabaseTests {
     @Test func unknownPartOfSpeechFallsBackToNoun() {
         let json = """
         {"version":1,"answers":["abcde"],"valid":["abcde"],
-         "definitions":{"abcde":{"pos":"nonsense","definition":"x"}}}
+         "definitions":{"abcde":{"meanings":[{"pos":"nonsense","definitions":["x"]}]}}}
         """
         let (sut, _) = makeSUT(json: json)
         #expect(sut.meaning(for: "abcde")?.meanings.first?.partOfSpeech == .noun)
@@ -73,7 +82,13 @@ struct WordDatabaseTests {
             #expect(word.count == 5, "answer '\(word)' is not 5 letters")
             #expect(word.allSatisfy { $0.isLetter && $0.isLowercase }, "answer '\(word)' not a–z")
             #expect(db.isValid(word), "answer '\(word)' missing from the valid set")
-            #expect(db.meaning(for: word) != nil, "answer '\(word)' has no offline meaning")
+            guard let meaning = db.meaning(for: word) else {
+                Issue.record("answer '\(word)' has no offline meaning")
+                continue
+            }
+            #expect(!meaning.meanings.isEmpty, "answer '\(word)' has no senses")
+            #expect(meaning.meanings.allSatisfy { !$0.definitions.isEmpty },
+                    "answer '\(word)' has a sense with no definitions")
         }
     }
 }

@@ -58,8 +58,8 @@ def _glossed_senses(entry: dict) -> list[dict]:
             if (s.get("glosses") or s.get("raw_glosses"))]
 
 
-def _pick_from(entry: dict, allow_tagged: bool) -> dict | None:
-    pos = POS_MAP.get(entry.get("pos", ""), entry.get("pos", ""))
+def _definitions_from(entry: dict, allow_tagged: bool) -> list[str]:
+    out: list[str] = []
     for sense in entry.get("senses", []):
         tags = {t.lower() for t in sense.get("tags", [])}
         if not allow_tagged and tags & SKIP_TAGS:
@@ -67,32 +67,40 @@ def _pick_from(entry: dict, allow_tagged: bool) -> dict | None:
         glosses = sense.get("glosses") or sense.get("raw_glosses")
         if not glosses or not glosses[0].strip():
             continue
-        out = {"pos": pos, "definition": glosses[0].strip(), "source": "wiktionary"}
-        for ex in sense.get("examples", []):
-            if ex.get("text"):
-                out["example"] = ex["text"].strip()
-                break
-        return out
-    return None
+        definition = glosses[0].strip()
+        if definition not in out:
+            out.append(definition)
+    return out
 
 
-def best_sense(entries: list[dict]) -> dict | None:
-    """Pick the best (pos, definition, example) across a word's Wiktionary entries.
-    Rank entries by richness (# glossed senses) then POS preference, so a modal's
-    verb entry beats a one-off nonce-noun entry (could/shall). Fall back to
-    archaic/rare senses only if nothing else exists (thine, shalt, quoth)."""
+def all_meanings(entries: list[dict]) -> list[dict] | None:
+    """Every Wiktionary sense grouped by part of speech. Entries are ordered by richness
+    (# glossed senses) then POS preference so a modal's verb entry leads its noun nonce
+    (could/shall). Archaic/rare senses are used only as a fallback when a POS has nothing
+    else (thine, shalt, quoth). Returns `[{pos, definitions: [str, …]}, …]` or None."""
     def rank(e):
         p = e.get("pos", "")
         return (-len(_glossed_senses(e)),
                 POS_RANK.index(p) if p in POS_RANK else len(POS_RANK))
 
-    ordered = sorted(entries, key=rank)
-    for allow_tagged in (False, True):
-        for entry in ordered:
-            picked = _pick_from(entry, allow_tagged)
-            if picked:
-                return picked
-    return None
+    groups: dict[str, list[str]] = {}
+    order: list[str] = []
+    for entry in sorted(entries, key=rank):
+        pos = POS_MAP.get(entry.get("pos", ""), entry.get("pos", ""))
+        if not pos:
+            continue
+        defs = _definitions_from(entry, allow_tagged=False) \
+            or _definitions_from(entry, allow_tagged=True)
+        if not defs:
+            continue
+        if pos not in groups:
+            groups[pos] = []
+            order.append(pos)
+        for d in defs:
+            if d not in groups[pos]:
+                groups[pos].append(d)
+    meanings = [{"pos": pos, "definitions": groups[pos]} for pos in order if groups[pos]]
+    return meanings or None
 
 
 def enrich(word: str) -> dict | None:
@@ -107,11 +115,11 @@ def enrich(word: str) -> dict | None:
     (RAW).mkdir(parents=True, exist_ok=True)
     (RAW / f"{word}.jsonl").write_text(
         "\n".join(json.dumps(e) for e in entries) + "\n")
-    result = best_sense(entries)
-    if result is None:
+    meanings = all_meanings(entries)
+    if meanings is None:
         print(f"  {word}: no usable sense")
         return None
-    result = {"word": word, **result}
+    result = {"word": word, "meanings": meanings, "source": "wiktionary"}
     cache_file.write_text(json.dumps(result, indent=2) + "\n")
     return result
 

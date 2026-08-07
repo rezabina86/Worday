@@ -1,6 +1,12 @@
 {
   "word": "doled",
-  "pos": "verb",
-  "definition": "simple past and past participle of dole",
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "simple past and past participle of dole"
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

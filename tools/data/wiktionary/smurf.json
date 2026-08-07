@@ -1,6 +1,24 @@
 {
   "word": "smurf",
-  "pos": "verb",
-  "definition": "Used to replace any other verb, as is typical of smurfs.",
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "Used to replace any other verb, as is typical of smurfs.",
+        "To split a large financial transaction into smaller ones so as to avoid scrutiny; to carry out structuring.",
+        "To carry out a smurf attack against someone.",
+        "To use a smurf account."
+      ]
+    },
+    {
+      "pos": "noun",
+      "definitions": [
+        "A blue pixie with a white stocking cap, from the media franchise The Smurfs.",
+        "A smurf account or its user.",
+        "A smurf attack.",
+        "One member of a team, each of whom acquires a small amount of money or ingredients for manufacturing drugs, keeping the transactions too small in order to not raise suspicion."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

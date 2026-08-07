@@ -1,7 +1,35 @@
 {
   "word": "ought",
-  "pos": "verb",
-  "definition": "Indicating duty or obligation.",
-  "source": "wiktionary",
-  "example": "I ought to vote in the coming election."
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "Indicating duty or obligation.",
+        "Indicating advisability or prudence.",
+        "Indicating desirability.",
+        "Indicating likelihood or probability.",
+        "simple past of owe"
+      ]
+    },
+    {
+      "pos": "noun",
+      "definitions": [
+        "A statement of what ought to be the case as contrasted with what is the case.",
+        "Alternative spelling of aught; cipher, zero, nought."
+      ]
+    },
+    {
+      "pos": "adverb",
+      "definitions": [
+        "Alternative spelling of aught; at all, to any degree."
+      ]
+    },
+    {
+      "pos": "pronoun",
+      "definitions": [
+        "Alternative spelling of aught; anything"
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

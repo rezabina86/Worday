@@ -1,6 +1,19 @@
 {
   "word": "fritz",
-  "pos": "noun",
-  "definition": "The state of being defective.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "The state of being defective.",
+        "A type of processed meat sausage; devon"
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "To go wrong or become defective."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

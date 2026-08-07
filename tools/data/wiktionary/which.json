@@ -1,7 +1,29 @@
 {
   "word": "which",
-  "pos": "pronoun",
-  "definition": "What one or ones (of those mentioned or implied).",
-  "source": "wiktionary",
-  "example": "Which is which?"
+  "meanings": [
+    {
+      "pos": "pronoun",
+      "definitions": [
+        "What one or ones (of those mentioned or implied).",
+        "The/Any ones that; whichever.",
+        "In a non-restrictive relative clause, referring to something previously mentioned.",
+        "In a restrictive relative clause, referring to a noun previously mentioned."
+      ]
+    },
+    {
+      "pos": "determiner",
+      "definitions": [
+        "What, of those mentioned or implied.",
+        "The/Any ... that; whichever.",
+        "Designates the one(s) previously mentioned."
+      ]
+    },
+    {
+      "pos": "conjunction",
+      "definitions": [
+        "And."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

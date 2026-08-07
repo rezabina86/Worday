@@ -1,7 +1,38 @@
 {
   "word": "where",
-  "pos": "adverb",
-  "definition": "In, at or to what place.",
-  "source": "wiktionary",
-  "example": "Where are you?"
+  "meanings": [
+    {
+      "pos": "adverb",
+      "definitions": [
+        "In, at or to what place.",
+        "In what situation.",
+        "In, at or to the place (that) or a place (that).",
+        "In, at or to any place (that); wherever; anywhere.",
+        "In, at or to which.",
+        "The place in, at or to which.",
+        "A situation or case in which.",
+        "In a/the situation, position, case, etc. in which."
+      ]
+    },
+    {
+      "pos": "conjunction",
+      "definitions": [
+        "While on the contrary; although; whereas.",
+        "That."
+      ]
+    },
+    {
+      "pos": "noun",
+      "definitions": [
+        "The place in which something happens."
+      ]
+    },
+    {
+      "pos": "pronoun",
+      "definitions": [
+        "What place."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

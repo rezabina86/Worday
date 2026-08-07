@@ -1,6 +1,20 @@
 {
   "word": "promo",
-  "pos": "noun",
-  "definition": "Clipping of promotion.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "Clipping of promotion.",
+        "an interview or monologue intended to promote a character or an upcoming match.",
+        "A reduction in consumer cost for a limited time for items or services rendered; a special."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "To promote; to publicize."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

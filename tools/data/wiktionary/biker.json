@@ -1,7 +1,13 @@
 {
   "word": "biker",
-  "pos": "noun",
-  "definition": "A person whose lifestyle is centered on motorcycles, sometimes a member of a motorcycle club.",
-  "source": "wiktionary",
-  "example": "Others, mostly behelmeted casual bikers whose enthusiasm for motorcycling is a monthly Sunday morning ride, also took in the gleam of the chrome and outrageous styling, but were confused that it had a Honda badge on it rather than Harley\u2019s winged logo."
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "A person whose lifestyle is centered on motorcycles, sometimes a member of a motorcycle club.",
+        "A cyclist."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

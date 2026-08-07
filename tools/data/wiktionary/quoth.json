@@ -1,7 +1,13 @@
 {
   "word": "quoth",
-  "pos": "verb",
-  "definition": "said",
-  "source": "wiktionary",
-  "example": "Tell me what thy lordly name is on the Night's Plutonian shore! / Quoth the raven, \"Nevermore.\""
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "said",
+        "To say."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

@@ -60,19 +60,28 @@ struct WordDatabaseEntity: Decodable, Equatable {
     let valid: [String]
     let definitions: [String: Definition]
 
+    /// A word's full set of senses, grouped by part of speech (mirrors what the meaning
+    /// screen's POS picker + numbered definitions render).
     struct Definition: Decodable, Equatable {
-        let pos: String
-        let definition: String
+        let meanings: [Meaning]
+
+        struct Meaning: Decodable, Equatable {
+            let pos: String
+            let definitions: [String]
+        }
     }
 }
 
 private extension WordMeaningModel {
     init(word: String, entry: WordDatabaseEntity.Definition) {
-        let partOfSpeech = Meaning.PartOfSpeech(rawValue: entry.pos) ?? .noun
         self.init(
             word: word,
-            meanings: [Meaning(partOfSpeech: partOfSpeech,
-                               definitions: [Meaning.Definition(definition: entry.definition)])]
+            meanings: entry.meanings.map { meaning in
+                Meaning(
+                    partOfSpeech: Meaning.PartOfSpeech(rawValue: meaning.pos) ?? .noun,
+                    definitions: meaning.definitions.map { Meaning.Definition(definition: $0) }
+                )
+            }
         )
     }
 }

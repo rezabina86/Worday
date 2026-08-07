@@ -1,6 +1,18 @@
 {
   "word": "rares",
-  "pos": "noun",
-  "definition": "plural of rare",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "plural of rare"
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "third-person singular simple present indicative of rare"
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

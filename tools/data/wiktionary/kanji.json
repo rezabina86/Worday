@@ -1,6 +1,16 @@
 {
   "word": "kanji",
-  "pos": "noun",
-  "definition": "A North Indian fermented drink made with beetroot, black mustard seeds, carrots etc.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "A North Indian fermented drink made with beetroot, black mustard seeds, carrots etc.",
+        "Drink made from sugarcane vinegar.",
+        "Rice gruel made by fermentation of rice and tastes sour.",
+        "The system of writing Japanese using Chinese characters.",
+        "Any individual Chinese character as used in the Japanese language."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

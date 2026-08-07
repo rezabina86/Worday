@@ -1,6 +1,24 @@
 {
   "word": "creme",
-  "pos": "noun",
-  "definition": "Alternative spelling of cr\u00e8me.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "Alternative spelling of cr\u00e8me."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "Alternative spelling of cr\u00e8me."
+      ]
+    },
+    {
+      "pos": "adjective",
+      "definitions": [
+        "Alternative spelling of cr\u00e8me."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

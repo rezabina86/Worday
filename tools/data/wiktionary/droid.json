@@ -1,7 +1,12 @@
 {
   "word": "droid",
-  "pos": "noun",
-  "definition": "A robot, especially one made with some physical resemblance to a human (an android).",
-  "source": "wiktionary",
-  "example": "It's crazy. They're swarming all over Carron City. They're stopping robots in the streets\u2014household Robs, commercial Droids, all of them. They just look at them, and then the others quit work and start off with them."
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "A robot, especially one made with some physical resemblance to a human (an android)."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

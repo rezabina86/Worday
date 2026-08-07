@@ -1,7 +1,12 @@
 {
   "word": "intel",
-  "pos": "noun",
-  "definition": "Intelligence (secret information).",
-  "source": "wiktionary",
-  "example": "Intel is important in espionage."
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "Intelligence (secret information)."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

@@ -1,7 +1,20 @@
 {
   "word": "could",
-  "pos": "verb",
-  "definition": "simple past of can",
-  "source": "wiktionary",
-  "example": "Before I was blind, I could see very well."
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "simple past of can",
+        "conditional of can",
+        "past participle of can"
+      ]
+    },
+    {
+      "pos": "noun",
+      "definitions": [
+        "Something that could happen, or could be the case, under different circumstances; a potentiality."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

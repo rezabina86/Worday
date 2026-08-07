@@ -1,7 +1,25 @@
 {
   "word": "would",
-  "pos": "verb",
-  "definition": "Past tense of will; usually followed by a bare infinitive.",
-  "source": "wiktionary",
-  "example": "On my first day at University, I met the woman who would become my wife."
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "Past tense of will; usually followed by a bare infinitive.",
+        "A modal verb, the subjunctive of will; usually followed by a bare infinitive."
+      ]
+    },
+    {
+      "pos": "noun",
+      "definitions": [
+        "Something that would happen, or would be the case, under different circumstances; a potentiality."
+      ]
+    },
+    {
+      "pos": "interjection",
+      "definitions": [
+        "Ellipsis of I would, used to denote that the speaker finds another person sexually attractive."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

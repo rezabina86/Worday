@@ -1,7 +1,25 @@
 {
   "word": "their",
-  "pos": "determiner",
-  "definition": "Belonging to, from, of, or relating to, them (plural).",
-  "source": "wiktionary",
-  "example": "they will meet tomorrow at their convenience"
+  "meanings": [
+    {
+      "pos": "determiner",
+      "definitions": [
+        "Belonging to, from, of, or relating to, them (plural).",
+        "Belonging to someone (one person, singular), or occasionally to something."
+      ]
+    },
+    {
+      "pos": "adverb",
+      "definitions": [
+        "Misspelling of there."
+      ]
+    },
+    {
+      "pos": "contraction",
+      "definitions": [
+        "Misspelling of they\u2019re."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

@@ -1,6 +1,12 @@
 {
   "word": "poppa",
-  "pos": "noun",
-  "definition": "father, papa.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "father, papa."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

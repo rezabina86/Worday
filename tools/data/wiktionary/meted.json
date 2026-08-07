@@ -1,6 +1,12 @@
 {
   "word": "meted",
-  "pos": "verb",
-  "definition": "simple past and past participle of mete",
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "simple past and past participle of mete"
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

@@ -1,7 +1,12 @@
 {
   "word": "circa",
-  "pos": "preposition",
-  "definition": "Approximately, about, around (typically in relation to time)",
-  "source": "wiktionary",
-  "example": "Julius Caesar visited this area circa 50 BC."
+  "meanings": [
+    {
+      "pos": "preposition",
+      "definitions": [
+        "Approximately, about, around (typically in relation to time)"
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

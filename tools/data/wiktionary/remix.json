@@ -1,7 +1,22 @@
 {
   "word": "remix",
-  "pos": "verb",
-  "definition": "To mix again.",
-  "source": "wiktionary",
-  "example": "Overhauling serves to remix the brine and to shift the meat so that all pieces will be exposed to the brine."
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "To mix again.",
+        "To create a remix.",
+        "To rearrange or radically alter (a particular piece of music).",
+        "To modify (a work in any medium)."
+      ]
+    },
+    {
+      "pos": "noun",
+      "definitions": [
+        "A rearrangement of an older piece of music, possibly including various cosmetic changes.",
+        "A piece of music formed by combining existing pieces of music together, possibly including various other cosmetic changes"
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

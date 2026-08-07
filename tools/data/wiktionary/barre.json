@@ -1,6 +1,19 @@
 {
   "word": "barre",
-  "pos": "noun",
-  "definition": "A handrail fixed to a wall used for ballet exercises.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "A handrail fixed to a wall used for ballet exercises.",
+        "Ellipsis of barre chord."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "To form a barre chord on an instrument."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

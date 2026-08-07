@@ -1,6 +1,26 @@
 {
   "word": "spake",
-  "pos": "noun",
-  "definition": "Alternative form of spoke (of a wheel).",
+  "meanings": [
+    {
+      "pos": "adjective",
+      "definitions": [
+        "Quiet; tame.",
+        "Ready; prompt."
+      ]
+    },
+    {
+      "pos": "noun",
+      "definitions": [
+        "Alternative form of spoke (of a wheel).",
+        "A type of wagon on rails used for carrying workers in and out of a colliery."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "simple past of speak"
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

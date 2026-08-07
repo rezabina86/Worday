@@ -7,10 +7,13 @@ Schema (decoded by `WordDatabase`):
     { "version": 1,
       "answers": ["abbey", ...],                       // daily-word pool
       "valid":   ["aahed", ...],                        // offline isValid set (superset)
-      "definitions": { "abbey": {"pos": "noun", "definition": "..."}, ... } }
+      "definitions": {                                  // all senses, grouped by POS
+        "guide": { "meanings": [
+            {"pos": "noun", "definitions": ["...", "..."]},
+            {"pos": "verb", "definitions": ["..."]} ] }, ... } }
 
-Examples/frequency/source stay in the tools artifacts (attribution/analysis) but are
-omitted here — the runtime meaning model needs only pos + definition, keeping the bundle
+Frequency/source stay in the tools artifacts (attribution/analysis) but are omitted here —
+the runtime meaning model needs only the grouped pos + definitions, keeping the bundle
 lean for instant launch.
 
     tools/.venv/bin/python tools/build_bundle.py
@@ -37,10 +40,12 @@ def main() -> int:
 
     definitions = {}
     for word, e in raw_defs.items():
-        pos = e["pos"]
-        if pos not in KNOWN_POS:
-            raise SystemExit(f"POS '{pos}' ({word}) not in the app enum — align first.")
-        definitions[word] = {"pos": pos, "definition": e["definition"]}
+        meanings = []
+        for m in e["meanings"]:
+            if m["pos"] not in KNOWN_POS:
+                raise SystemExit(f"POS '{m['pos']}' ({word}) not in the app enum — align first.")
+            meanings.append({"pos": m["pos"], "definitions": m["definitions"]})
+        definitions[word] = {"meanings": meanings}
 
     bundle = {
         "version": 1,

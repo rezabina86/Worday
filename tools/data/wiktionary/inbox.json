@@ -1,6 +1,21 @@
 {
   "word": "inbox",
-  "pos": "noun",
-  "definition": "A container in which papers to be dealt with are put.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "A container in which papers to be dealt with are put.",
+        "An electronic folder serving the same purpose, but for electronic files, especially email.",
+        "The aggregate of items that demand one's attention or effort."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "To put (something) in someone's inbox.",
+        "To communicate with (a person) by writing to their electronic inbox."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

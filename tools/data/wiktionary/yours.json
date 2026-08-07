@@ -1,7 +1,14 @@
 {
   "word": "yours",
-  "pos": "pronoun",
-  "definition": "That or those belonging to you; the possessive second-person singular pronoun used without a following noun.",
-  "source": "wiktionary",
-  "example": "If this edit is mine, the other must be yours."
+  "meanings": [
+    {
+      "pos": "pronoun",
+      "definitions": [
+        "That or those belonging to you; the possessive second-person singular pronoun used without a following noun.",
+        "Your house or home.",
+        "Written at the end of a letter, before the signature."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

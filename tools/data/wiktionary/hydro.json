@@ -1,6 +1,25 @@
 {
   "word": "hydro",
-  "pos": "noun",
-  "definition": "Clipping of hydropower (\u201chydroelectric power\u201d).",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "Clipping of hydropower (\u201chydroelectric power\u201d).",
+        "Clipping of hydroelectricity.",
+        "Electrical power supply; specifically, electrical power provided by a utility (as a publicly-owned one); payment or bills for this.",
+        "Abbreviation of hydrodynamics.",
+        "Hydroponically-grown marijuana.",
+        "Clipping of hydrocodone."
+      ]
+    },
+    {
+      "pos": "adjective",
+      "definitions": [
+        "Clipping of hydroelectric.",
+        "Clipping of hydroponic.",
+        "Alternative form of hydro- (\u201cwater\u201d)."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

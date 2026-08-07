@@ -1,7 +1,13 @@
 {
   "word": "gotta",
-  "pos": "verb",
-  "definition": "Synonym of have got to, have to",
-  "source": "wiktionary",
-  "example": "I gotta learn this for my exam."
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "Synonym of have got to, have to",
+        "Contraction of got + a."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

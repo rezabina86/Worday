@@ -1,7 +1,26 @@
 {
   "word": "roger",
-  "pos": "verb",
-  "definition": "To acknowledge by saying \"roger\".",
-  "source": "wiktionary",
-  "example": "The Explorer radio operator rogered receipt of the War Room's signal."
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "Of a man, to have sexual intercourse with (someone), especially in a rough manner.",
+        "To have sexual intercourse.",
+        "To acknowledge by saying \"roger\"."
+      ]
+    },
+    {
+      "pos": "noun",
+      "definitions": [
+        "An act of sexual intercourse."
+      ]
+    },
+    {
+      "pos": "interjection",
+      "definitions": [
+        "Received (used in radio communications to acknowledge that a message has been received and understood)"
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

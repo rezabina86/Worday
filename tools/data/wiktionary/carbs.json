@@ -1,6 +1,12 @@
 {
   "word": "carbs",
-  "pos": "noun",
-  "definition": "plural of carb",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "plural of carb"
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

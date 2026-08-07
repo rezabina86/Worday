@@ -1,6 +1,18 @@
 {
   "word": "these",
-  "pos": "pronoun",
-  "definition": "plural of this",
+  "meanings": [
+    {
+      "pos": "pronoun",
+      "definitions": [
+        "plural of this"
+      ]
+    },
+    {
+      "pos": "determiner",
+      "definitions": [
+        "plural of this"
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

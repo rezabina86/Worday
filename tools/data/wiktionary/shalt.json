@@ -1,7 +1,12 @@
 {
   "word": "shalt",
-  "pos": "verb",
-  "definition": "second-person singular simple present indicative of shall",
-  "source": "wiktionary",
-  "example": "Thou shalt not kill."
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "second-person singular simple present indicative of shall"
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

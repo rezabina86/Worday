@@ -1,7 +1,31 @@
 {
   "word": "trans",
-  "pos": "verb",
-  "definition": "To cause to cross from one side to another of (gender, sex or similar).",
-  "source": "wiktionary",
-  "example": "[\u2026] as they interact with bodies transing gender (and other) borders and spaces."
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "To cause to cross from one side to another of (gender, sex or similar)."
+      ]
+    },
+    {
+      "pos": "adjective",
+      "definitions": [
+        "In (or constituting, forming, or describing) a double bond in which the greater radical on both ends is on the opposite side of the bond.",
+        "In (or constituting, forming, or describing) a coordination compound in which the two instances of a particular ligand are on opposite sides of the central atom.",
+        "Of the side of the Golgi apparatus farther from the endoplasmic reticulum.",
+        "Transgender or transsexual.",
+        "Alternative form of trans*."
+      ]
+    },
+    {
+      "pos": "noun",
+      "definitions": [
+        "Clipping of transaction.",
+        "Clipping of transmission.",
+        "A trans person.",
+        "plural of tran"
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

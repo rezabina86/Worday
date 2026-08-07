@@ -1,6 +1,20 @@
 {
   "word": "taser",
-  "pos": "noun",
-  "definition": "A Taser, a handheld device made by Taser International intended to immobilize another by delivering an electric shock.",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "A Taser, a handheld device made by Taser International intended to immobilize another by delivering an electric shock.",
+        "Any electroshock stun gun."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "To shock a person, thing, individual, or animal with a handheld device with the electric shock that it delivers; to stun with a stun gun.",
+        "To strike verbally or gesturally with ill intents."
+      ]
+    }
+  ],
   "source": "wiktionary"
 }

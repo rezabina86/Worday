@@ -1,7 +1,19 @@
 {
   "word": "login",
-  "pos": "noun",
-  "definition": "Credentials: the combination of a user's identification and password used to enter a computer, program, network, etc.",
-  "source": "wiktionary",
-  "example": "I've forgotten my login again."
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "Credentials: the combination of a user's identification and password used to enter a computer, program, network, etc.",
+        "The process or an instance of logging in."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "Misspelling of log in."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

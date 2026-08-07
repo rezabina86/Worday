@@ -1,7 +1,14 @@
 {
   "word": "shall",
-  "pos": "verb",
-  "definition": "Used before a verb to indicate the simple future tense in the first person singular or plural.",
-  "source": "wiktionary",
-  "example": "I shall sing in the choir tomorrow."
+  "meanings": [
+    {
+      "pos": "verb",
+      "definitions": [
+        "Used before a verb to indicate the simple future tense in the first person singular or plural.",
+        "Used similarly to indicate determination or obligation in the second and third persons singular or plural.",
+        "Used in questions with the first person singular or plural to suggest a possible future action."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

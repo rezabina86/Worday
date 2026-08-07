@@ -1,7 +1,12 @@
 {
   "word": "celeb",
-  "pos": "noun",
-  "definition": "A celebrity; a famous person, a one who is celebrated.",
-  "source": "wiktionary",
-  "example": "Just in case you thought celebs stay famous on their own, think again. There's a whole pack of people who help a star each day"
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "A celebrity; a famous person, a one who is celebrated."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

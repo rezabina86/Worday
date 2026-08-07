@@ -1,7 +1,22 @@
 {
   "word": "until",
-  "pos": "preposition",
-  "definition": "Up to the time of (something happening); pending.",
-  "source": "wiktionary",
-  "example": "If you can wait until after my meeting with her, we'll talk then."
+  "meanings": [
+    {
+      "pos": "preposition",
+      "definitions": [
+        "Up to the time of (something happening); pending.",
+        "Up to (a certain place)",
+        "Before (a time).",
+        "Up to the time that the foods or other things available to sell, or tasks which need to be completed, run out."
+      ]
+    },
+    {
+      "pos": "conjunction",
+      "definitions": [
+        "Up to the time that (a condition becomes true).",
+        "Before (a condition becoming true)."
+      ]
+    }
+  ],
+  "source": "wiktionary"
 }

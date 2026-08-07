@@ -37,9 +37,7 @@ def main() -> int:
         CREATE TABLE words (
             word       TEXT PRIMARY KEY NOT NULL,        -- 5-letter, lowercase
             is_answer  INTEGER NOT NULL DEFAULT 0,       -- eligible as the daily word
-            pos        TEXT,                             -- part of speech (if defined)
-            definition TEXT,
-            example    TEXT,
+            meanings   TEXT,                             -- JSON: [{pos, definitions:[…]}] or NULL
             frequency  REAL,
             source     TEXT                              -- 'wordnet' | 'wiktionary'
         ) WITHOUT ROWID;
@@ -51,15 +49,13 @@ def main() -> int:
         rows.append((
             w,
             1 if w in answers else 0,
-            d["pos"] if d else None,
-            d["definition"] if d else None,
-            d.get("example") if d else None,
+            json.dumps(d["meanings"], ensure_ascii=False) if d else None,
             d["frequency"] if d else None,
             d["source"] if d else None,
         ))
     con.executemany(
-        "INSERT INTO words (word,is_answer,pos,definition,example,frequency,source) "
-        "VALUES (?,?,?,?,?,?,?)", rows)
+        "INSERT INTO words (word,is_answer,meanings,frequency,source) "
+        "VALUES (?,?,?,?,?)", rows)
     con.execute("CREATE INDEX idx_is_answer ON words(is_answer);")
     con.commit()
     con.execute("VACUUM;")
@@ -68,7 +64,7 @@ def main() -> int:
     n_valid = con.execute("SELECT COUNT(*) FROM words").fetchone()[0]
     n_ans = con.execute("SELECT COUNT(*) FROM words WHERE is_answer=1").fetchone()[0]
     n_def = con.execute(
-        "SELECT COUNT(*) FROM words WHERE definition IS NOT NULL").fetchone()[0]
+        "SELECT COUNT(*) FROM words WHERE meanings IS NOT NULL").fetchone()[0]
     con.close()
 
     size_kb = DB.stat().st_size / 1024
