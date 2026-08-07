@@ -42,7 +42,7 @@ struct GameView: View {
                 .animation(.easeInOut(duration: 1.5), value: viewState)
         case .error:
             Text("Seomething horrible happened.\nPlease delete and re-install the app")
-                .font(bodyFont)
+                .dsFont(.body)
                 .transition(.opacity)
                 .padding(.space_16pt)
         case let .noWordToday(viewModel):

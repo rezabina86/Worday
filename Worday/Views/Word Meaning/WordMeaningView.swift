@@ -33,9 +33,9 @@ struct WordMeaningView: View {
             VStack(spacing: .space_16pt) {
                 Text(message)
                     .multilineTextAlignment(.center)
-                    .font(bodyFont)
+                    .dsFont(.body)
                 Text(word)
-                    .font(titleFont)
+                    .dsFont(.largeTitle)
             }
         case let .meaning(viewState):
             buildMeaningView(from: viewState)
@@ -48,7 +48,7 @@ struct WordMeaningView: View {
         VStack(alignment: .leading, spacing: .space_16pt) {
             HStack {
                 Text(viewState.word)
-                    .font(titleFont)
+                    .dsFont(.largeTitle)
                 Spacer()
             }
             .animation(nil, value: viewState)
@@ -69,14 +69,14 @@ struct WordMeaningView: View {
                     .pickerStyle(.palette)
                     
                     Text("DEFINITIONS")
-                        .font(bodyFont)
+                        .dsFont(.body)
                     
                     ScrollView {
                         LazyVStack {
                             ForEach(selectedMeaning.definitions) { def in
                                 HStack(alignment: .top) {
                                     Text("\(def.index).")
-                                        .font(bodyFont)
+                                        .dsFont(.body)
                                         .bold()
                                     
                                     Text(def.definition)

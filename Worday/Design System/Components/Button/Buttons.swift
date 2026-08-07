@@ -4,14 +4,14 @@ struct WDButtonStyle: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
             content
-                .font(wdFont16.bold())
+                .font(DSFont.label.font.bold())
                 .foregroundColor(.primary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .glassify()
         } else {
             content
-                .font(wdFont16.bold())
+                .font(DSFont.label.font.bold())
                 .foregroundColor(.primary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)

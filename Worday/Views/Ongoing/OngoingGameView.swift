@@ -29,7 +29,7 @@ struct OngoingGameView: View {
                         .frame(width: .size_24pt, height: .size_24pt)
                     
                     Text("DailySort")
-                        .font(bodyFont)
+                        .dsFont(.body)
                         
                 }
             }
@@ -41,10 +41,10 @@ struct OngoingGameView: View {
             viewState.numberOfTries.map { number in
                 Group {
                     Text("Number of Tries: ")
-                        .font(bodyFont)
+                        .dsFont(.body)
                     +
                     Text("\(number)")
-                        .font(bodyFont)
+                        .dsFont(.body)
                         .foregroundStyle(Color.orange)
                 }
                 .animation(.easeInOut(duration: 0.5), value: viewState)

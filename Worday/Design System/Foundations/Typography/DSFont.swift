@@ -3,9 +3,6 @@ import SwiftUI
 /// The semantic type scale — the tier features use. Each role names a *purpose* and resolves to a
 /// `DSFontFamily` + size + weight + tracking, so screens ask for `.dsFont(.sectionTitle)`, never a raw
 /// `.system(size:)`/`.custom(...)`. Mirrors the two-tier typography architecture (raw faces → roles).
-///
-/// The legacy `wdFont*` / `titleFont` / `bodyFont` constants are thin aliases onto these roles (see
-/// `WDFont.swift`) so existing screens keep their exact look while new work uses `.dsFont(_:)`.
 enum DSFont: CaseIterable {
 
     // Display serif (Baskerville)
@@ -17,8 +14,8 @@ enum DSFont: CaseIterable {
     case callout           // body copy
     case caption           // footnotes, version string
 
-    // Chrome serif (Copperplate) — legacy body role
-    case body              // body copy (legacy `bodyFont`)
+    // Chrome serif (Copperplate)
+    case body              // engraved-serif body copy (game chrome, meaning screen)
 
     // Impact
     case impact            // loud display moment

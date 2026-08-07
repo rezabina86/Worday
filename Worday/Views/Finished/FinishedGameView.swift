@@ -28,7 +28,7 @@ struct FinishedGameView: View {
             
             Text(viewState.title)
                 .multilineTextAlignment(.center)
-                .font(titleFont2)
+                .dsFont(.impact)
                 .bold()
                 .animation(nil, value: viewState)
             
@@ -98,9 +98,9 @@ struct FinishedGameView: View {
             VStack(spacing: .space_16pt) {
                 Text(message)
                     .multilineTextAlignment(.center)
-                    .font(bodyFont)
+                    .dsFont(.body)
                 Text(word)
-                    .font(titleFont)
+                    .dsFont(.largeTitle)
             }
         case let .meaning(viewState):
             buildMeaningView(from: viewState)
@@ -112,7 +112,7 @@ struct FinishedGameView: View {
         VStack(alignment: .leading, spacing: .space_16pt) {
             HStack {
                 Text(viewState.word)
-                    .font(titleFont)
+                    .dsFont(.largeTitle)
                 Spacer()
             }
             
@@ -133,14 +133,14 @@ struct FinishedGameView: View {
                     .tint(Color.blue)
                     
                     Text("DEFINITIONS")
-                        .font(bodyFont)
+                        .dsFont(.body)
                     
                     ScrollView {
                         LazyVStack {
                             ForEach(selectedMeaning.definitions) { def in
                                 HStack(alignment: .top) {
                                     Text("\(def.index).")
-                                        .font(bodyFont)
+                                        .dsFont(.body)
                                         .bold()
                                     
                                     Text(def.definition)
