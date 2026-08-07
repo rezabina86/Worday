@@ -6,12 +6,14 @@ protocol InfoModalViewStateConverterType {
 
 struct InfoModalViewStateConverter: InfoModalViewStateConverterType {
     
-    init(bundle: BundleType) {
+    init(bundle: BundleType, modalRouter: ModalRouterType) {
         self.bundle = bundle
+        self.modalRouter = modalRouter
     }
-    
+
     func make() -> InfoModalViewState {
-        .init(
+        let modalRouter = self.modalRouter
+        return .init(
             topics: [
                 "Each day, the game provides a new word for you to guess.",
                 "Rearrange the letters to form the correct word.",
@@ -19,12 +21,14 @@ struct InfoModalViewStateConverter: InfoModalViewStateConverterType {
                 "Once you've guessed the word, its meaning will be revealed."
             ],
             versionString: "Version \(bundle.versionDescription ?? "")",
-            acknowledgements: Self.makeAcknowledgements()
+            acknowledgements: Self.makeAcknowledgements(),
+            dismiss: .init { modalRouter.dismiss() }
         )
     }
 
     // MARK: - Privates
     private let bundle: BundleType
+    private let modalRouter: ModalRouterType
 
     /// The dictionary-data attribution the app is obliged to show: Wiktionary (CC BY-SA) and WordNet
     /// (copyright notice), plus the supporting data sources. Text mirrors `tools/PROVENANCE.md`.

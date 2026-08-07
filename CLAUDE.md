@@ -631,19 +631,38 @@ on-device. The daily word, word validity, and every definition come from a singl
 
 ## Design System
 
-All visual constants come from `Common/UI Kit` — never hard-code a colour, size, spacing, radius, or
-font in a view:
+Visual constants and reusable views live under **`Worday/Design System/`** — a two-tier, token-driven
+system (raw faces/palette → semantic roles/tokens → components). Never hard-code a colour, size, spacing,
+radius, or font in a view; reach for a semantic token or a `DS*` component. Full guide:
+`Worday/Design System/DesignSystem.md`.
 
-- **`ColorTokens`** — semantic `Color`s loaded from the asset catalog (`backgroundColor`, `textColor`,
-  `borderActiveColor`, `correct`, `misplaced`, …).
-- **`MeasurementTokens`** — `CGFloat` size/space/radius tokens (`size_*pt`, `space_*pt`, `radius_*`).
-- **`WDFont`** — the app's `Font` constants (`wdFont*`, `titleFont`, `bodyFont`).
-- **`Buttons` / `GlassView` / `GlassPane` / `View+Glassify` / `WDBackground`** — the DS primitives (the
-  glass surfaces gate the iOS 26 Liquid Glass API behind an availability check with a pre-26 fallback).
+**Foundations** (`Design System/Foundations/`) — the tier features consume:
+- **Typography** — `DSFont` is the semantic type scale (`.sectionTitle`, `.callout`, `.caption`,
+  `.largeTitle`, `.gameTile`, …), applied with the **`.dsFont(_:)`** view/`Text` modifier (sets font +
+  tracking). It resolves through `DSFontFamily` (the raw faces: `display`=Baskerville, `chrome`=Copperplate,
+  `impact`, `mono`=system-monospaced, `ui`=system). **Content roles are clean system sans** (matching the
+  result screen); serif is reserved for display titles. The legacy `wdFont*`/`titleFont`/`bodyFont`
+  constants are thin **aliases** onto `DSFont` (in `WDFont.swift`) — screens migrate to `.dsFont(_:)` as
+  touched. Never use `.font(.system(...))` in a feature.
+- **Colors** — `DSColor` is the semantic layer (`textPrimary`, `textSecondary`, `background`, `border`,
+  `brand`, `link`, `correct`, …); it aliases `DSPalette`, the raw layer over the asset colorsets. **Links
+  wear `DSColor.link` (the cardinal brand red), never system blue.** (`ColorTokens` is the pre-DS
+  `Color.*` extension, still used by unmigrated screens.)
+- **Metrics** — `MeasurementTokens` — `CGFloat` size/space/radius tokens (`size_*pt`, `space_*pt`,
+  `radius_*`).
 
-Add a token only when a number/colour has design meaning; a genuinely one-off local constant may stay
-inline. Extract a DS primitive on the **second** use, not the first. The app ships **zero image assets**
-beyond the app icon and logo — brand art is generated in SwiftUI.
+**Components** (`Design System/Components/`) — `DS`-prefixed, dumb leaf views, one folder per family.
+Pure-visual leaves take plain init params (`DSCard`, `DSSectionHeader`, `DSBulletRow`, `DSLink`,
+`DSWordmark`); a stateful component would carry an `Equatable Model` with `UserAction`s (PP convention).
+The glass primitives (`GlassView`/`GlassPane`/`View+Glassify`), animated `WDBackground`, and `Buttons`
+live here too; the glass surfaces gate the iOS 26 Liquid Glass API behind an availability check with a
+pre-26 fallback.
+
+DS components are **not unit-tested** (dumb views — see `WordayTests/Tests/Design System/
+DesignSystemTestNotes.md`); a component's `Model`/behaviour is asserted through its consuming
+converter/view-model. Add a token only when a number/colour has design meaning; extract a DS component on
+the **second** use, not the first. The app ships **zero image assets** beyond the app icon and logo —
+brand art is generated in SwiftUI.
 
 ---
 
@@ -776,7 +795,8 @@ Source and test files mirror each other folder-for-folder:
 ```
 Worday/
 ├── Application/            (App entry, WordayApp)
-├── Common/                 (DI aggregator + common seams, UI Kit, helpers, entity id)
+├── Common/                 (DI aggregator + common seams, helpers, entity id, UserAction, WordDatabase)
+├── Design System/          (Foundations: Typography/Colors/Metrics · Components: DS* + glass + background)
 ├── Routing/                (presentation hosts, one subfolder per flavour)
 │   ├── Navigation/         (router + host + provider + destinations + its DI file)
 │   ├── Modal/
@@ -784,9 +804,9 @@ Worday/
 ├── Views/<Screen>/         (View + ViewState + ViewModel + Factory (or Converter) + its DI file)
 ├── Use Cases/              (application use cases + word-provider pipeline DI)
 ├── Domain/<Feature>/       (domain models + repositories + its DI file)
-├── Repositories/
-├── API Client/             (HTTPClient, Resource, Services + its DI file)
 └── Storage/                (SwiftData model, schema/migration, context seam, projection + its DI file)
+
+tools/                      (offline dictionary + word-list generation pipeline — see tools/PROVENANCE.md)
 
 WordayTests/
 ├── Tests/   (mirrors source folder-for-folder)

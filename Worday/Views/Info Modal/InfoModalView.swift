@@ -1,69 +1,77 @@
 import SwiftUI
 
 struct InfoModalView: View {
-    
+
     let viewState: InfoModalViewState
-    
+
     var body: some View {
         NavigationStack {
-            content
+            ZStack {
+                WDBackground()
+                content
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    DSWordmark()
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewState.dismiss.action()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .tint(DSColor.textPrimary)
+                }
+            }
         }
         .presentationDetents([.large])
     }
 
+    // MARK: - Privates
+
     private var content: some View {
-        VStack(spacing: .space_48pt) {
-            Spacer(minLength: .space_8pt)
-            
-            HStack {
-                Image("logo")
-                    .resizable()
-                    .frame(width: .size_24pt, height: .size_24pt)
-                
-                Text("DailySort")
-                    .font(bodyFont)
-                    
-            }
-            
-            VStack(alignment: .leading, spacing: .space_12pt) {
-                Text("How the Game Works:")
-                    .font(.body)
-                    .bold()
-                
-                ForEach(viewState.topics, id: \.self) { topic in
-                    HStack(alignment: .firstTextBaseline) {
-                        Image(systemName: "smallcircle.filled.circle.fill")
-                            .resizable()
-                            .frame(width: .size_8pt, height: .size_8pt)
-                        Text(topic)
-                            .font(.callout)
-                            .fixedSize(horizontal: false, vertical: true)
+        VStack(spacing: .space_32pt) {
+            DSCard {
+                VStack(alignment: .leading, spacing: .space_16pt) {
+                    DSSectionHeader("How the Game Works")
+                    VStack(alignment: .leading, spacing: .space_12pt) {
+                        ForEach(viewState.topics, id: \.self) { topic in
+                            DSBulletRow(topic)
+                        }
                     }
                 }
             }
-            
+
             Spacer()
-            
-            VStack(alignment: .center, spacing: .space_12pt) {
-                NavigationLink {
-                    AcknowledgementsView(viewState: viewState.acknowledgements)
-                } label: {
-                    Text("Acknowledgements")
-                        .font(.footnote)
-                }
 
-                Text("Made with ")
-                +
-                Text(Image(systemName: "heart.fill"))
-                    .foregroundColor(.red)
-                +
-                Text(" in Berlin")
-
-                Text(viewState.versionString)
-                    .font(.caption2)
-            }
+            footer
         }
         .padding(.space_24pt)
+    }
+
+    private var footer: some View {
+        VStack(spacing: .space_12pt) {
+            NavigationLink {
+                AcknowledgementsView(viewState: viewState.acknowledgements)
+            } label: {
+                Text("Acknowledgements")
+                    .dsFont(.callout)
+                    .foregroundStyle(DSColor.link)
+            }
+
+            (
+                Text("Made with ").dsFont(.callout)
+                + Text(Image(systemName: "heart.fill")).foregroundColor(DSColor.brand)
+                + Text(" in Berlin").dsFont(.callout)
+            )
+            .foregroundStyle(DSColor.textSecondary)
+
+            Text(viewState.versionString)
+                .dsFont(.caption)
+                .foregroundStyle(DSColor.textSecondary)
+        }
     }
 }
 
@@ -71,17 +79,22 @@ struct InfoModalViewState: Equatable {
     let topics: [String]
     let versionString: String
     let acknowledgements: AcknowledgementsViewState
+    let dismiss: UserAction
 }
 
 #Preview {
-    InfoModalView(viewState: .init(
-        topics: [
-            "Each day, the game provides a new word for you to guess.",
-            "Rearrange the letters to form the correct word.",
-            "The color of the tiles will change to show how close your guess was to the word.",
-            "Once you've guessed the word, its meaning will be revealed."
-        ],
-        versionString: "Version 1.3.0",
-        acknowledgements: .init(title: "Acknowledgements", sections: [])
-    ))
+    Color.clear
+        .sheet(isPresented: .constant(true)) {
+            InfoModalView(viewState: .init(
+                topics: [
+                    "Each day, the game provides a new word for you to guess.",
+                    "Rearrange the letters to form the correct word.",
+                    "The color of the tiles will change to show how close your guess was to the word.",
+                    "Once you've guessed the word, its meaning will be revealed."
+                ],
+                versionString: "Version 1.7.0 (1)",
+                acknowledgements: .init(title: "Acknowledgements", sections: []),
+                dismiss: .empty
+            ))
+        }
 }

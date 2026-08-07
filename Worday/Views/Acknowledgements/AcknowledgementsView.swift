@@ -10,28 +10,39 @@ struct AcknowledgementsView: View {
     let viewState: AcknowledgementsViewState
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: .space_24pt) {
-                ForEach(viewState.sections) { section in
-                    VStack(alignment: .leading, spacing: .space_8pt) {
-                        Text(section.title)
-                            .font(.headline)
-                        Text(section.body)
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                        if let link = section.link {
-                            Link(link.absoluteString, destination: link)
-                                .font(.callout)
+        ZStack {
+            WDBackground()
+
+            ScrollView {
+                VStack(spacing: .space_16pt) {
+                    ForEach(viewState.sections) { section in
+                        DSCard {
+                            VStack(alignment: .leading, spacing: .space_8pt) {
+                                DSSectionHeader(section.title)
+                                Text(section.body)
+                                    .dsFont(.callout)
+                                    .foregroundStyle(DSColor.textSecondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                if let link = section.link {
+                                    DSLink(link.host() ?? link.absoluteString, url: link)
+                                        .padding(.top, .space_4pt)
+                                }
+                            }
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .padding(.space_24pt)
             }
-            .padding(.space_24pt)
         }
-        .navigationTitle(viewState.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text(viewState.title)
+                    .dsFont(.sectionTitle)
+                    .foregroundStyle(DSColor.textPrimary)
+            }
+        }
     }
 }
 
