@@ -18,7 +18,7 @@ struct WordayApp: App {
 
         // Hydrate the shared played-words projection once at launch; writers reload() it thereafter.
         let playedWordsLibrary: PlayedWordsLibraryType = container.resolve()
-        playedWordsLibrary.load()
+        playedWordsLibrary.reload()
     }
 
     init() {

@@ -10,8 +10,7 @@ struct WordStorageMigrationTests {
 
     @Test("a V1 (String id) store migrates to V2 (EntityID) preserving word, date, and id")
     func migratesV1StoreToV2() throws {
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("worday-migration-test-\(UUID().uuidString).store")
+        let url = makeStoreURL()
         defer { removeStore(at: url) }
 
         let playedAt = Date(timeIntervalSince1970: 1_000)
@@ -22,14 +21,7 @@ struct WordStorageMigrationTests {
         }
 
         // 2. Open the same store with the current schema + migration plan.
-        let v2Schema = Schema(versionedSchema: WordStorageSchemaV2.self)
-        let v2Container = try ModelContainer(
-            for: v2Schema,
-            migrationPlan: WordStorageMigrationPlan.self,
-            configurations: ModelConfiguration(schema: v2Schema, url: url)
-        )
-        let context = ModelContext(v2Container)
-        let rows = try context.fetch(FetchDescriptor<WordStorageEntity>())
+        let rows = try openV2AndFetch(at: url)
 
         // 3. Every field survived, and the id is now the wrapped EntityID.
         #expect(rows.count == 1)
@@ -38,7 +30,52 @@ struct WordStorageMigrationTests {
         #expect(rows.first?.id == EntityID(rawValue: "uuid-123"))
     }
 
+    @Test("an empty V1 store migrates to an empty V2 store")
+    func migratesEmptyV1Store() throws {
+        let url = makeStoreURL()
+        defer { removeStore(at: url) }
+
+        try writeV1Store(at: url) { _ in }
+
+        let rows = try openV2AndFetch(at: url)
+
+        #expect(rows.isEmpty)
+    }
+
+    @Test("a multi-row V1 store migrates carrying every row forward")
+    func migratesMultiRowV1Store() throws {
+        let url = makeStoreURL()
+        defer { removeStore(at: url) }
+
+        let seed: [(id: String, word: String, playedAt: Date)] = [
+            (id: "1", word: "CAT", playedAt: Date(timeIntervalSince1970: 1_000)),
+            (id: "2", word: "DOG", playedAt: Date(timeIntervalSince1970: 2_000)),
+            (id: "3", word: "FOX", playedAt: Date(timeIntervalSince1970: 3_000))
+        ]
+
+        try writeV1Store(at: url) { context in
+            for row in seed {
+                context.insert(WordStorageSchemaV1.WordStorageEntity(id: row.id, word: row.word, playedAt: row.playedAt))
+            }
+        }
+
+        let rows = try openV2AndFetch(at: url)
+
+        #expect(rows.count == seed.count)
+        // Every seeded row survived with its id, word, and date — compared order-independently.
+        for row in seed {
+            let match = rows.first { $0.id == EntityID(rawValue: row.id) }
+            #expect(match?.word == row.word)
+            #expect(match?.playedAt == row.playedAt)
+        }
+    }
+
     // MARK: - Helpers
+
+    private func makeStoreURL() -> URL {
+        FileManager.default.temporaryDirectory
+            .appendingPathComponent("worday-migration-test-\(UUID().uuidString).store")
+    }
 
     private func writeV1Store(at url: URL, _ insert: (ModelContext) -> Void) throws {
         let v1Schema = Schema(versionedSchema: WordStorageSchemaV1.self)
@@ -49,6 +86,16 @@ struct WordStorageMigrationTests {
         let context = ModelContext(container)
         insert(context)
         try context.save()
+    }
+
+    private func openV2AndFetch(at url: URL) throws -> [WordStorageEntity] {
+        let v2Schema = Schema(versionedSchema: WordStorageSchemaV2.self)
+        let v2Container = try ModelContainer(
+            for: v2Schema,
+            migrationPlan: WordStorageMigrationPlan.self,
+            configurations: ModelConfiguration(schema: v2Schema, url: url)
+        )
+        return try ModelContext(v2Container).fetch(FetchDescriptor<WordStorageEntity>())
     }
 
     private func removeStore(at url: URL) {

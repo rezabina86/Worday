@@ -10,6 +10,8 @@ final class WordStorageModelContextMock: WordStorageModelContextType {
         case fetchAll
         case fetch
     }
+
+    enum StubError: Error { case failed }
     
     func insert(_ model: WordStorageEntity) {
         calls.append(.insert(model: model))
@@ -21,14 +23,17 @@ final class WordStorageModelContextMock: WordStorageModelContextType {
     
     func fetchAll() throws -> [WordStorageEntity] {
         calls.append(.fetchAll)
+        if let fetchAllThrows { throw fetchAllThrows }
         return fetchReturnValue
     }
-    
+
     func fetch(_ descriptor: FetchDescriptor<WordStorageEntity>) throws -> [WordStorageEntity] {
         calls.append(.fetch)
+        if let fetchAllThrows { throw fetchAllThrows }
         return fetchReturnValue
     }
-    
+
     var calls: [Call] = []
     var fetchReturnValue: [WordStorageEntity] = []
+    var fetchAllThrows: Error?
 }

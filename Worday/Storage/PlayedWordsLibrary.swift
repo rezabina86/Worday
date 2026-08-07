@@ -9,7 +9,6 @@ import Observation
 @MainActor
 protocol PlayedWordsLibraryType: AnyObject {
     var words: [WordStorageEntity] { get }
-    func load()
     func reload()
 }
 
@@ -26,12 +25,12 @@ final class PlayedWordsLibrary: PlayedWordsLibraryType {
 
     private(set) var words: [WordStorageEntity] = []
 
-    func load() {
-        reload()
-    }
-
+    /// Re-derive the projection from the store. Used both to hydrate at launch and to refresh after a
+    /// write. On a fetch failure the last-known-good `words` are kept rather than blanked — the data is
+    /// safe on disk, so a transient read error must not empty the history the UI is showing.
     func reload() {
-        words = (try? wordContext.fetchAll()) ?? []
+        guard let fetched = try? wordContext.fetchAll() else { return }
+        words = fetched
     }
 
     // MARK: - Privates

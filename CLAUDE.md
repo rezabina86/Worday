@@ -517,7 +517,11 @@ Two persistence surfaces, each behind an injected seam:
   `CaseIterable enum Key` so `reset()` clears them all.
 - **Played-word history** is **SwiftData**: the `@Model WordStorageEntity` (id, word, playedAt) via
   `WordStorageModelContextType` (`ModelContext` conforms). Access stays `@MainActor` (see
-  [Concurrency](#concurrency-swift-6)). The default `fetchAll()` sorts by `playedAt` descending.
+  [Concurrency](#concurrency-swift-6)). The default `fetchAll()` sorts by `playedAt` descending. The seam
+  is registered **`.container`** (class-bound protocol, `===` in `DependencyGraphTests`) so the writer and
+  every reader share **one** `ModelContext` over `sharedModelContainer` — an insert is immediately visible
+  to a fetch, with a single stable identity; don't register it `.default` (that hands out a fresh context
+  per resolve).
 
 Any codec (`JSONEncoder`/`JSONDecoder`) is injected via `EncoderType`/`DecoderType` — never constructed
 inline. Behaviour driven by a setting reads it **live** at the point of use, so a change takes effect
@@ -532,9 +536,10 @@ When **multiple surfaces read the same persisted collection**, don't let each ca
 the observable window everyone reads.
 
 - **`PlayedWordsLibrary`** (`PlayedWordsLibraryType`, `@Observable`, `.container`) is the projection over
-  `WordStorageModelContextType`: it owns `words`, derived via `load()` at launch (hydrated in
-  `WordayApp.init`) and `reload()` after a change. The **store stays the single source of truth** — the
-  projection only ever derives from it, so the readers can't disagree.
+  `WordStorageModelContextType`: it owns `words`, derived via a single `reload()` (called once at launch
+  to hydrate in `WordayApp.init`, and again after each change). A failed fetch keeps the last-known-good
+  `words` rather than blanking them. The **store stays the single source of truth** — the projection only
+  ever derives from it, so the readers can't disagree.
 - **Readers take the projection, not the store.** `WordListViewStateConverter` and `StreakUseCase` read
   `playedWordsLibrary.words` — never `wordContext.fetchAll()`. Because it's a shared `@Observable`, a
   change re-renders every reader natively.
