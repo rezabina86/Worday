@@ -5,10 +5,18 @@ import Foundation
 struct InfoModalViewStateConverterTests {
     let sut: InfoModalViewStateConverter
     let mockBundle: BundleMock
-    
+    let mockModalRouter: ModalRouterMock
+
     init() {
         mockBundle = .init()
-        sut = .init(bundle: mockBundle)
+        mockModalRouter = .init()
+        sut = .init(bundle: mockBundle, modalRouter: mockModalRouter)
+    }
+
+    @Test("the dismiss action dismisses the modal via the router")
+    func dismissActionDismissesTheModal() {
+        sut.make().dismiss.action()
+        #expect(mockModalRouter.calls == [.dismiss])
     }
 
     @Test func makesViewState() {

@@ -16,5 +16,6 @@ final class InfoModalViewStateConverterMock: InfoModalViewStateConverterType {
     var makeReturnValue: InfoModalViewState = .init(
         topics: [],
         versionString: "",
-        acknowledgements: .init(title: "", sections: []))
+        acknowledgements: .init(title: "", sections: []),
+        dismiss: .fake)
 }
