@@ -642,9 +642,10 @@ radius, or font in a view; reach for a semantic token or a `DS*` component. Full
   tracking). It resolves through `DSFontFamily` (the raw faces: `display`=Baskerville, `chrome`=Copperplate,
   `impact`, `mono`=system-monospaced, `ui`=system). **Content roles are clean system sans** (matching the
   result screen); serif is reserved for display titles. **Every feature uses `.dsFont(_:)`** — the old
-  `wdFont*`/`titleFont`/`bodyFont` constants are gone; never use `.font(.system(...))`/`.custom(...)` in a
-  feature. (System text styles like `.font(.caption)` still appear on a few screens; convert to a `DSFont`
-  role when you touch them.)
+  `wdFont*`/`titleFont`/`bodyFont` constants are gone, and raw `.font(.caption)`/`.footnote`/… have been
+  tokenised too; never use `.font(.system(...))`/`.custom(...)`/`.font(.<textStyle>)` in a feature. Content
+  roles (`.sectionTitle`/`.callout`/`.footnote`/`.caption`/`.caption2`/`.keyCap`) resolve to **system text
+  styles**, so they scale with Dynamic Type; brand faces and gameplay tiles are fixed-size.
 - **Colors** — `DSColor` is the semantic layer (`textPrimary`, `textSecondary`, `background`, `border`,
   `brand`, `link`, `correct`, …); it aliases `DSPalette`, the raw layer over the asset colorsets. **Links
   wear `DSColor.link` (the cardinal brand red), never system blue.** The pre-DS `ColorTokens` `Color.*`

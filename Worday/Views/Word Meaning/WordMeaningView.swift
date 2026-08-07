@@ -80,7 +80,7 @@ struct WordMeaningView: View {
                                         .bold()
                                     
                                     Text(def.definition)
-                                        .font(.callout)
+                                        .dsFont(.callout)
                                     Spacer()
                                 }
                                 .padding([.horizontal], .space_32pt)

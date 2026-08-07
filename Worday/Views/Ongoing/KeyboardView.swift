@@ -24,7 +24,7 @@ struct KeyBoardView: View {
             viewState.onTapEnter.action()
         } label: {
             Text("ENTER")
-                .font(.caption2)
+                .dsFont(.caption2)
                 .fontWeight(.bold)
                 .scaledToFill()
                 .minimumScaleFactor(0.01)
@@ -55,7 +55,7 @@ struct KeyBoardView: View {
             vs.onTap.action()
         } label: {
             Text(vs.character.uppercased())
-                .font(.title3)
+                .dsFont(.keyCap)
                 .fontWeight(.bold)
                 .foregroundColor(DSColor.textPrimary)
                 .frame(width: .size_48pt, height: .size_48pt)

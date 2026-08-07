@@ -1,67 +1,74 @@
 import SwiftUI
 
-/// The semantic type scale — the tier features use. Each role names a *purpose* and resolves to a
-/// `DSFontFamily` + size + weight + tracking, so screens ask for `.dsFont(.sectionTitle)`, never a raw
-/// `.system(size:)`/`.custom(...)`. Mirrors the two-tier typography architecture (raw faces → roles).
+/// The semantic type scale — the tier features use. Each role names a *purpose* and resolves to either a
+/// fixed-size brand face (`DSFontFamily`) or a system text style (Dynamic-Type-scaled), so screens ask for
+/// `.dsFont(.sectionTitle)`, never a raw `.system(size:)`/`.custom(...)`/`.font(.caption)`.
+///
+/// Display titles, the wordmark serif, the Impact face, and the gameplay tiles are **fixed** (their
+/// layout is size-critical); content/label roles ride the **system text styles** so body copy scales for
+/// accessibility and reads like the result screen.
 enum DSFont: CaseIterable {
 
-    // Display serif (Baskerville)
+    // Display serif (Baskerville) — fixed
     case largeTitle        // hero title / streak headline
     case title             // screen title
 
-    // Content (system sans — clean and legible, matching the result screen)
+    // Content (system text styles — Dynamic Type)
     case sectionTitle      // grouped-section heading
+    case keyCap            // keyboard letter key
     case callout           // body copy
+    case footnote          // compact stat / label
     case caption           // footnotes, version string
+    case caption2          // smallest label
 
-    // Chrome serif (Copperplate)
+    // Chrome serif (Copperplate) — fixed
     case body              // engraved-serif body copy (game chrome, meaning screen)
 
-    // Impact
+    // Impact — fixed
     case impact            // loud display moment
 
-    // Mono (gameplay & interface)
+    // Mono gameplay — fixed
     case gameTile          // the scrambled letter tiles
-    case gameHeading       // large mono heading
-    case gameTitle         // mono title
-    case gameCaption       // micro mono caption
 
-    // System (compact interface labels)
-    case label
-    case labelSmall
+    // System label — fixed
+    case label             // compact interface label (buttons)
 
     // MARK: - Publics
 
-    /// The resolved SwiftUI font (scales with Dynamic Type for the custom faces).
-    var font: Font { spec.family.font(size: spec.size, weight: spec.weight) }
+    /// The resolved SwiftUI font. Content roles scale with Dynamic Type; brand/gameplay roles are fixed.
+    var font: Font {
+        switch resolution {
+        case let .face(family, size, weight):
+            family.font(size: size, weight: weight)
+        case let .textStyle(style, weight):
+            .system(style, weight: weight)
+        }
+    }
 
-    /// Letter spacing that pairs with this role. Applied together with `font` by `.dsFont(_:)`.
-    var tracking: CGFloat { spec.tracking }
+    /// Letter spacing paired with this role (applied with `font` by `.dsFont(_:)`).
+    var tracking: CGFloat { 0 }
 
     // MARK: - Privates
 
-    private struct Spec {
-        let family: DSFontFamily
-        let size: CGFloat
-        var weight: Font.Weight = .regular
-        var tracking: CGFloat = 0
+    private enum Resolution {
+        case face(DSFontFamily, size: CGFloat, weight: Font.Weight)
+        case textStyle(Font.TextStyle, weight: Font.Weight)
     }
 
-    private var spec: Spec {
+    private var resolution: Resolution {
         switch self {
-        case .largeTitle:   Spec(family: .display, size: 42)
-        case .title:        Spec(family: .display, size: 32)
-        case .sectionTitle: Spec(family: .ui, size: 20, weight: .semibold)
-        case .callout:      Spec(family: .ui, size: 16)
-        case .caption:      Spec(family: .ui, size: 13)
-        case .body:         Spec(family: .chrome, size: 18)
-        case .impact:       Spec(family: .impact, size: 36)
-        case .gameTile:     Spec(family: .mono, size: 36, weight: .medium)
-        case .gameHeading:  Spec(family: .mono, size: 24, weight: .medium)
-        case .gameTitle:    Spec(family: .mono, size: 20, weight: .medium)
-        case .gameCaption:  Spec(family: .mono, size: 8, weight: .medium)
-        case .label:        Spec(family: .ui, size: 16)
-        case .labelSmall:   Spec(family: .ui, size: 12)
+        case .largeTitle:   .face(.display, size: 42, weight: .regular)
+        case .title:        .face(.display, size: 32, weight: .regular)
+        case .sectionTitle: .textStyle(.title3, weight: .semibold)
+        case .keyCap:       .textStyle(.title3, weight: .regular)
+        case .callout:      .textStyle(.callout, weight: .regular)
+        case .footnote:     .textStyle(.footnote, weight: .regular)
+        case .caption:      .textStyle(.caption, weight: .regular)
+        case .caption2:     .textStyle(.caption2, weight: .regular)
+        case .body:         .face(.chrome, size: 18, weight: .regular)
+        case .impact:       .face(.impact, size: 36, weight: .regular)
+        case .gameTile:     .face(.mono, size: 36, weight: .medium)
+        case .label:        .face(.ui, size: 16, weight: .regular)
         }
     }
 }

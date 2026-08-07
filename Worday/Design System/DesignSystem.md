@@ -32,13 +32,14 @@ Text("Dictionary data").dsFont(.sectionTitle)
 
 Roles resolve through `DSFontFamily`, the raw faces and the single swap point:
 `display` = Baskerville · `chrome` = Copperplate · `impact` = Impact · `mono` = system monospaced ·
-`ui` = system sans. **Content roles (`sectionTitle`, `callout`, `caption`) are clean system sans** — the
-Copperplate engraved face is display-only, never body copy. Display serif is `largeTitle`/`title`
-(Baskerville); the gameplay tiles/counters are `gameTile`/`gameHeading`/`gameTitle`/`gameCaption` (mono).
+`ui` = system sans. **Content roles (`sectionTitle`, `callout`, `footnote`, `caption`, `caption2`,
+`keyCap`) resolve to system text styles and scale with Dynamic Type** — the Copperplate engraved face is
+display-only, never body copy. Display serif is `largeTitle`/`title` (Baskerville, fixed); the gameplay
+tiles are `gameTile` (mono, fixed) — anything size-critical stays fixed.
 
-Every feature uses `.dsFont(_:)` — the pre-DS `wdFont*`/`titleFont`/`bodyFont` constants have been
-removed. (A few screens still use raw system text styles like `.font(.caption)`; convert those to a
-`DSFont` role when touched.)
+Every feature uses `.dsFont(_:)` — the pre-DS `wdFont*`/`titleFont`/`bodyFont` constants **and** raw
+`.font(.caption)`/`.footnote`/… have all been removed. `DSFont` is the single source of every font in the
+app.
 
 ### Colours — `DSColor` (→ `DSPalette`)
 `DSColor` is the semantic layer features use (`textPrimary`, `textSecondary`, `background`, `border`,
