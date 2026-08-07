@@ -14,7 +14,7 @@ protocol WordProviderUseCaseType {
 final class WordProviderUseCase: WordProviderUseCaseType {
     
     init(
-        wordRepository: WordRepositoryType,
+        wordDatabase: WordDatabaseType,
         wordContext: WordStorageModelContextType,
         randomWordProducer: RandomWordProducerType,
         dateService: DateServiceType,
@@ -25,7 +25,7 @@ final class WordProviderUseCase: WordProviderUseCaseType {
         attemptTrackerUseCase: AttemptTrackerUseCaseType,
         playedWordsLibrary: PlayedWordsLibraryType
     ) {
-        self.wordRepository = wordRepository
+        self.wordDatabase = wordDatabase
         self.wordContext = wordContext
         self.randomWordProducer = randomWordProducer
         self.dateService = dateService
@@ -42,10 +42,11 @@ final class WordProviderUseCase: WordProviderUseCaseType {
             return .word(word: currentWord)
         }
         
-        guard let allWords = try? wordRepository.words().words else {
+        let allWords = wordDatabase.answerWords()
+        guard !allWords.isEmpty else {
             return .error
         }
-        
+
         guard let storedWords = try? wordContext.fetchAll() else {
             return .error
         }
@@ -90,7 +91,7 @@ final class WordProviderUseCase: WordProviderUseCaseType {
     }
     
     // MARK: - Privates
-    private let wordRepository: WordRepositoryType
+    private let wordDatabase: WordDatabaseType
     private let wordContext: WordStorageModelContextType
     private let randomWordProducer: RandomWordProducerType
     private let dateService: DateServiceType

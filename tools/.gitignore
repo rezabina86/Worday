@@ -1,0 +1,7 @@
+# Regenerable / downloaded — not source. Regenerate via build_wordlist.py.
+.venv/
+out/
+data/hunspell/
+data/ldnoobw_en.txt
+data/wiktionary_raw/
+# data/wiktionary/ (parsed CC BY-SA defs) IS committed — it's source for the artifact.

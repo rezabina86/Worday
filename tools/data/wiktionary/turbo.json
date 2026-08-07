@@ -1,0 +1,31 @@
+{
+  "word": "turbo",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "A turbine.",
+        "Clipping of turbocharger.",
+        "Clipping of turbojet.",
+        "Clipping of turbomolecular pump.",
+        "Autofire.",
+        "A turban shell."
+      ]
+    },
+    {
+      "pos": "adjective",
+      "definitions": [
+        "With rapidly-increasing blind levels.",
+        "Causing or relating to increased speed.",
+        "Very, super, etc.; usually relating to a qualitative value (as opposed to quantitative)."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "To autofire."
+      ]
+    }
+  ],
+  "source": "wiktionary"
+}

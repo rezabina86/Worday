@@ -5,6 +5,13 @@ struct InfoModalView: View {
     let viewState: InfoModalViewState
     
     var body: some View {
+        NavigationStack {
+            content
+        }
+        .presentationDetents([.large])
+    }
+
+    private var content: some View {
         VStack(spacing: .space_48pt) {
             Spacer(minLength: .space_8pt)
             
@@ -38,32 +45,43 @@ struct InfoModalView: View {
             Spacer()
             
             VStack(alignment: .center, spacing: .space_12pt) {
+                NavigationLink {
+                    AcknowledgementsView(viewState: viewState.acknowledgements)
+                } label: {
+                    Text("Acknowledgements")
+                        .font(.footnote)
+                }
+
                 Text("Made with ")
                 +
                 Text(Image(systemName: "heart.fill"))
                     .foregroundColor(.red)
                 +
                 Text(" in Berlin")
-                
+
                 Text(viewState.versionString)
                     .font(.caption2)
             }
         }
         .padding(.space_24pt)
-        .presentationDetents([.large])
     }
 }
 
 struct InfoModalViewState: Equatable {
     let topics: [String]
     let versionString: String
+    let acknowledgements: AcknowledgementsViewState
 }
 
 #Preview {
-    InfoModalView(viewState: .init(topics: [
-        "Each day, the game provides a new word for you to guess.",
-        "Rearrange the letters to form the correct word.",
-        "The color of the tiles will change to show how close your guess was to the word.",
-        "Once you've guessed the word, its meaning will be revealed."
-    ], versionString: "Version 1.3.0"))
+    InfoModalView(viewState: .init(
+        topics: [
+            "Each day, the game provides a new word for you to guess.",
+            "Rearrange the letters to form the correct word.",
+            "The color of the tiles will change to show how close your guess was to the word.",
+            "Once you've guessed the word, its meaning will be revealed."
+        ],
+        versionString: "Version 1.3.0",
+        acknowledgements: .init(title: "Acknowledgements", sections: [])
+    ))
 }

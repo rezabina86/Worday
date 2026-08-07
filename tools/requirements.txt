@@ -1,0 +1,5 @@
+# Reproducible build environment for the DailySort word-list + dictionary pipeline.
+# Pin majors to keep regeneration deterministic; refresh deliberately, not incidentally.
+nltk==3.9.1          # WordNet: lemmas, POS, glosses, morphy (plural detection)
+wordfreq==3.1.1      # frequency-ranked candidate source + Zipf thresholding
+spylls==0.1.7        # pure-Python Hunspell: authoritative en_US validity gate

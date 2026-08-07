@@ -1,0 +1,26 @@
+{
+  "word": "whose",
+  "meanings": [
+    {
+      "pos": "determiner",
+      "definitions": [
+        "Of whom, belonging to whom; which person's or people's.",
+        "Of whom, belonging to whom.",
+        "Of which, belonging to which."
+      ]
+    },
+    {
+      "pos": "pronoun",
+      "definitions": [
+        "That or those of whom or belonging to whom."
+      ]
+    },
+    {
+      "pos": "contraction",
+      "definitions": [
+        "Misspelling of who's."
+      ]
+    }
+  ],
+  "source": "wiktionary"
+}

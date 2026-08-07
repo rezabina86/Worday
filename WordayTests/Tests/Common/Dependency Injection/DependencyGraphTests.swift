@@ -13,8 +13,8 @@ struct DependencyGraphTests {
         let container = makeWiredContainer()
 
         _ = container.resolve() as ResourceLoaderType
-        _ = container.resolve() as WordServiceType
-        _ = container.resolve() as WordRepositoryType
+        _ = container.resolve() as DecoderType
+        _ = container.resolve() as WordDatabaseType
         _ = container.resolve() as URLContentLoaderType
         _ = container.resolve() as WordStorageModelContextType
         _ = container.resolve() as DateServiceType
@@ -28,9 +28,6 @@ struct DependencyGraphTests {
         _ = container.resolve() as InfoModalViewStateConverterType
         _ = container.resolve() as ArrayShuffleType
         _ = container.resolve() as FinishGameRelayType
-        _ = container.resolve() as HTTPClientType
-        _ = container.resolve() as URLSessionFactoryType
-        _ = container.resolve() as DictionaryServiceType
         _ = container.resolve() as DictionaryRepositoryType
         _ = container.resolve() as DictionaryUseCaseType
         _ = container.resolve() as FinishedGameViewModelFactoryType
@@ -47,12 +44,12 @@ struct DependencyGraphTests {
         _ = container.resolve() as AlertRouterType
     }
 
-    @Test("a .container-scoped dependency resolves to the same instance")
-    func containerScopeReturnsSameInstance() {
+    @Test("the shared word database resolves to the same instance")
+    func wordDatabaseIsShared() {
         let container = makeWiredContainer()
 
-        let first = container.resolve() as HTTPClientType
-        let second = container.resolve() as HTTPClientType
+        let first = container.resolve() as WordDatabaseType
+        let second = container.resolve() as WordDatabaseType
 
         #expect(first === second)
     }

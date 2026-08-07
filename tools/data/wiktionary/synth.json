@@ -1,0 +1,27 @@
+{
+  "word": "synth",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "A synthetic humanoid, an android, a robot, a clone",
+        "A fictional reptilian android species.",
+        "A musical synthesizer."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "To play on a musical synthesizer.",
+        "Synonym of synthesize."
+      ]
+    },
+    {
+      "pos": "adjective",
+      "definitions": [
+        "Abbreviation of synthetic."
+      ]
+    }
+  ],
+  "source": "wiktionary"
+}

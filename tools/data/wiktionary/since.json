@@ -1,0 +1,25 @@
+{
+  "word": "since",
+  "meanings": [
+    {
+      "pos": "conjunction",
+      "definitions": [
+        "From the time that.",
+        "Because."
+      ]
+    },
+    {
+      "pos": "preposition",
+      "definitions": [
+        "From: referring to a period of time ending in the present and defining it by the point in time at which it started, or the period in which its starting point occurred."
+      ]
+    },
+    {
+      "pos": "adverb",
+      "definitions": [
+        "From a specified time in the past."
+      ]
+    }
+  ],
+  "source": "wiktionary"
+}

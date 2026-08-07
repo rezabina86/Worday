@@ -25,6 +25,7 @@ extension WordMeaningModel.Meaning {
         case numeral
         case article
         case determiner
+        case contraction
     }
     
     struct Definition: Equatable {

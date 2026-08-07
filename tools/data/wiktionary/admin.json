@@ -1,0 +1,23 @@
+{
+  "word": "admin",
+  "meanings": [
+    {
+      "pos": "noun",
+      "definitions": [
+        "Administration, or administrative work.",
+        "An administration (a body that administers; the executive part of government).",
+        "The administrative or managerial body of a company or other organization.",
+        "An administrator (one who administers affairs).",
+        "A systems administrator (one who maintains a computer system or network).",
+        "A user of a discussion forum, website, etc. with privileges allowing them to control or restrict the activity of other users."
+      ]
+    },
+    {
+      "pos": "verb",
+      "definitions": [
+        "To serve as an administrator for or of."
+      ]
+    }
+  ],
+  "source": "wiktionary"
+}

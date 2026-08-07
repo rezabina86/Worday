@@ -3,9 +3,9 @@ import Foundation
 @testable import Worday
 
 struct WordProviderUseCaseTests {
-    
+
     var sut: WordProviderUseCase
-    var mockWordRepository: WordRepositoryMock
+    var mockWordDatabase: WordDatabaseMock
     var mockWordContext: WordStorageModelContextMock
     var mockRandomWordProducer: RandomWordProducerMock
     var mockDateService: DateServiceMock
@@ -17,7 +17,7 @@ struct WordProviderUseCaseTests {
     var mockPlayedWordsLibrary: PlayedWordsLibraryMock
 
     init() {
-        mockWordRepository = .init()
+        mockWordDatabase = .init()
         mockWordContext = .init()
         mockRandomWordProducer = .init()
         mockDateService = .init()
@@ -28,7 +28,7 @@ struct WordProviderUseCaseTests {
         mockAttemptTrackerUseCase = .init()
         mockPlayedWordsLibrary = .init()
         sut = .init(
-            wordRepository: mockWordRepository,
+            wordDatabase: mockWordDatabase,
             wordContext: mockWordContext,
             randomWordProducer: mockRandomWordProducer,
             dateService: mockDateService,
@@ -40,17 +40,17 @@ struct WordProviderUseCaseTests {
             playedWordsLibrary: mockPlayedWordsLibrary
         )
     }
-    
+
     @Test func whenThereIsUnplayedWord() async throws {
         mockUserSettings.currentWordReturnValue = "hello"
-        mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
+        mockWordDatabase.answerWordsReturnValue = ["a", "b"]
         mockWordContext.fetchReturnValue = []
         mockRandomWordProducer.randomElementReturnValue = "a"
         mockDateService.isDateInTodayReturnValue = false
-        
+
         let result = sut.fetch()
         #expect(result == .word(word: "hello"))
-        #expect(mockWordRepository.calls.isEmpty)
+        #expect(mockWordDatabase.calls.isEmpty)
         #expect(mockWordContext.calls.isEmpty)
         #expect(mockRandomWordProducer.calls.isEmpty)
         #expect(mockUserSettings.setCurrentWordCall.isEmpty)
@@ -59,83 +59,83 @@ struct WordProviderUseCaseTests {
 
     @Test func fetchSuccessfully() async throws {
         mockUserSettings.currentWordReturnValue = nil
-        mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
+        mockWordDatabase.answerWordsReturnValue = ["a", "b"]
         mockWordContext.fetchReturnValue = []
         mockRandomWordProducer.randomElementReturnValue = "a"
         mockDateService.isDateInTodayReturnValue = false
-        
+
         let result = sut.fetch()
         #expect(result == .word(word: "a"))
-        #expect(mockWordRepository.calls == [.words])
+        #expect(mockWordDatabase.calls == [.answerWords])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [.randomElement(words: ["a", "b"])])
         #expect(mockUserSettings.setCurrentWordCall == [.currentWord(.set("a"))])
         #expect(mockAttemptTrackerUseCase.calls == [.cleanup])
     }
-    
+
     @Test func fetchSuccessfullyWhenAllWordsCompleted() async throws {
         mockUserSettings.currentWordReturnValue = nil
-        mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
+        mockWordDatabase.answerWordsReturnValue = ["a", "b"]
         mockWordContext.fetchReturnValue = [
             .init(id: .init(rawValue: "123"), word: "a", playedAt: .now),
             .init(id: .init(rawValue: "345"), word: "b", playedAt: .now)
         ]
         mockRandomWordProducer.randomElementReturnValue = "a"
         mockDateService.isDateInTodayReturnValue = false
-        
+
         let result = sut.fetch()
-        
+
         #expect(result == .error)
-        #expect(mockWordRepository.calls == [.words])
+        #expect(mockWordDatabase.calls == [.answerWords])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [])
         #expect(mockUserSettings.setCurrentWordCall.isEmpty)
         #expect(mockAttemptTrackerUseCase.calls.isEmpty)
     }
-    
+
     @Test func fetchTodayWordIsCompleted() async throws {
         mockUserSettings.currentWordReturnValue = nil
-        mockWordRepository.wordsReturnValue = .fake(words: ["a", "b"])
+        mockWordDatabase.answerWordsReturnValue = ["a", "b"]
         mockWordContext.fetchReturnValue = [
             .init(id: .init(rawValue: "123"), word: "a", playedAt: .now),
             .init(id: .init(rawValue: "345"), word: "b", playedAt: .now)
         ]
         mockRandomWordProducer.randomElementReturnValue = "a"
         mockDateService.isDateInTodayReturnValue = true
-        
+
         let result = sut.fetch()
         #expect(result == .noWordToday(lastPlayedWord: "a"))
-        #expect(mockWordRepository.calls == [.words])
+        #expect(mockWordDatabase.calls == [.answerWords])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls.isEmpty)
         #expect(mockUserSettings.setCurrentWordCall.isEmpty)
         #expect(mockAttemptTrackerUseCase.calls.isEmpty)
     }
-    
+
     @Test func fetchSuccessfullyWhenWordsPartiallyCompleted() async throws {
         mockUserSettings.currentWordReturnValue = nil
-        mockWordRepository.wordsReturnValue = .fake(words: ["a", "b", "c", "d"])
+        mockWordDatabase.answerWordsReturnValue = ["a", "b", "c", "d"]
         mockWordContext.fetchReturnValue = [
             .init(id: .init(rawValue: "123"), word: "a", playedAt: .now),
             .init(id: .init(rawValue: "345"), word: "b", playedAt: .now)
         ]
         mockRandomWordProducer.randomElementReturnValue = "c"
         mockDateService.isDateInTodayReturnValue = false
-        
+
         let result = sut.fetch()
         #expect(result == .word(word: "c"))
-        #expect(mockWordRepository.calls == [.words])
+        #expect(mockWordDatabase.calls == [.answerWords])
         #expect(mockWordContext.calls == [.fetchAll])
         #expect(mockRandomWordProducer.calls == [.randomElement(words: ["c", "d"])])
         #expect(mockUserSettings.setCurrentWordCall == [.currentWord(.set("c"))])
         #expect(mockAttemptTrackerUseCase.calls == [.cleanup])
     }
-    
+
     @Test func storeWord() async throws {
         let referenceDate = Date.fake(hour: 12, minute: 23, day: 2, month: 10, year: 2023)!
         mockDateProvider.nowReturnValue = referenceDate
         mockUUIDProvider.createReturnValue = "123"
-        
+
         sut.store(word: "a")
         #expect(mockUserSettings.setCurrentWordCall == [.currentWord(.set(nil))])
         #expect(mockWordContext.calls == [.insert(model: .init(id: .init(rawValue: "123"), word: "a", playedAt: referenceDate)), .save])

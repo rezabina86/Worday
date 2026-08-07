@@ -1,16 +1,12 @@
 import Foundation
 
 extension ContainerType {
-    /// The application use cases and the word-provider data pipeline (service → repository → provider)
-    /// they build on. The pipeline's types span layers (`Common/Services`, `Repositories`, `Use Cases`)
-    /// but form one vertical feature, so their wiring is co-located here with the use case they serve.
+    /// The application use cases and the word-provider pipeline they build on. The daily-word pool is
+    /// served by the offline `WordDatabase` (a cross-cutting seam registered in `registerCommonDependencies`),
+    /// so this file wires only the use cases themselves.
     func registerUseCasesDependencies() {
-        register { container in WordService(resourceLoader: container.resolve()) as WordServiceType }
-
-        register { container in WordRepository(wordService: container.resolve()) as WordRepositoryType }
-
         register { container in
-            WordProviderUseCase(wordRepository: container.resolve(),
+            WordProviderUseCase(wordDatabase: container.resolve(),
                                 wordContext: container.resolve(),
                                 randomWordProducer: container.resolve(),
                                 dateService: container.resolve(),

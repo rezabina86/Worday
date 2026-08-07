@@ -14,8 +14,7 @@ public func injectDependencies(into container: ContainerType) {
     container.registerModalRoutingDependencies()
     container.registerAlertRoutingDependencies()
 
-    // Network + domain
-    container.registerAPIClientDependencies()
+    // Offline dictionary domain (word pool, validity, meanings — all served by WordDatabase)
     container.registerDictionaryDependencies()
 
     // Application use cases
