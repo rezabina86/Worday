@@ -1,0 +1,42 @@
+# Curated 5-letter sensitivity blocklist for DailySort.
+# Any word here is excluded from BOTH the ANSWERS tier (never "today's word") and the
+# VALID guess set. Seeded from LDNOOBW (github.com/LDNOOBW), then hand-curated: the goal
+# is slurs and strongly offensive/sexual terms, not mild profanity. One lowercase word per
+# line; '#' comments and blank lines ignored. This list is intentionally conservative —
+# a slur as the daily word is a product disaster (see build_wordlist.py).
+# Also blocked per product decision: clinical/crude terms unfit for a surprise daily word.
+bosom
+feces
+mucus
+penis
+semen
+sperm
+bitch
+boner
+boobs
+busty
+cocks
+coons
+dildo
+felch
+grope
+horny
+juggs
+kinky
+negro
+nigga
+panty
+pikey
+porno
+pubes
+pussy
+queaf
+queef
+shota
+skeet
+spunk
+titty
+twink
+vulva
+whore
+yiffy

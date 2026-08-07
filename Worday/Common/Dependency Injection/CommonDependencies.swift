@@ -14,6 +14,14 @@ extension ContainerType {
 
         register { _ in URLContentLoader() as URLContentLoaderType }
 
+        register { _ in JSONDecoder() as DecoderType }
+
+        register(in: .container) { container in
+            WordDatabase(resourceLoader: container.resolve(),
+                         decoder: container.resolve())
+            as WordDatabaseType
+        }
+
         register { _ in DateService() as DateServiceType }
 
         register { _ in UUIDProvider() as UUIDProviderType }

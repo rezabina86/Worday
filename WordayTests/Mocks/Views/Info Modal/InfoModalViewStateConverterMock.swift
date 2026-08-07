@@ -13,5 +13,8 @@ final class InfoModalViewStateConverterMock: InfoModalViewStateConverterType {
     }
 
     private(set) var calls: [Call] = []
-    var makeReturnValue: InfoModalViewState = .init(topics: [], versionString: "")
+    var makeReturnValue: InfoModalViewState = .init(
+        topics: [],
+        versionString: "",
+        acknowledgements: .init(title: "", sections: []))
 }

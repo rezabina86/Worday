@@ -1,0 +1,21 @@
+# Non-offensive exclusions from the ANSWERS tier only (these stay in VALID as legit
+# guessable words). Proper nouns and awkward-as-a-daily-answer forms that slip past the
+# automated proper-noun filter because WordNet gives them a common-ish sense
+# (venus=planet, paris=plaster, argus=pheasant, angus=cattle). One lowercase word/line.
+adams
+angus
+argus
+aries
+asian
+clegg
+papua
+elvis
+hades
+judas
+lyons
+paris
+scots
+venus
+wales
+
+versa
