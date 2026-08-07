@@ -29,7 +29,7 @@ struct KeyBoardView: View {
                 .scaledToFill()
                 .minimumScaleFactor(0.01)
                 .padding(.space_8pt)
-                .foregroundColor(Color.textColor)
+                .foregroundColor(DSColor.textPrimary)
                 .frame(width: .size_72pt, height: .size_48pt)
                 .buttonBackground
         }
@@ -43,7 +43,7 @@ struct KeyBoardView: View {
             Image(systemName: "delete.left")
                 .fontWeight(.bold)
                 .padding(.space_8pt)
-                .foregroundColor(Color.textColor)
+                .foregroundColor(DSColor.textPrimary)
                 .frame(width: .size_48pt, height: .size_48pt)
                 .buttonBackground
         }
@@ -57,7 +57,7 @@ struct KeyBoardView: View {
             Text(vs.character.uppercased())
                 .font(.title3)
                 .fontWeight(.bold)
-                .foregroundColor(Color.textColor)
+                .foregroundColor(DSColor.textPrimary)
                 .frame(width: .size_48pt, height: .size_48pt)
                 .buttonBackground
         }
@@ -95,7 +95,7 @@ private extension View {
             self.glassify(with: .radius_medium)
                 .contentShape(Rectangle())
         } else {
-            self.background(Color.backgroundKeyNoneColor)
+            self.background(DSColor.keyNone)
                 .cornerRadius(.radius_medium)
                 .contentShape(Rectangle())
         }

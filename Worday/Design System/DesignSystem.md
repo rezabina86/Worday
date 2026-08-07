@@ -9,7 +9,7 @@ DailySort's own (glass surfaces, serif/mono faces, the cardinal-red accent).
 Design System/
 ├── Foundations/
 │   ├── Typography/  DSFontFamily (raw faces) → DSFont (semantic roles) + .dsFont(_:)
-│   ├── Colors/      DSPalette (raw → asset colorsets) → DSColor (semantic)   [ColorTokens = legacy]
+│   ├── Colors/      DSPalette (raw → asset colorsets) → DSColor (semantic)
 │   └── Metrics/     MeasurementTokens (size / space / radius scales)
 └── Components/
     ├── Glass/        GlassView · GlassPane · View+Glassify   (Liquid Glass, gated)
@@ -36,16 +36,17 @@ Roles resolve through `DSFontFamily`, the raw faces and the single swap point:
 Copperplate engraved face is display-only, never body copy. Display serif is `largeTitle`/`title`
 (Baskerville); the gameplay tiles/counters are `gameTile`/`gameHeading`/`gameTitle`/`gameCaption` (mono).
 
-The legacy `wdFont*` / `titleFont` / `bodyFont` constants (`WDFont.swift`) are **thin aliases** onto
-`DSFont` roles, so screens written before the system keep their exact look; migrate each to `.dsFont(_:)`
-when you touch it.
+Every feature uses `.dsFont(_:)` — the pre-DS `wdFont*`/`titleFont`/`bodyFont` constants have been
+removed. (A few screens still use raw system text styles like `.font(.caption)`; convert those to a
+`DSFont` role when touched.)
 
 ### Colours — `DSColor` (→ `DSPalette`)
 `DSColor` is the semantic layer features use (`textPrimary`, `textSecondary`, `background`, `border`,
 `brand`, `link`, `correct`, `misplaced`, …). It aliases `DSPalette`, the raw layer that spells the asset
 colorset names (light/dark handled in the catalog). **Links use `DSColor.link` — the cardinal brand red,
 never system blue.** Adding a colour = add a `DSColor` token mapped to a `DSPalette` entry; never inline
-`Color("…")` in a view. (`ColorTokens` is the pre-DS `Color.*` extension; unmigrated screens still use it.)
+`Color("…")` in a view. Inside DS components (e.g. `WDBackground`) the raw `DSPalette` tier is used
+directly; features use only `DSColor`.
 
 ### Metrics — `MeasurementTokens`
 `CGFloat` tokens on a 4pt rhythm: `size_*pt`, `space_*pt`, `radius_*`. A raw spacing/size/radius literal

@@ -29,7 +29,7 @@ struct WordListView: View {
         GlassPane(cornerRadius: .radius_xxlarge) {
             VStack(alignment: .center, spacing: .space_2pt) {
                 Text(card.word.uppercased())
-                    .font(titleFont3)
+                    .dsFont(.title)
                 
                 Text(card.dateSection.title)
                     .font(.caption)

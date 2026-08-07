@@ -7,7 +7,7 @@ struct WDBackground: View {
                 .opacity(0.25)
                 .ignoresSafeArea()
             
-            Color.silver
+            DSPalette.silver
                 .opacity(0.7)
                 .blur(radius: 200)
                 .ignoresSafeArea()
@@ -27,13 +27,13 @@ struct WDBackground: View {
                     
                     ZStack {
                         Circle()
-                            .fill(Color.raisinBlack)
+                            .fill(DSPalette.raisinBlack)
                             .padding(50)
                             .blur(radius: 100)
                             .offset(x: x1, y: y1)
                         
                         Circle()
-                            .fill(Color.cardinal)
+                            .fill(DSPalette.cardinal)
                             .padding(50)
                             .blur(radius: 120)
                             .offset(x: x2, y: y2)

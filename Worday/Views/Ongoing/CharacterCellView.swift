@@ -17,7 +17,7 @@ struct CharacterCellView: View {
     @ViewBuilder
     private func buildCell(with char: String) -> some View {
         Text(String(char).uppercased())
-            .font(wdFont)
+            .dsFont(.gameTile)
             .fontWeight(.bold)
             .frame(width: width, height: height)
             .background(background)
@@ -29,8 +29,8 @@ struct CharacterCellView: View {
     @ViewBuilder
     private var background: some View {
         switch character.state {
-        case .correct: Color.correct
-        case .misplaced: Color.misplaced
+        case .correct: DSColor.correct
+        case .misplaced: DSColor.misplaced
         case .draft: Color.clear
         case .empty: Color.clear
         }
@@ -51,7 +51,7 @@ private extension View {
             self.overlay {
                 RoundedRectangle(cornerRadius: .radius_medium)
                     .stroke(LinearGradient(
-                        colors: [Color.borderInactiveColor],
+                        colors: [DSColor.borderMuted],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing), lineWidth: .size_4pt)
             }
@@ -71,7 +71,7 @@ private extension View {
     func cellForegroundColor(for character: GameViewState.OngoingGameViewState.Character) -> some View {
         switch character.state {
         case .correct, .misplaced: self.foregroundColor(.white)
-        case .draft, .empty: self.foregroundColor(Color.textColor)
+        case .draft, .empty: self.foregroundColor(DSColor.textPrimary)
         }
     }
 }
